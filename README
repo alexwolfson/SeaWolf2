@@ -1,0 +1,43 @@
+UnderSeaWolf README
+===================
+
+Summary:
+
+This project is created to provide an open source appliation for
+the different aspects of Apnea training.
+Qt/QML 5.5+ is used as a developmet toolkit.
+I used this app as a way to become proficient with QML/Qt development
+
+Apnea:
+
+Software Architecture:
+
+To preserve configurations/results JSON is used so far (I might switch to YAML or Database later), but for start choice seems natural,
+because of the Javascript nature of QML
+
+For application configuration saved in JSON
+
+{"name": string, "birthdate": date, "gender": ["M", "F"], "best": time}
+
+For sessions configurations saving in JSON
+
+{"session":"Name"
+   [
+      {"breath": seconds, "hold": seconds, "walk":seconds},
+      {"breath": seconds, "hold": seconds, "walk":seconds},
+      ...
+   ]
+}
+
+For the result saving in JSON
+
+{ "session": "Name", "date": data_time,
+[
+   {"breath: seconds, "heartrate":[number,number,...]},
+   {"hold": seconds, "heartrate":[number,number,...]},
+   {"walk": seconds, "steps": number, "heartrate":[number,number,...]}
+   {"walkback": seconds, "heartrate":[number,number,...]}
+]
+}
+
+Gauges have 2 states: "initial" and "stateRun"
