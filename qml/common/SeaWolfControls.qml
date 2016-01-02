@@ -4,28 +4,24 @@ import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
 import QtQuick.Extras 1.4
 import QtMultimedia 5.0
+import VPlay 2.0
 
 CircularGauge {
     id: gauge
     property real valueChange: 0
-    //property int modelIndex:0
-    // property alias needleColor: gaugeStyle.needle
     value: 0
     anchors.verticalCenter: parent.verticalCenter
-    property string gaugeName: "unknownName"
+    property string gaugeName: "brth"
     property GridView gridView
     property ListModel gaugeModel: gridView.model
     property CircularGauge nextGauge
-    property var gaugeModelElement: gaugeModel.get(modelIndex)
+    //property var gaugeModelElement: gaugeModel.get(modelIndex)
     property bool isCurrent: false
     property real minAngle: -45
     property real maxAngle:  45
-    property color needleColor: gaugeModelElement.myColor
-    property int currentModelElement: 0
-    property Button gaugeWalkControl
-    maximumValue: gaugeModelElement.time
-    property int modelIndex: 0
-    //onIsCurrentChanged: { gaugeModelElement.isCurrent = isCurrent}
+    property color needleColor: runColors[gaugeName]
+    property int modelIndex:0
+    property int maximumValue:  gaugeModel.get(modelIndex).time
     style: CircularGaugeStyle {
         id: gaugeStyle
         minimumValueAngle: gauge.minAngle
@@ -66,59 +62,30 @@ CircularGauge {
             styleColor: gauge.needleColor
         }
     }
-
-    Rectangle {
-        id: textWrapper
-
-        width: 60
-        height: 20
-        radius: 4
-        x: (gauge.x + gauge.width) /2
-        anchors.centerIn: gauge.Center
-        //color: apneaModel.get(index).myColor
-                    gradient: Gradient {
-                        GradientStop { position: 0.0; color: "#f8306a" }
-                        GradientStop { position: 1.0; color: "#fb5b40" }
-                    }
-
-        Text {
-            text: gauge.gaugeModelElement.typeName
-            color: gauge.needleColor
-            font.pixelSize: textWrapper.height - 4
-    //        horizontalAlignment: Text.AlignHCenter
-    //        verticalAlignment:   Text.AlignVCenter
-            //anchors.centerIn: gauge.Center
-
-            //x: gauge.x + gauge.width/2
-            //y: gauge.horizontalCenter
-            //rotation: 60 //(parent.minAngle + parent.maxAngle) / 2
-        }
-
-    }
-    Audio {
+    SoundEffectVPlay {
             id: breathsnd
             volume: 1.0
-            source: "qrc:/qml/sounds/breathe.wav"
+            source: "../../assets/sounds/breathe.wav"
     }
-    Audio {
+    SoundEffectVPlay {
             id: holdsnd
             volume: 1.0
-            source: "qrc:/qml/sounds/hold.wav"
+            source: "../../assets/sounds/hold.wav"
     }
-    Audio {
+    SoundEffectVPlay {
             id: walksnd
             volume: 1.0
-            source: "qrc:/qml/sounds/walk.wav"
+            source: "../../assets//walk.wav"
     }
-    Audio {
+    SoundEffectVPlay {
             id: thirtysnd
             volume: 1.0
-            source: "qrc:/qml/sounds/30sec.wav"
+            source: "../../assets/sounds/30sec.wav"
     }
-    Audio {
+    SoundEffectVPlay {
             id: tensnd
             volume: 1.0
-            source: "qrc:/qml/sounds/10sec.wav"
+            source: "../../assets/sounds/10sec.wav"
     }
     states:[
         State {
@@ -178,11 +145,14 @@ CircularGauge {
                         tenTimer.start()
                     }
                     if (gauge.gaugeName == "brth"){
+                        gaugeModel.get(modelIndex).maximumValue = gaugeModel.get(modelIndex).time
+                        gaugeModel.get(modelIndex+1).maximumValue = gaugeModel.get(modelIndex+1).time
+                        gaugeModel.get(modelIndex+2).maximumValue = gaugeModel.get(modelIndex+2).time
+
                        breathsnd.play()
 
                     } else if (gauge.gaugeName == "hold"){
                         holdsnd.play()
-                        gridView.holdFooterTime = view.holdFooterTime
                         //gridView.delegate.border.color = "white"
                     }  else if (gauge.gaugeName == "walk"){
                         //gaugeWalkControl.enabled = true
@@ -190,17 +160,19 @@ CircularGauge {
                     }
                 }
 
-                if ((!running) && (gaugeModelElement.typeName === gaugeName)) {
+                if ((!running) /*&& (gaugeModelElement.typeName === gaugeName)*/) {
                     console.log("running=", running, "modelIndex=", modelIndex)
                     state = "initial";
                     gaugeModel.get(modelIndex).isCurrent = false
-                    if (nextGauge.modelIndex < gaugeModel.count){
+                    if (nextGauge.modelIndex < (gaugeModel.count -1)){
                         nextGauge.modelIndex = modelIndex + 1
                         gaugeModel.get(nextGauge.modelIndex).isCurrent = true
                         //seting up next gauge as current
                         nextGauge.state = "stateRun"
                     }
                 }
+                // we are here as part of the transaction to running, so in case of next serie
+                // we change all times!
             }
         },
         Transition {

@@ -41,3 +41,8 @@ win32 {
 macx {
     ICON = macx/app_icon.icns
 }
+
+DISTFILES += \
+    TODO \
+    README.md \
+    README

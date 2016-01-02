@@ -60,7 +60,8 @@ SceneBase{
                 <br>Qt/QML 5.5+ is used as a developmet toolkit.<br>
                 I used this app as a way to become proficient with<br>
                  QML/Qt development
-                <p><b> Apnea influences <b></p>
+                <p><b> Apnea influences </b></p>
+                   <span class="auto-style3">
                 <i>Nick Fazah</i> <br>One of the owners of the
                 <br><a href=\"http://www.ecdivers.com\">East Cost divers</a><br>
                 and SSI international training director

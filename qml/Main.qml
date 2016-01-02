@@ -4,8 +4,12 @@ import "scenes"
 
 GameWindow {
     id: window
-    width: 960
-    height: 640
+    width: dp(640)
+    height: dp(960)
+    //AWtest
+    property variant jsonTest
+    property var currentSession
+   // property ListModel currentModel: apneaModel
 
     // You get free licenseKeys from http://v-play.net/licenseKey
     // With a licenseKey you can:
@@ -25,8 +29,10 @@ GameWindow {
         // listen to the button signals of the scene and change the state according to it
         onAboutPressed: window.state = "about"
         onConfigSeriesPressed: window.state = "configSeries"
+        onRunSessionPressed: window.state = "runSession"
         onSelectLevelPressed: window.state = "selectLevel"
         onCreditsPressed: window.state = "credits"
+        //onSessionCreated: configSeriesScene.generateCO2Session()
         // the menu scene is our start scene, so if back is pressed there we ask the user if he wants to quit the application
         onBackButtonPressed: {
             nativeUtils.displayMessageBox(qsTr("Really quit the training?"), "", 2);
@@ -47,9 +53,16 @@ GameWindow {
         id: aboutScene
         onBackButtonPressed: window.state = "menu"
     }
-    // About the app scene
+    // Configure Series scene
     ConfigSeriesScene {
         id: configSeriesScene
+        onBackButtonPressed: window.state = "menu"
+    }
+    // Running Session Scene
+    RunSessionScene {
+        id: runSessionScene
+        onSessionSelected: fillListModel(selectedSession)
+
         onBackButtonPressed: window.state = "menu"
     }
     // scene for selecting levels
@@ -57,6 +70,7 @@ GameWindow {
         id: selectLevelScene
         onLevelPressed: {
             // selectedLevel is the parameter of the levelPressed signal
+
             gameScene.setLevel(selectedLevel)
             window.state = "game"
 
@@ -91,6 +105,11 @@ GameWindow {
             name: "about"
             PropertyChanges {target: aboutScene; opacity: 1}
             PropertyChanges {target: window; activeScene: aboutScene}
+        },
+        State {
+            name: "runSession"
+            PropertyChanges {target: runSessionScene; opacity: 1}
+            PropertyChanges {target: window; activeScene: runSessionScene}
         },
         State {
             name: "configSeries"

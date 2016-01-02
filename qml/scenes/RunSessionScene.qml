@@ -13,12 +13,19 @@ SceneBase {
   id: runSessionScene
   property var runColors: {"brth" : "red", "hold" : "green", "walk" : "blue"}
   property SeaWolfControls timerHold:    timerHold
-  //active: true
-  //anchors.right: seriesConfig.left
-  //anchors.bottom: parent.bottom
-  //anchors.left: parent.left
-  //anchors.top: parent.top
-  //z: 5
+  // signal indicating that current session is slected
+  signal sessionSelected(var selectedSession)
+  function fillListModel(listModelSrc){
+      console.log("**** In fillListModel width ", listModelSrc)
+      var step;
+      apneaModel.clear();
+      for (step in listModelSrc){
+          apneaModel.append({"time": listModelSrc[step].time, "typeName":listModelSrc[step].typeName, "isCurrent": false});
+      }
+      timerBreathe.maximumValue = apneaModel.get(apneaModel.brthIndx).time
+      timerHold.maximumValue = apneaModel.get(apneaModel.holdIndx).time
+      timerWalk.maximumValue = apneaModel.get(apneaModel.walkIndx).time
+  }
   MenuButton {
       z:100
       text: "Back"
@@ -42,51 +49,23 @@ SceneBase {
       width: parent.width
       height: parent.height
       anchors.fill: parent
-//            anchors.rightMargin: 0
-//            anchors.bottomMargin: 0
-//            anchors.leftMargin: 0
-//            //anchors.top: tocContainer.bottom
-//            anchors.topMargin: 5
       anchors.horizontalCenter: parent.horizontalCenter;
-      //property alias walkControl: walkControl
-      //height: Math.min(root.width, root.height)
+
+      // List elements are created dynamically, when fillListModel is called
       ListModel {
           id: apneaModel
           //the following 3 properties will be used as indexes
-          property int breathe: 0
-          property int hold: 1
-          property int walk: 2
+          property int brthIndx: 0
+          property int holdIndx:    1
+          property int walkIndx:    2
+          //added something so user will not be confused if runs before configuring
           ListElement { time: 11; typeName: "brth";    myColor: "red";   isCurrent: false }
           ListElement { time: 12; typeName: "hold";    myColor: "blue";  isCurrent: false }
           ListElement { time: 13; typeName: "walk";    myColor: "green"; isCurrent: false }
-
           ListElement { time: 14; typeName: "brth";    myColor: "red";   isCurrent: false }
-          ListElement { time: 11; typeName: "hold";    myColor: "blue";  isCurrent: false }
-          ListElement { time: 12; typeName: "walk";    myColor: "green"; isCurrent: false }
+          ListElement { time: 15; typeName: "hold";    myColor: "blue";  isCurrent: false }
+          ListElement { time: 16; typeName: "walk";    myColor: "green"; isCurrent: false }
 
-          ListElement { time: 10; typeName: "brth";    myColor: "red";   isCurrent: false }
-          ListElement { time: 16; typeName: "hold";    myColor: "blue";  isCurrent: false }
-          ListElement { time: 18; typeName: "walk";    myColor: "green"; isCurrent: false }
-
-          ListElement { time: 14; typeName: "brth";    myColor: "red";   isCurrent: false }
-          ListElement { time: 18; typeName: "hold";    myColor: "blue";  isCurrent: false }
-          ListElement { time: 12; typeName: "walk";    myColor: "green"; isCurrent: false }
-
-          ListElement { time: 10; typeName: "brth";    myColor: "red";   isCurrent: false }
-          ListElement { time: 16; typeName: "hold";    myColor: "blue";  isCurrent: false }
-          ListElement { time: 18; typeName: "walk";    myColor: "green"; isCurrent: false }
-
-          ListElement { time: 14; typeName: "brth";    myColor: "red";   isCurrent: false }
-          ListElement { time: 11; typeName: "hold";    myColor: "blue";  isCurrent: false }
-          ListElement { time: 12; typeName: "walk";    myColor: "green"; isCurrent: false }
-
-          ListElement { time: 10; typeName: "brth";    myColor: "red";   isCurrent: false }
-          ListElement { time: 16; typeName: "hold";    myColor: "blue";  isCurrent: false }
-          ListElement { time: 18; typeName: "walk";    myColor: "green"; isCurrent: false }
-
-          ListElement { time: 14; typeName: "brth";    myColor: "red";   isCurrent: false }
-          ListElement { time: 11; typeName: "hold";    myColor: "blue";  isCurrent: false }
-          ListElement { time: 12; typeName: "walk";    myColor: "green"; isCurrent: false }
       }
 
 
@@ -94,23 +73,16 @@ SceneBase {
           id: view
           width: parent.width
           //height: parent.height
-          anchors.rightMargin: 1
-          anchors.bottomMargin: 1
-          anchors.leftMargin: 1
-          anchors.topMargin: 46
+          anchors.margins: 1
           anchors.bottom:viewFooter.top
-          anchors.fill: parent
+          anchors.fill: container
 
-          cellWidth: dp((parent.width - 2 * anchors.margins) /12 - 3)
-          cellHeight: dp(40)
+          cellWidth: (parent.width - 2 * anchors.margins) /12 - 3
+          cellHeight: cellWidth
           clip: true
           model: apneaModel
           delegate: apneaDelegate
           footer: viewFooter
-          property int breatheFooterTime: model.get(0).time
-          property int holdFooterTime:    model.get(1).time
-          property int walkFooterTime:    model.get(2).time
-
 
           Component {
               id: apneaDelegate
@@ -118,7 +90,7 @@ SceneBase {
               Rectangle {
 
                   // find if show that cell big
-                  function testCellIfCurrent(index){
+                  function cellIsCurrent(index){
                      if (apneaModel.get(index).isCurrent) return true
 //                       if ((index > 1) && (index < apneaModel.count -1) && apneaModel.get(index - 1).isCurrent)
 //                           return true
@@ -128,22 +100,17 @@ SceneBase {
 
                   property real myRadius: dp(5)
                   id: wrapper
-                  z: testCellIfCurrent(index) ? 100:10
-                  width: testCellIfCurrent(index) ? 2* view.cellWidth : view.cellWidth -myRadius
-                  height: testCellIfCurrent(index)? 2* view.cellHeight + myRadius: view.cellHeight -myRadius
-                  radius:testCellIfCurrent(index) ? 2 * myRadius: myRadius
-                  color: apneaModel.get(index).myColor
+                  z: cellIsCurrent(index) ? 100:10
+                  width: cellIsCurrent(index) ? 2* view.cellWidth  : view.cellWidth
+                  height: cellIsCurrent(index)? 2* view.cellHeight + myRadius: view.cellHeight
+                  radius:cellIsCurrent(index) ? 2 * myRadius: myRadius
+                  color: runColors[apneaModel.get(index).typeName]
                   border.color: apneaModel.get(index).isCurrent? "white": "black"
                   border.width: 2
-                  //                    gradient: Gradient {
-                  //                        GradientStop { position: 0.0; color: "#f8306a" }
-                  //                        GradientStop { position: 1.0; color: "#fb5b40" }
-                  //                    }
-
                   Text {
                       id:timeText
                       anchors.centerIn: parent
-                      font.pixelSize: parent.height - 2
+                      //font.pixelSize: dp(parent.height)
                       text: "<b>" + time + "</b>"; color: "white"; style: Text.Raised; styleColor: "black"
                       //text: index + ". " + typeName + " " + time + "sec."
 
@@ -157,30 +124,30 @@ SceneBase {
               id: viewFooter
               RowLayout {
                   id: viewFooterLayout
-                  spacing: 5
-                  width: container.width - 2
-                  height:40
+                  spacing: dp(5)
+                  width: container.width - dp(2)
+                  height:dp(40)
 
                   Rectangle { id: breatheFooter; width: (container.width )/3 ; height:  parent.height; radius: parent.spacing
                               color: "red"
                               border.color: "black"
-                              border.width: 2
+                              border.width: dp(2)
                               Text { anchors.centerIn: parent
-                                         font.pointSize: 18; text: qsTr("Breathe <b>%1</b> Sec").arg(view.breatheFooterTime); color: "white"; style: Text.Raised; styleColor: "black"  }
+                                         font.pixelSize: dp(18); text: qsTr("Breathe <b>%1</b> Sec").arg(apneaModel.get(view.currentIndex - view.currentIndex % 3 ).time); color: "white"; style: Text.Raised; styleColor: "black"  }
                   }
                   Rectangle { id: holdFooter; width: (container.width )/3 ; height:  parent.height; radius: parent.spacing
                               color: "blue"
                               border.color: "black"
-                              border.width: 2
+                              border.width: dp(2)
                               Text { anchors.centerIn: parent
-                                         font.pointSize: 18; text: qsTr("Hold <b>%1</b> Sec").arg(view.holdFooterTime); color: "white"; style: Text.Raised; styleColor: "black"  }
+                                         font.pixelSize: dp(18); text: qsTr("Hold <b>%1</b> Sec").arg(apneaModel.get(view.currentIndex - view.currentIndex % 3 +1 ).time); color: "white"; style: Text.Raised; styleColor: "black"  }
                   }
                   Rectangle { id: walkFooter; width: (container.width )/3 ; height:  parent.height; radius: parent.spacing
                               color: "green"
                               border.color: "black"
-                              border.width: 2
+                              border.width: dp(2)
                               Text { anchors.centerIn: parent
-                                         font.pointSize: 18; text: qsTr("Walk <b>%1</b> Sec").arg(view.walkFooterTime); color: "white"; style: Text.Raised; styleColor: "black"  }
+                                         font.pixelSize: dp(18); text: qsTr("Walk <b>%1</b> Sec").arg(apneaModel.get(view.currentIndex - view.currentIndex % 3 + 2 ).time); color: "white"; style: Text.Raised; styleColor: "black"  }
                   }
               }
           }
@@ -189,9 +156,9 @@ SceneBase {
           id: button1
           z: 100
           text: qsTr("Start")
-          anchors.leftMargin: 8
+          anchors.leftMargin: dp(8)
           anchors.bottom: container.bottom
-          anchors.bottomMargin: 60
+          anchors.bottomMargin: dp(60)
           anchors.left: container.left
           //isDefault: true
           //anchors.horizontalCenter: root.horizontalCenter
@@ -200,6 +167,7 @@ SceneBase {
 
           onClicked: {
               timerBreathe.modelIndex = 0
+
               timerBreathe.state = "stateRun";
               timerBreathe.isCurrent = true
               apneaModel.get(0).isCurrent = true
@@ -215,7 +183,7 @@ SceneBase {
           enabled: true
           anchors.left: button1.right
           anchors.bottom: container.bottom
-          anchors.bottomMargin: 60
+          anchors.bottomMargin: dp(60)
           onClicked: {
               if (walkControl.text === qsTr("Finish Walk")){
                   //enabled = false;
@@ -232,7 +200,7 @@ SceneBase {
           text: qsTr("Walk Back")
           anchors.left: walkControl.right
           anchors.bottom: container.bottom
-          anchors.bottomMargin: 60
+          anchors.bottomMargin: dp(60)
           onClicked: {
               timerBreathe.state = "initial"
               timerHold.state = "initial"
@@ -249,7 +217,7 @@ SceneBase {
           z:100
           gaugeName: "brth"
           gridView: view
-          modelIndex: apneaModel.breathe
+          modelIndex: apneaModel.brthIndx
           minAngle:     185
           maxAngle:     295
           anchors.centerIn: parent
@@ -261,7 +229,7 @@ SceneBase {
           z:100
           gaugeName:  "hold"
           gridView: view
-          modelIndex: apneaModel.hold
+          modelIndex: apneaModel.holdIndx
           minAngle:     -55
           maxAngle:     55
           anchors.centerIn: parent
@@ -274,7 +242,7 @@ SceneBase {
           z:100
           gaugeName: "walk"
           gridView: view
-          modelIndex: apneaModel.walk
+          modelIndex: apneaModel.walkIndx
           minAngle:     65
           maxAngle:     175
           anchors.centerIn: parent

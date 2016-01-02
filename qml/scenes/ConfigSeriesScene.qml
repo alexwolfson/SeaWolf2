@@ -2,22 +2,12 @@ import VPlay 2.0
 import QtQuick 2.0
 import "../common"
 
-//GameWindow {
-//    visible: true
-//    landscape:false
-
-//  EntityManager {
-//    id: entityManager
-//    entityContainer: configSeriesScene
-
-//    // required for LevelEditor, so the entities can be created by entityType
-//    dynamicCreationEntityList: [ Qt.resolvedUrl("qml/ConfgSeries.qml") ]
-
-//  }
 
 
   SceneBase {
     id: configSeriesScene
+    property var currentSession
+
     MenuButton {
         z:100
         text: "Back"
@@ -37,39 +27,25 @@ import "../common"
         property int holdTime:30
         property int holdIncrement:0
         property int breathTime:0
-        property int breathDecriment:0
+        property int breathDecrement:0
         property int walkTime:120
-/*
-        property type name: value
-        name: valueLabel { text: "sessionName" }
-            TextField { id: sessionName; }
-            Label { text: "numberOfCycles"}
-            TextField { id: numberOfCycles}
-            Label { text: "repeatLast"}
-            Switch {checked:false}
-            Label { text: "maxHoldTime"}
-            TextField { id: maxHoldTime}
-            Label { text: "holdIncrement"}
-            TextField { id: holdIncrement}
-            Label { text: "minBtratheTime"}
-            TextField { id: minBtratheTime}
-            Label { text: "breathDecrement"}
-            TextField { id: breathDecrement}
-*/
     }
     LevelEditor {
       id: levelEditor
       anchors.fill: parent
-      applicationJSONLevelsDirectory: "JSONSessions/"
-      toRemoveEntityTypes: [ "platform", "platformGoal", "stars", "obstacle" ]
-      toStoreEntityTypes: [ "platform", "platformGoal", "stars", "obstacle" ]
+      applicationJSONLevelsDirectory: "jsonSessions/"
+//      toRemoveEntityTypes: [ "platform", "platformGoal", "stars", "obstacle" ]
+//      toStoreEntityTypes: [ "platform", "platformGoal", "stars", "obstacle" ]
       Component.onCompleted: {
           loadAllLevelsFromStorageLocation(applicationJSONLevelsLocation)
       }
     }
-
-
+    // had trouble with multidimension arrays in javascript function, so stated to use 1 dimension
+    function get2DimIndex(dim0, dim1){
+        return 3 * dim0 + dim1
+    }
     EditableComponent {
+        id:o2
         editableType: "O2"
         defaultGroup: "Session"
         target:session
@@ -77,10 +53,40 @@ import "../common"
             "name": {label:"Session name"},
             "numberOfCycles": {"min": 1, "max": 8, "step": 1, "label": "Number of cycles" },
             "repeatLast":{label:"Repeat Last Cycle"},
-            "holdTime":{"min":0, "max":600, "step": 5, "label": "Maximum hold time"}
+            "holdTime":{"min":0, "max":600, "step": 5, "label": "Maximum hold time"},
+            "holdIncrement":{"min":0, "max":120, "step": 5, "label": "Hold time increment"}
         }
     }
+    // Create a JSON array representing the current session
+    // Do we need to make it robust, check for ranges, etc. ?
+    function generateCO2Session (){
+        var mySession = []
+
+
+        var cycles4Calculation = session.repeatLast ? session.numberOfCycles -1 : session.numberOfCycles;
+        mySession.unshift( {"time" : 0, "typeName" :"walk"});
+        mySession.unshift( {"time" : session.holdTime, "typeName" :"hold"});
+        mySession.unshift( {"time" : session.breathTime, "typeName" :"brth"});
+        // copy the last group
+        if (session.repeatLast){
+            mySession.unshift( mySession[mySession.length -1]);
+            mySession.unshift( mySession[mySession.length -2]);
+            mySession.unshift( mySession[mySession.length -3]);
+        }
+        for (var i = 0; i < cycles4Calculation - 1; i++){
+            //mySession[i] = new Array (3)
+            mySession.unshift( {"time": 0, "typeName": "walk"});
+            mySession.unshift( {"time": session.holdTime, "typeName": "hold"});
+            // we are adding to the beginning of the array so the previous time is always in element 3
+            mySession.unshift( {"time": mySession[2].time + session.breathDecrement, "typeName": "brth"});
+        }
+
+        return mySession
+
+    }
+
     EditableComponent {
+        id:co2
         editableType: "CO2"
         defaultGroup: "Session"
         target:session
@@ -88,8 +94,11 @@ import "../common"
             "name": {label:"Session name"},
             "numberOfCycles": {"min": 1, "max": 8, "step": 1, "label": "Number of cycles" },
             "repeatLast":{label:"Repeat Last Cycle"},
-            "breathTime":{"min":0, "max":600, "step": 5, "label": "Minimum breath time"}
+            "breathTime":{"min":0, "max":600, "step": 5, "label": "Minimum breath time"},
+            "breathDecrement":{"min":0, "max":120, "step": 5, "label": "Breath time decrement"},
+            "holdTime":{"min":0, "max":600, "step": 5, "label": "Hold time"},
         }
+
     }
     EditableComponent {
         editableType: "Apnea Walk"
@@ -105,7 +114,7 @@ import "../common"
     ItemEditor {
       id: itemEditor // important to set the id to ItemEditor!
       anchors.fill: parent
-      anchors.bottomMargin: buttonsRow.height
+      //anchors.bottomMargin: buttonsRow.height
     }
 
     Row {
@@ -115,17 +124,25 @@ import "../common"
         anchors.right: parent.right
         spacing: 3
 
-        SimpleButton {
+        MenuButton {
             text: "New Session"
             onClicked: levelEditor.createNewLevel()
         }
 
-        SimpleButton {
+        MenuButton {
             text: "Save Session"
-            onClicked: levelEditor.saveCurrentLevel()
+            onClicked: {
+
+                ///AWdebug
+                currentSession = generateCO2Session()
+                console.log(" **** generated CO2 session=", currentSession)
+                runSessionScene.sessionSelected(currentSession)
+
+                levelEditor.saveCurrentLevel()
+            }
         }
 
-        SimpleButton {
+        MenuButton {
             text: "Show All Session"
             onClicked: {
                 levelEditor.loadAllLevelsFromStorageLocation(levelEditor.authorGeneratedLevelsLocation)
@@ -135,18 +152,19 @@ import "../common"
     }
 
     LevelSelectionList {
-      id: levelSelectionList
-      // at the beginning it is invisible, only gets visible after a click on the Levels button
-      visible: false
-      anchors.right: parent.right // position on the right
+          id: levelSelectionList
+          // at the beginning it is invisible, only gets visible after a click on the Levels button
+          visible: false
+          anchors.right: parent.right // position on the right
 
-      // this connects the stored levels from the player with the level list
-      levelMetaDataArray: levelEditor.authorGeneratedLevels
+          // this connects the stored levels from the player with the level list
+          levelMetaDataArray: levelEditor.authorGeneratedLevels
 
-      onLevelSelected: {
-        levelEditor.loadSingleLevel(levelData)
-        // make invisible afterwards
-        levelSelectionList.visible = false
+          onLevelSelected: {
+            levelEditor.loadSingleLevel(levelData)
+            // make invisible afterwards
+            levelSelectionList.visible = false
+          }
+
       }
-    }
   }// end of Scene

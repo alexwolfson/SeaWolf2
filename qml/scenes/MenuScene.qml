@@ -5,7 +5,6 @@ import "../common"
 
 SceneBase {
     id: menuScene
-
     // signal indicating that the selectLevelScene should be displayed
     signal selectLevelPressed
     // signal indicating that the creditsScene should be displayed
@@ -14,6 +13,8 @@ SceneBase {
     signal aboutPressed
     // signal indicating that the configSeriesScene should be displayed
     signal configSeriesPressed
+    // signal indicating that the RunSessionScene should be dislayed
+    signal runSessionPressed
 
     // background
     Rectangle {
@@ -34,8 +35,8 @@ SceneBase {
     // the "logo"
     Text {
         anchors.horizontalCenter: parent.horizontalCenter
-        y: 30
-        font.pixelSize: 30
+        y: dp(30)
+        font.pixelSize: dp(30)
         color: "#e9e9e9"
         text: "SeaWolf Apnea Training"
     }
@@ -43,7 +44,7 @@ SceneBase {
     // menu
     Column {
         anchors.centerIn: parent
-        spacing: 10
+        spacing: dp(10)
         MenuButton {
             text: "About"
             onClicked: aboutPressed()
@@ -52,6 +53,11 @@ SceneBase {
         MenuButton {
             text: "Config Series"
             onClicked: configSeriesPressed()
+            anchors.horizontalCenter: parent.horizontalCenter
+        }
+        MenuButton {
+            text: "Run Session"
+            onClicked: runSessionPressed()
             anchors.horizontalCenter: parent.horizontalCenter
         }
         MenuButton {
