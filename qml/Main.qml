@@ -23,7 +23,7 @@ GameWindow {
         id: entityManager
     }
 
-    // menu scene
+    // menu sceneapneaModel.get(view.currentIndex - view.currentIndex % 3 + pr.type).ti
     MenuScene {
         id: menuScene
         // listen to the button signals of the scene and change the state according to it
@@ -62,7 +62,7 @@ GameWindow {
     RunSessionScene {
         id: runSessionScene
         onSessionSelected: fillListModel(selectedSession)
-
+        onNotifyFooter: updateFooter(currentIndex)
         onBackButtonPressed: window.state = "menu"
     }
     // scene for selecting levels
