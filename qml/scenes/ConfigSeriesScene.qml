@@ -40,6 +40,23 @@ import "../common"
           loadAllLevelsFromStorageLocation(applicationJSONLevelsLocation)
       }
     }
+
+    LevelSelectionList {
+        id: levelSelectionList
+        width: 150
+        z: 3
+        // at the beginning it is invisible, only gets visible after a click on the Levels button
+        visible: false
+        anchors.centerIn: parent
+        levelMetaDataArray: levelEditor.authorGeneratedLevels
+        //levelMetaDataArray: levelEditor.applicationJSONLevels
+
+        onLevelSelected: {
+            levelEditor.loadSingleLevel(levelData)
+            // make invisible afterwards
+            levelSelectionList.visible = false
+        }
+    }
     // had trouble with multidimension arrays in javascript function, so stated to use 1 dimension
     function get2DimIndex(dim0, dim1){
         return 3 * dim0 + dim1
@@ -137,7 +154,7 @@ import "../common"
                 currentSession = generateCO2Session()
                 console.log(" **** generated CO2 session=", currentSession)
                 runSessionScene.sessionSelected(currentSession)
-
+                levelEditor.saveCurrentLevel( {levelMetaData: {levelName: co2.name}} )
                 levelEditor.saveCurrentLevel()
             }
         }
@@ -151,20 +168,20 @@ import "../common"
         }
     }
 
-    LevelSelectionList {
-          id: levelSelectionList
-          // at the beginning it is invisible, only gets visible after a click on the Levels button
-          visible: false
-          anchors.right: parent.right // position on the right
+//    LevelSelectionList {
+//          id: levelSelectionList
+//          // at the beginning it is invisible, only gets visible after a click on the Levels button
+//          visible: false
+//          anchors.right: parent.right // position on the right
 
-          // this connects the stored levels from the player with the level list
-          levelMetaDataArray: levelEditor.authorGeneratedLevels
+//          // this connects the stored levels from the player with the level list
+//          levelMetaDataArray: levelEditor.authorGeneratedLevels
 
-          onLevelSelected: {
-            levelEditor.loadSingleLevel(levelData)
-            // make invisible afterwards
-            levelSelectionList.visible = false
-          }
+//          onLevelSelected: {
+//            levelEditor.loadSingleLevel(levelData)
+//            // make invisible afterwards
+//            levelSelectionList.visible = false
+//          }
 
-      }
+//      }
   }// end of Scene

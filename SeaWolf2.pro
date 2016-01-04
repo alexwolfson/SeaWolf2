@@ -45,4 +45,10 @@ macx {
 DISTFILES += \
     TODO \
     README.md \
-    README
+    README \
+    android/gradle/wrapper/gradle-wrapper.jar \
+    android/gradlew \
+    android/res/values/libs.xml \
+    android/build.gradle \
+    android/gradle/wrapper/gradle-wrapper.properties \
+    android/gradlew.bat

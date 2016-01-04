@@ -17,10 +17,18 @@ SceneBase {
     signal runSessionPressed
 
     // background
-    Rectangle {
-        anchors.fill: parent.gameWindowAnchorItem
-        color: "#47688e"
+    Image {
+        id: bkgImg
+        source: "../../assets/img/SeaWolf.png"
+        fillMode: Image.PreserveAspectCrop
+        opacity: 0.4
+        anchors.fill: parent
     }
+
+//    Rectangle {
+//        anchors.fill: parent.gameWindowAnchorItem
+//        color: "#47688e"
+//    }
 
 //    // use a BackgroundImage for performance improvements involving blending function and pixelFormat, especially important for Android!
 //    BackgroundImage {

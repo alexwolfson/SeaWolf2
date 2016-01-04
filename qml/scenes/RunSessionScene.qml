@@ -37,12 +37,13 @@ SceneBase {
   //===================================================
   // signal indicating that footer needs update shown time values
   signal notifyFooter(int currentIndex)
-  property int    timeFooterBrth
+  property int   timeFooterBrth
   property color borderColorFooterBrth
-  property int    timeFooterHold
+  property int   timeFooterHold
   property color borderColorFooterHold
   property int   timeFooterWalk
   property color borderColorFooterWalk
+  property bool  noWalk: true
 
   //called by onNotifyFooter signal hangler
   function updateFooter(index) {
@@ -117,23 +118,20 @@ SceneBase {
 
                   // find if show that cell big and notifyFooter about changes if cell is "brth"
                   function cellIsCurrent(index){
-                     if (apneaModel.get(index).isCurrent){
-                         //if (0 === index % 3){
-                             notifyFooter(index)
-                         //}
-                         return true
-                     }
-                     else
-                         return false
+                      if (index === -1) return false
+                      if (apneaModel.get(index).isCurrent){
+                          notifyFooter(index)
+                          return true
+                      } else return false
                   }
                   property real myRadius: dp(5)
                   id: wrapper
-                  z: cellIsCurrent(index) ? 100:10
+                  z:     cellIsCurrent(index) ? 100:10
                   width: cellIsCurrent(index) ? 2* sessionView.cellWidth  : sessionView.cellWidth
-                  height: cellIsCurrent(index)? 2* sessionView.cellHeight + myRadius: sessionView.cellHeight
+                  height:cellIsCurrent(index)? 2* sessionView.cellHeight + myRadius: sessionView.cellHeight
                   radius:cellIsCurrent(index) ? 2 * myRadius: myRadius
-                  color: runColors[apneaModel.get(index).typeName]
-                  border.color: apneaModel.get(index).isCurrent? "white": "black"
+                  color: { if (index == -1) return "grey"; runColors[apneaModel.get(index).typeName]}
+                  border.color: { if (index == -1) return "grey"; apneaModel.get(index).isCurrent? "white": "black"}
                   border.width: 2
                   Text {
                       id:timeText
@@ -251,7 +249,8 @@ SceneBase {
           gridView: sessionView
           modelIndex: brthIndx
           minAngle:     185
-          maxAngle:     295
+          // different angles, depenging if "walk" part is presented
+          maxAngle:     timerWalk.maximumValue === 0 ? 355 : 295
           anchors.centerIn: parent
           gaugeModel: apneaModel
           nextGauge:timerHold
@@ -262,8 +261,9 @@ SceneBase {
           gaugeName:  "hold"
           gridView: sessionView
           modelIndex: holdIndx
-          minAngle:     -55
-          maxAngle:     55
+          // different angles, depenging if "walk" part is presented
+          minAngle:     timerWalk.maximumValue === 0 ? 5 :-55
+          maxAngle:     timerWalk.maximumValue === 0 ? 155 : 55
           anchors.centerIn: parent
           gaugeModel: apneaModel
           nextGauge: timerWalk

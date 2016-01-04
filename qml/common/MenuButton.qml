@@ -8,6 +8,7 @@ Rectangle {
 
     color: "#e9e9e9"
     border.color: "black"
+    opacity: 0.6
     // round edges
     radius: dp(10)
 
@@ -34,7 +35,7 @@ Rectangle {
         anchors.fill: parent
         hoverEnabled: true
         onClicked: button.clicked()
-        onPressed: button.opacity = 0.5
-        onReleased: button.opacity = 1
+        onPressed: button.opacity = 0.4
+        onReleased: button.opacity = 0.6
     }
 }
