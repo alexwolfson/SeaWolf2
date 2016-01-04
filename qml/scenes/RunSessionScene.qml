@@ -242,10 +242,17 @@ SceneBase {
               button2.enabled = false
           }
       }
+      SoundEffectVPlay {
+              id: brthSnd
+              volume: 1.0
+              //source: "../../assets/sounds/breathe.wav"
+              source: "../../assets/sounds/breathe.wav"
+      }
       SeaWolfControls {
           id:timerBrth
           z:100
           gaugeName: "brth"
+          enterStateSndEffect: brthSnd
           gridView: sessionView
           modelIndex: brthIndx
           minAngle:     185
@@ -255,24 +262,36 @@ SceneBase {
           gaugeModel: apneaModel
           nextGauge:timerHold
       }
+      SoundEffectVPlay {
+              id: holdSnd
+              volume: 1.0
+              source: "../../assets/sounds/hold.wav"
+      }
       SeaWolfControls {
           id:timerHold
           z:100
           gaugeName:  "hold"
+          enterStateSndEffect: holdSnd
           gridView: sessionView
           modelIndex: holdIndx
           // different angles, depenging if "walk" part is presented
           minAngle:     timerWalk.maximumValue === 0 ? 5 :-55
-          maxAngle:     timerWalk.maximumValue === 0 ? 155 : 55
+          maxAngle:     timerWalk.maximumValue === 0 ? 175 : 55
           anchors.centerIn: parent
           gaugeModel: apneaModel
-          nextGauge: timerWalk
+          nextGauge: timerWalk.maximumValue === 0 ? timerBreathe : timerWalk
       }
 
+      SoundEffectVPlay {
+              id: walkSnd
+              volume: 1.0
+              source: "../../assets/sounds/walk.wav"
+      }
       SeaWolfControls {
           id:timerWalk
           z:100
           gaugeName: "walk"
+          enterStateSndEffect: walkSnd
           gridView: sessionView
           modelIndex: walkIndx
           minAngle:     65

@@ -12,6 +12,7 @@ CircularGauge {
     value: 0
     anchors.verticalCenter: parent.verticalCenter
     property string gaugeName: "brth"
+    property  SoundEffectVPlay enterStateSndEffect
     property GridView gridView
     property ListModel gaugeModel: gridView.model
     property CircularGauge nextGauge
@@ -61,21 +62,6 @@ CircularGauge {
             style: Text.Outline
             styleColor: gauge.needleColor
         }
-    }
-    SoundEffectVPlay {
-            id: breathsnd
-            volume: 1.0
-            source: "../../assets/sounds/breathe.wav"
-    }
-    SoundEffectVPlay {
-            id: holdsnd
-            volume: 1.0
-            source: "../../assets/sounds/hold.wav"
-    }
-    SoundEffectVPlay {
-            id: walksnd
-            volume: 1.0
-            source: "../../assets//walk.wav"
     }
     SoundEffectVPlay {
             id: thirtysnd
@@ -144,19 +130,11 @@ CircularGauge {
                     if (tenTimer.interval > 0){
                         tenTimer.start()
                     }
+                    enterStateSndEffect.play()
                     if (gauge.gaugeName == "brth"){
                         gaugeModel.get(modelIndex).maximumValue = gaugeModel.get(modelIndex).time
                         gaugeModel.get(modelIndex+1).maximumValue = gaugeModel.get(modelIndex+1).time
                         gaugeModel.get(modelIndex+2).maximumValue = gaugeModel.get(modelIndex+2).time
-
-                       breathsnd.play()
-
-                    } else if (gauge.gaugeName == "hold"){
-                        holdsnd.play()
-                        //gridView.delegate.border.color = "white"
-                    }  else if (gauge.gaugeName == "walk"){
-                        //gaugeWalkControl.enabled = true
-                        walksnd.play()
                     }
                 }
 

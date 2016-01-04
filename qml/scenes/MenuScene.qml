@@ -21,7 +21,7 @@ SceneBase {
         id: bkgImg
         source: "../../assets/img/SeaWolf.png"
         fillMode: Image.PreserveAspectCrop
-        opacity: 0.4
+        opacity: 0.5
         anchors.fill: parent
     }
 
@@ -73,11 +73,11 @@ SceneBase {
             onClicked: selectLevelPressed()
             anchors.horizontalCenter: parent.horizontalCenter
         }
-        MenuButton {
-            text: "Credits"
-            onClicked: creditsPressed()
-            anchors.horizontalCenter: parent.horizontalCenter
-        }
+//        MenuButton {
+//            text: "Credits"
+//            onClicked: creditsPressed()
+//            anchors.horizontalCenter: parent.horizontalCenter
+//        }
         MenuButton {
             text: "Finish"
             onClicked: Qt.quit()
