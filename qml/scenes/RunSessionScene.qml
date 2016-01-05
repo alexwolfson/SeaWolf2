@@ -245,7 +245,6 @@ SceneBase {
       SoundEffectVPlay {
               id: brthSnd
               volume: 1.0
-              //source: "../../assets/sounds/breathe.wav"
               source: "../../assets/sounds/breathe.wav"
       }
       SeaWolfControls {

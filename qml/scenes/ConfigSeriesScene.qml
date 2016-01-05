@@ -64,14 +64,17 @@ import "../common"
     EditableComponent {
         id:o2
         editableType: "O2"
+        editableComponentMetaData: {
+          "displayname" : "O2 Session"
+        }
         defaultGroup: "Session"
         target:session
         properties: {
             "name": {label:"Session name"},
-            "numberOfCycles": {"min": 1, "max": 8, "step": 1, "label": "Number of cycles" },
+            "numberOfCycles": {"min": 1, "max": 8, "stepsize": 1, "label": "Number of cycles" },
             "repeatLast":{label:"Repeat Last Cycle"},
-            "holdTime":{"min":0, "max":600, "step": 5, "label": "Maximum hold time"},
-            "holdIncrement":{"min":0, "max":120, "step": 5, "label": "Hold time increment"}
+            "holdTime":{"min":0, "max":600, "stepsize": 5, "label": "Maximum hold time"},
+            "holdIncrement":{"min":0, "max":120, "stepsize": 5, "label": "Hold time increment"}
         }
     }
     // Create a JSON array representing the current session
@@ -105,27 +108,34 @@ import "../common"
     EditableComponent {
         id:co2
         editableType: "CO2"
+        editableComponentMetaData: {
+          "displayname" : "CO2 Session"
+        }
         defaultGroup: "Session"
+
         target:session
         properties: {
             "name": {label:"Session name"},
-            "numberOfCycles": {"min": 1, "max": 8, "step": 1, "label": "Number of cycles" },
+            "numberOfCycles": {"min": 1, "max": 8, "stepsize": 1, "label": "Number of cycles" },
             "repeatLast":{label:"Repeat Last Cycle"},
-            "breathTime":{"min":0, "max":600, "step": 5, "label": "Minimum breath time"},
-            "breathDecrement":{"min":0, "max":120, "step": 5, "label": "Breath time decrement"},
-            "holdTime":{"min":0, "max":600, "step": 5, "label": "Hold time"},
+            "breathTime":{"min":0, "max":600, "stepsize": 5, "label": "Minimum breath time"},
+            "breathDecrement":{"min":0, "max":120, "stepsize": 5, "label": "Breath time decrement"},
+            "holdTime":{"min":0, "max":600, "stepsize": 5, "label": "Hold time"},
         }
 
     }
     EditableComponent {
         editableType: "Apnea Walk"
+        editableComponentMetaData: {
+          "displayname" : "Current Session"
+        }
         defaultGroup: "Session"
         target:session
         properties: {
             "name": {label:"Session name"},
-            "numberOfCycles": {"min": 1, "max": 8, "step": 1, "label": "Number of cycles" },
+            "numberOfCycles": {"min": 1, "max": 8, "stepsize": 1, "label": "Number of cycles" },
             "repeatLast":{label:"Repeat Last Cycle"},
-            "breathTime":{"min":0, "max":600, "step": 5, "label": "Minimum breath time"}
+            "breathTime":{"min":0, "max":600, "stepsize": 5, "label": "Breath time"}
         }
     }
     ItemEditor {
