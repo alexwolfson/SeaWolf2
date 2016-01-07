@@ -86,13 +86,19 @@ SceneBase {
           id: apneaModel
           //the following 3 properties will be used as indexes
           //added something so user will not be confused if runs before configuring
-          ListElement { time: 3; typeName: "brth";    myColor: "red";   isCurrent: false }
-          ListElement { time: 4; typeName: "hold";    myColor: "blue";  isCurrent: false }
-          ListElement { time: 5; typeName: "walk";    myColor: "green"; isCurrent: false }
-          ListElement { time: 6; typeName: "brth";    myColor: "red";   isCurrent: false }
-          ListElement { time: 7; typeName: "hold";    myColor: "blue";  isCurrent: false }
-          ListElement { time: 8; typeName: "walk";    myColor: "green"; isCurrent: false }
+//          ListElement { time: 3; typeName: "brth";    isCurrent: false }
+//          ListElement { time: 4; typeName: "hold";    isCurrent: false }
+//          ListElement { time: 5; typeName: "walk";    isCurrent: false }
+//          ListElement { time: 6; typeName: "brth";    isCurrent: false }
+//          ListElement { time: 7; typeName: "hold";    isCurrent: false }
+//          ListElement { time: 8; typeName: "walk";    isCurrent: false }
 
+          ListElement { time: 3; typeName: "brth";    isCurrent: false }
+          ListElement { time: 4; typeName: "hold";    isCurrent: false }
+          ListElement { time: 0; typeName: "walk";    isCurrent: false }
+          ListElement { time: 6; typeName: "brth";    isCurrent: false }
+          ListElement { time: 7; typeName: "hold";    isCurrent: false }
+          ListElement { time: 0; typeName: "walk";    isCurrent: false }
       }
 
 
@@ -200,7 +206,7 @@ SceneBase {
 
               timerBrth.state = "stateRun";
               timerBrth.isCurrent = true
-              apneaModel.get(0).isCurrent = true
+              //apneaModel.get(0).isCurrent = true
               walkControl.enabled = false
               button2.enabled = true
           }
@@ -278,7 +284,7 @@ SceneBase {
           maxAngle:     timerWalk.maximumValue === 0 ? 175 : 55
           anchors.centerIn: parent
           gaugeModel: apneaModel
-          nextGauge: timerWalk.maximumValue === 0 ? timerBreathe : timerWalk
+          nextGauge: timerWalk.maximumValue === 0 ? timerBrth : timerWalk
       }
 
       SoundEffectVPlay {

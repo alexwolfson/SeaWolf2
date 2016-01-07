@@ -22,7 +22,7 @@ CircularGauge {
     property real maxAngle:  45
     property color needleColor: runColors[gaugeName]
     property int modelIndex:0
-    property int maximumValue:  gaugeModel.get(modelIndex).time
+    property int maximumValue: gaugeModel.get(modelIndex).time
     style: CircularGaugeStyle {
         id: gaugeStyle
         minimumValueAngle: gauge.minAngle
@@ -108,6 +108,12 @@ CircularGauge {
             tensnd.play()
         }
     }
+    function isLastInCycle(){
+        if (nextGauge.modelIndex % 3 ===  0)
+            return true
+        else
+            return false
+    }
 
     transitions:[
         Transition {
@@ -117,7 +123,7 @@ CircularGauge {
             NumberAnimation{
                 target: gauge
                 property: "value"
-                duration: (maximumValue - gauge.value) * 1000
+                duration: Math.abs(maximumValue - gauge.value) * 1000
             }
             onRunningChanged: {
                 // the step is over - go to the next step
@@ -131,22 +137,32 @@ CircularGauge {
                         tenTimer.start()
                     }
                     enterStateSndEffect.play()
-                    if (gauge.gaugeName == "brth"){
-                        gaugeModel.get(modelIndex).maximumValue = gaugeModel.get(modelIndex).time
-                        gaugeModel.get(modelIndex+1).maximumValue = gaugeModel.get(modelIndex+1).time
-                        gaugeModel.get(modelIndex+2).maximumValue = gaugeModel.get(modelIndex+2).time
-                    }
-                }
+                 }
 
                 if ((!running) /*&& (gaugeModelElement.typeName === gaugeName)*/) {
-                    console.log("running=", running, "modelIndex=", modelIndex)
+                    console.log("running=", running, "modelIndex=", modelIndex, "index=", gridView.delegate.index)
                     state = "initial";
                     gaugeModel.get(modelIndex).isCurrent = false
-                    if (nextGauge.modelIndex < (gaugeModel.count -1)){
-                        nextGauge.modelIndex = modelIndex + 1
+                    // update 3 gauges if we are about to run the "breath"gauge
+                    if ((gauge.modelIndex > 0) && (gauge.modelIndex < gaugeModel.count) &&
+                            isLastInCycle()){
+                        gauge.modelIndex += 3
+                        gauge.nextGauge.modelIndex += 3
+                        gauge.nextGauge.nextGauge.modelIndex += 3
+                    }
+                    //var nextActiveGauge = nextGauge.maximumValue != 0 ? nextGauge : nextGauge.nextGauge
+                    if (nextGauge.modelIndex < gaugeModel.count){
+                        //nextGauge.modelIndex = modelIndex + 1
+                        //skip the next gauge if it has 0 maximum value
                         gaugeModel.get(nextGauge.modelIndex).isCurrent = true
-                        //seting up next gauge as current
+                        //seting up next gauge as current if it's time is not 0
                         nextGauge.state = "stateRun"
+                    }
+                    else {
+                        nextGauge.modelIndex = 0
+                        nextGauge.nextGauge.modelIndex = 1
+                        nextGauge.nextGauge.nextGauge.modelIndex = 2
+
                     }
                 }
                 // we are here as part of the transaction to running, so in case of next serie
