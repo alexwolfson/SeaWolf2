@@ -114,6 +114,22 @@ CircularGauge {
         else
             return false
     }
+    //trick to pass by reference
+    function loadNextCycleVal(ind){
+        console.log("start ind[0]=", ind[0]);
+        if ((ind[0] + 3 < gaugeModel.count))
+        {
+            ind[0] += 3;
+
+        }
+        console.log("return ind[0]=", ind[0]);
+        return ind[0];
+    }
+    function loadIfNot0(gaugeAr, val){
+        if (gaugeAr[0] != 0){
+            gaugeAr[0]=val
+        }
+    }
 
     transitions:[
         Transition {
@@ -144,14 +160,18 @@ CircularGauge {
                     state = "initial";
                     gaugeModel.get(modelIndex).isCurrent = false
                     // update 3 gauges if we are about to run the "breath"gauge
-                    if ((gauge.modelIndex > 0) && (gauge.modelIndex < gaugeModel.count) &&
-                            isLastInCycle()){
-                        gauge.modelIndex += 3
-                        gauge.nextGauge.modelIndex += 3
-                        gauge.nextGauge.nextGauge.modelIndex += 3
+                    var bContinue = true
+                    if (isLastInCycle()){
+                        gauge.modelIndex = loadNextCycleVal([gauge.modelIndex])
+                        var prevNextModelIndex = gauge.nextGauge.modelIndex
+                        console.log("prevNextModelIndex=", prevNextModelIndex)
+                        gauge.nextGauge.modelIndex = loadNextCycleVal([gauge.nextGauge.modelIndex])
+                        if (prevNextModelIndex === gauge.nextGauge.modelIndex) bContinue = false
+                        gauge.nextGauge.nextGauge.modelIndex = loadNextCycleVal([gauge.nextGauge.nextGauge.modelIndex])
                     }
+                    console.log("bContinue=", bContinue)
                     //var nextActiveGauge = nextGauge.maximumValue != 0 ? nextGauge : nextGauge.nextGauge
-                    if (nextGauge.modelIndex < gaugeModel.count){
+                    if ((nextGauge.modelIndex < gaugeModel.count) && bContinue){
                         //nextGauge.modelIndex = modelIndex + 1
                         //skip the next gauge if it has 0 maximum value
                         gaugeModel.get(nextGauge.modelIndex).isCurrent = true
@@ -159,9 +179,9 @@ CircularGauge {
                         nextGauge.state = "stateRun"
                     }
                     else {
-                        nextGauge.modelIndex = 0
-                        nextGauge.nextGauge.modelIndex = 1
-                        nextGauge.nextGauge.nextGauge.modelIndex = 2
+                        loadIfNot0([nextGauge.modelIndex], 0)
+                        loadIfNot0([nextGauge.nextGauge.modelIndex], 1)
+                        loadIfNot0([nextGauge.nextGauge.nextGauge.modelIndex], 2)
 
                     }
                 }
