@@ -2,12 +2,10 @@ import VPlay 2.0
 import QtQuick 2.0
 import "../common"
 
-
-
   SceneBase {
     id: configSeriesScene
     property var currentSession
-
+    property  string sessionType:"O2"
     MenuButton {
         z:100
         text: "Back"
@@ -24,10 +22,10 @@ import "../common"
         property string name
         property int numberOfCycles
         property bool repeatLast:false
-        property int holdTime:30
-        property int holdIncrement:0
-        property int breathTime:0
-        property int breathDecrement:0
+        property int holdTime:20
+        property int holdIncrement:1
+        property int breathTime:5
+        property int breathDecrement:1
         property int walkTime:120
     }
     LevelEditor {
@@ -61,6 +59,38 @@ import "../common"
     function get2DimIndex(dim0, dim1){
         return 3 * dim0 + dim1
     }
+    // Create a JSON array representing the current session
+    // Do we need to make it robust, check for ranges, etc. ?
+    function generateO2Session (){
+        var mySession = []
+        sessionType = "O2"
+
+        var cycles4Calculation = session.repeatLast ? session.numberOfCycles -1 : session.numberOfCycles;
+        mySession.unshift( {"time" : 0, "typeName" :"walk"});
+        mySession.unshift( {"time" : session.holdTime, "typeName" :"hold"});
+        mySession.unshift( {"time" : session.breathTime, "typeName" :"brth"});
+        console.log("***** mySession=", mySession[0].time, mySession[1].time, mySession[2].time)
+        // copy the last group
+        var currentSessionLength = mySession.length
+        if (session.repeatLast){
+            mySession.unshift( mySession[currentSessionLength -1]);
+            mySession.unshift( mySession[currentSessionLength -2]);
+            mySession.unshift( mySession[currentSessionLength -3]);
+        }
+        for (var i = 0; i < cycles4Calculation - 1; i++){
+            //mySession[i] = new Array (3)
+             mySession.unshift( {"time": 0, "typeName": "walk"});
+            console.log("***** mySession=", mySession[0].time, mySession[1].time, mySession[2].time)
+            // we are adding to the beginning of the array so the previous time is always in element 2 (if starting from 0)
+            mySession.unshift( {"time": mySession[2].time - session.holdIncrement, "typeName": "hold"});
+            mySession.unshift( {"time": session.breathTime, "typeName": "brth"});
+            console.log("***** mySession=", mySession[0].time, mySession[1].time, mySession[2].time)
+        }
+
+        return mySession
+
+    }
+
     EditableComponent {
         id:o2
         editableType: "O2"
@@ -73,6 +103,7 @@ import "../common"
             "name": {label:"Session name"},
             "numberOfCycles": {"min": 1, "max": 8, "stepsize": 1, "label": "Number of cycles" },
             "repeatLast":{label:"Repeat Last Cycle"},
+            "breathTime":{"min":0, "max":600, "stepsize": 5, "label": "Breath time"},
             "holdTime":{"min":0, "max":600, "stepsize": 5, "label": "Maximum hold time"},
             "holdIncrement":{"min":0, "max":120, "stepsize": 5, "label": "Hold time increment"}
         }
@@ -81,7 +112,7 @@ import "../common"
     // Do we need to make it robust, check for ranges, etc. ?
     function generateCO2Session (){
         var mySession = []
-
+        sessionType = "CO2"
 
         var cycles4Calculation = session.repeatLast ? session.numberOfCycles -1 : session.numberOfCycles;
         mySession.unshift( {"time" : 0, "typeName" :"walk"});
@@ -97,7 +128,7 @@ import "../common"
             //mySession[i] = new Array (3)
             mySession.unshift( {"time": 0, "typeName": "walk"});
             mySession.unshift( {"time": session.holdTime, "typeName": "hold"});
-            // we are adding to the beginning of the array so the previous time is always in element 3
+            // we are adding to the beginning of the array so the previous time is always in element 2 (starting from 0)
             mySession.unshift( {"time": mySession[2].time + session.breathDecrement, "typeName": "brth"});
         }
 
@@ -142,6 +173,7 @@ import "../common"
       id: itemEditor // important to set the id to ItemEditor!
       anchors.fill: parent
       //anchors.bottomMargin: buttonsRow.height
+
     }
 
     Row {
@@ -161,10 +193,16 @@ import "../common"
             onClicked: {
 
                 ///AWdebug
-                currentSession = generateCO2Session()
-                console.log(" **** generated CO2 session=", currentSession)
+                if (sessionType == "CO2"){
+                    configSeriesScene.currentSession = generateCO2Session()
+                    console.log(" **** generated CO2 session=", currentSession)
+               }
+                else if (sessionType == "O2"){
+                    configSeriesScene.currentSession = generateO2Session()
+                    console.log(" **** generated O2 session=", currentSession)
+                }
                 runSessionScene.sessionSelected(currentSession)
-                levelEditor.saveCurrentLevel( {levelMetaData: {levelName: co2.name}} )
+                levelEditor.saveCurrentLevel( {levelMetaData: {levelName: session.name}} )
                 levelEditor.saveCurrentLevel()
             }
         }

@@ -115,7 +115,7 @@ CircularGauge {
             return false
     }
     //trick to pass by reference
-    function loadNextCycleVal(ind){
+    function loadNextCycleInd(ind){
         console.log("start ind[0]=", ind[0]);
         if ((ind[0] + 3 < gaugeModel.count))
         {
@@ -162,12 +162,13 @@ CircularGauge {
                     // update 3 gauges if we are about to run the "breath"gauge
                     var bContinue = true
                     if (isLastInCycle()){
-                        gauge.modelIndex = loadNextCycleVal([gauge.modelIndex])
+                        gauge.modelIndex = loadNextCycleInd([gauge.modelIndex])
                         var prevNextModelIndex = gauge.nextGauge.modelIndex
                         console.log("prevNextModelIndex=", prevNextModelIndex)
-                        gauge.nextGauge.modelIndex = loadNextCycleVal([gauge.nextGauge.modelIndex])
+                        gauge.nextGauge.modelIndex = loadNextCycleInd([gauge.nextGauge.modelIndex])
+                        console.log("******nextGauge.modelIndex=", gauge.nextGauge.ModelIndex)
                         if (prevNextModelIndex === gauge.nextGauge.modelIndex) bContinue = false
-                        gauge.nextGauge.nextGauge.modelIndex = loadNextCycleVal([gauge.nextGauge.nextGauge.modelIndex])
+                        gauge.nextGauge.nextGauge.modelIndex = loadNextCycleInd([gauge.nextGauge.nextGauge.modelIndex])
                     }
                     console.log("bContinue=", bContinue)
                     //var nextActiveGauge = nextGauge.maximumValue != 0 ? nextGauge : nextGauge.nextGauge
