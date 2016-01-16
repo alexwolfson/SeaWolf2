@@ -86,19 +86,25 @@ SceneBase {
           id: apneaModel
           //the following 3 properties will be used as indexes
           //added something so user will not be confused if runs before configuring
-          ListElement { time: 3; typeName: "brth";    isCurrent: false }
-          ListElement { time: 4; typeName: "hold";    isCurrent: false }
-          ListElement { time: 5; typeName: "walk";    isCurrent: false }
-          ListElement { time: 6; typeName: "brth";    isCurrent: false }
-          ListElement { time: 7; typeName: "hold";    isCurrent: false }
-          ListElement { time: 8; typeName: "walk";    isCurrent: false }
-
 //          ListElement { time: 3; typeName: "brth";    isCurrent: false }
 //          ListElement { time: 4; typeName: "hold";    isCurrent: false }
-//          ListElement { time: 0; typeName: "walk";    isCurrent: false }
+//          ListElement { time: 5; typeName: "walk";    isCurrent: false }
 //          ListElement { time: 6; typeName: "brth";    isCurrent: false }
 //          ListElement { time: 7; typeName: "hold";    isCurrent: false }
-//          ListElement { time: 0; typeName: "walk";    isCurrent: false }
+//          ListElement { time: 8; typeName: "walk";    isCurrent: false }
+//          ListElement { time: 9; typeName: "brth";    isCurrent: false }
+//          ListElement { time:10; typeName: "hold";    isCurrent: false }
+//          ListElement { time:11; typeName: "walk";    isCurrent: false }
+
+          ListElement { time: 3; typeName: "brth";    isCurrent: false }
+          ListElement { time: 4; typeName: "hold";    isCurrent: false }
+          ListElement { time: 0; typeName: "walk";    isCurrent: false }
+          ListElement { time: 6; typeName: "brth";    isCurrent: false }
+          ListElement { time: 7; typeName: "hold";    isCurrent: false }
+          ListElement { time: 0; typeName: "walk";    isCurrent: false }
+          ListElement { time: 9; typeName: "brth";    isCurrent: false }
+          ListElement { time:10; typeName: "hold";    isCurrent: false }
+          ListElement { time: 0; typeName: "walk";    isCurrent: false }
       }
 
 

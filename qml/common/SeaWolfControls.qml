@@ -23,6 +23,7 @@ CircularGauge {
     property color needleColor: runColors[gaugeName]
     property int modelIndex:0
     property int maximumValue: gaugeModel.get(modelIndex).time
+    onModelIndexChanged:{gaugeModel.get(modelIndex).time}
     style: CircularGaugeStyle {
         id: gaugeStyle
         minimumValueAngle: gauge.minAngle
@@ -115,20 +116,19 @@ CircularGauge {
             return false
     }
     //trick to pass by reference
-    function loadNextCycleInd(ind){
-        console.log("start ind[0]=", ind[0]);
-        if ((ind[0] + 3 < gaugeModel.count))
+    function loadNextCycle(gauge){
+       if ((gauge[0].modelIndex + 3 < gaugeModel.count))
         {
-            ind[0] += 3;
+            gauge[0].modelIndex += 3;
+            //gauge[0].maximumValue = gaugeModel.get(gauge[0].modelIndex).time
 
         }
-        console.log("return ind[0]=", ind[0]);
-        return ind[0];
-    }
-    function loadIfNot0(gaugeAr, val){
-        if (gaugeAr[0] != 0){
-            gaugeAr[0]=val
-        }
+   }
+    function loadIfNot0(gauge, ind){
+        //if (gauge[0] !== 0){
+            gauge[0].modelIndex = ind
+            //gauge[0].maximumValue = gaugeModel.get(gauge[0].modelIndex).time
+        //}
     }
 
     transitions:[
@@ -156,19 +156,19 @@ CircularGauge {
                  }
 
                 if ((!running) /*&& (gaugeModelElement.typeName === gaugeName)*/) {
-                    console.log("running=", running, "modelIndex=", modelIndex, "index=", gridView.delegate.index)
+                    //console.log("running=", running, "modelIndex=", modelIndex, "index=", gridView.delegate.index)
                     state = "initial";
                     gaugeModel.get(modelIndex).isCurrent = false
                     // update 3 gauges if we are about to run the "breath"gauge
                     var bContinue = true
                     if (isLastInCycle()){
-                        gauge.modelIndex = loadNextCycleInd([gauge.modelIndex])
-                        var prevNextModelIndex = gauge.nextGauge.modelIndex
+                        loadNextCycle([gauge])
+                        var prevNextModelIndex = nextGauge.modelIndex
                         console.log("prevNextModelIndex=", prevNextModelIndex)
-                        gauge.nextGauge.modelIndex = loadNextCycleInd([gauge.nextGauge.modelIndex])
-                        console.log("******nextGauge.modelIndex=", gauge.nextGauge.ModelIndex)
-                        if (prevNextModelIndex === gauge.nextGauge.modelIndex) bContinue = false
-                        gauge.nextGauge.nextGauge.modelIndex = loadNextCycleInd([gauge.nextGauge.nextGauge.modelIndex])
+                        loadNextCycle([nextGauge])
+                        console.log("******nextGauge.modelIndex=", nextGauge.modelIndex)
+                        if (prevNextModelIndex === nextGauge.modelIndex) bContinue = false
+                        loadNextCycle([nextGauge.nextGauge])
                     }
                     console.log("bContinue=", bContinue)
                     //var nextActiveGauge = nextGauge.maximumValue != 0 ? nextGauge : nextGauge.nextGauge
@@ -180,9 +180,9 @@ CircularGauge {
                         nextGauge.state = "stateRun"
                     }
                     else {
-                        loadIfNot0([nextGauge.modelIndex], 0)
-                        loadIfNot0([nextGauge.nextGauge.modelIndex], 1)
-                        loadIfNot0([nextGauge.nextGauge.nextGauge.modelIndex], 2)
+                        loadIfNot0([nextGauge], 0)
+                        loadIfNot0([nextGauge.nextGauge], 1)
+                        loadIfNot0([nextGauge.nextGauge.nextGauge], 2)
 
                     }
                 }
