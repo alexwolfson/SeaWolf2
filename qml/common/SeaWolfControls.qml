@@ -13,8 +13,8 @@ CircularGauge {
     anchors.verticalCenter: parent.verticalCenter
     property string gaugeName: "brth"
     property  SoundEffectVPlay enterStateSndEffect
-    property GridView gridView
-    property ListModel gaugeModel: gridView.model
+    //property GridView gridView
+    property ListModel gaugeModel //: runSessionScene.runSessionModel
     property CircularGauge nextGauge
     //property var gaugeModelElement: gaugeModel.get(modelIndex)
     property bool isCurrent: false
@@ -23,7 +23,9 @@ CircularGauge {
     property color needleColor: runColors[gaugeName]
     property int modelIndex:0
     property int maximumValue: gaugeModel.get(modelIndex).time
-    onModelIndexChanged:{gaugeModel.get(modelIndex).time}
+    onModelIndexChanged:{
+        maximumValue = gaugeModel.get(modelIndex).time
+    }
     style: CircularGaugeStyle {
         id: gaugeStyle
         minimumValueAngle: gauge.minAngle
@@ -109,6 +111,7 @@ CircularGauge {
             tensnd.play()
         }
     }
+    // It means that the next one is "brth"
     function isLastInCycle(){
         if (nextGauge.modelIndex % 3 ===  0)
             return true
@@ -168,7 +171,10 @@ CircularGauge {
                         loadNextCycle([nextGauge])
                         console.log("******nextGauge.modelIndex=", nextGauge.modelIndex)
                         if (prevNextModelIndex === nextGauge.modelIndex) bContinue = false
-                        loadNextCycle([nextGauge.nextGauge])
+                        //if we have 2 gauges only (no "walk" we need to prevent updating "hold" twice
+                        if (nextGauge.nextGauge !== gauge){
+                            loadNextCycle([nextGauge.nextGauge])
+                        }
                     }
                     console.log("bContinue=", bContinue)
                     //var nextActiveGauge = nextGauge.maximumValue != 0 ? nextGauge : nextGauge.nextGauge
@@ -182,7 +188,10 @@ CircularGauge {
                     else {
                         loadIfNot0([nextGauge], 0)
                         loadIfNot0([nextGauge.nextGauge], 1)
-                        loadIfNot0([nextGauge.nextGauge.nextGauge], 2)
+                        //if we have 2 gauges only (no "walk" we need to prevent updating "hold" twice
+                        if (nextGauge.nextGauge !== gauge){
+                            loadIfNot0([nextGauge.nextGauge.nextGauge], 2)
+                        }
 
                     }
                 }

@@ -189,6 +189,13 @@ import "../common"
         }
 
         MenuButton {
+            text: "Remove Session"
+            onClicked: {
+
+                levelEditor.removeCurrentLevel()
+            }
+        }
+        MenuButton {
             text: "Save Session"
             onClicked: {
 

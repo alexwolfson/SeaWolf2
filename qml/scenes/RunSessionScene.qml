@@ -16,7 +16,7 @@ SceneBase {
   property int holdIndx: 1
   property int walkIndx: 2
   property SeaWolfControls timerHold:    timerHold
-
+  //property alias runSessionModel: container.apneaModel
   //===================================================
   // signal indicating that current session is selected
   signal sessionSelected(var selectedSession)
@@ -264,7 +264,7 @@ SceneBase {
           z:100
           gaugeName: "brth"
           enterStateSndEffect: brthSnd
-          gridView: sessionView
+          //gridView: sessionView
           modelIndex: brthIndx
           minAngle:     185
           // different angles, depenging if "walk" part is presented
@@ -283,7 +283,7 @@ SceneBase {
           z:100
           gaugeName:  "hold"
           enterStateSndEffect: holdSnd
-          gridView: sessionView
+          //gridView: sessionView
           modelIndex: holdIndx
           // different angles, depenging if "walk" part is presented
           minAngle:     timerWalk.maximumValue === 0 ? 5 :-55
@@ -303,7 +303,7 @@ SceneBase {
           z:100
           gaugeName: "walk"
           enterStateSndEffect: walkSnd
-          gridView: sessionView
+          //gridView: sessionView
           modelIndex: walkIndx
           minAngle:     65
           maxAngle:     175
