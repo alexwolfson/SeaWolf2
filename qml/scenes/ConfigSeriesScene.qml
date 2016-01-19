@@ -5,7 +5,7 @@ import "../common"
   SceneBase {
     id: configSeriesScene
     property var currentSession
-    property  string sessionType:"O2"
+    property  string sessionType:"WALK"
     MenuButton {
         z:100
         text: "Back"
@@ -69,7 +69,6 @@ import "../common"
         mySession.unshift( {"time" : 0, "typeName" :"walk"});
         mySession.unshift( {"time" : session.holdTime, "typeName" :"hold"});
         mySession.unshift( {"time" : session.breathTime, "typeName" :"brth"});
-        console.log("***** mySession=", mySession[0].time, mySession[1].time, mySession[2].time)
         // copy the last group
         var currentSessionLength = mySession.length
         if (session.repeatLast){
@@ -77,7 +76,7 @@ import "../common"
             mySession.unshift( mySession[currentSessionLength -2]);
             mySession.unshift( mySession[currentSessionLength -3]);
         }
-        for (var i = 0; i < cycles4Calculation - 1; i++){
+        for (var i = 0; i < cycles4Calculation; i++){
             //mySession[i] = new Array (3)
              mySession.unshift( {"time": 0, "typeName": "walk"});
             console.log("***** mySession=", mySession[0].time, mySession[1].time, mySession[2].time)
@@ -119,16 +118,16 @@ import "../common"
         mySession.unshift( {"time" : session.holdTime, "typeName" :"hold"});
         mySession.unshift( {"time" : session.breathTime, "typeName" :"brth"});
         // copy the last group
+        var currentSessionLength = mySession.length
         if (session.repeatLast){
-            mySession.unshift( mySession[mySession.length -1]);
-            mySession.unshift( mySession[mySession.length -2]);
-            mySession.unshift( mySession[mySession.length -3]);
+            mySession.unshift( mySession[currentSessionLength -1]);
+            mySession.unshift( mySession[currentSessionLength -2]);
+            mySession.unshift( mySession[currentSessionLength -3]);
         }
-        for (var i = 0; i < cycles4Calculation - 1; i++){
-            //mySession[i] = new Array (3)
+        for (var i = 0; i < cycles4Calculation; i++){
+            // we are adding to the beginning of the array so the previous time is always in element 2 (if starting from 0)
             mySession.unshift( {"time": 0, "typeName": "walk"});
             mySession.unshift( {"time": session.holdTime, "typeName": "hold"});
-            // we are adding to the beginning of the array so the previous time is always in element 2 (starting from 0)
             mySession.unshift( {"time": mySession[2].time + session.breathDecrement, "typeName": "brth"});
         }
 
@@ -155,18 +154,35 @@ import "../common"
         }
 
     }
+    // Create a JSON array representing the current session
+    // Do we need to make it robust, check for ranges, etc. ?
+    function generateWalkSession (){
+        var mySession = []
+        sessionType = "WALK"
+
+        for (var i = 0; i < session.numberOfCycles; i++){
+            // we are adding to the beginning of the array so the previous time is always in element 2 (if starting from 0)
+            mySession.unshift( {"time": session.walkTime, "typeName": "walk"});
+            mySession.unshift( {"time": session.holdTime, "typeName": "hold"});
+            mySession.unshift( {"time": session.walkTime, "typeName": "brth"});
+        }
+        return mySession
+    }
     EditableComponent {
-        editableType: "Apnea Walk"
+        id:walk
+        editableType: "WALK"
         editableComponentMetaData: {
-          "displayname" : "Current Session"
+          "displayname" : "Walk Session"
         }
         defaultGroup: "Session"
         target:session
         properties: {
             "name": {label:"Session name"},
             "numberOfCycles": {"min": 1, "max": 8, "stepsize": 1, "label": "Number of cycles" },
-            "repeatLast":{label:"Repeat Last Cycle"},
-            "breathTime":{"min":0, "max":600, "stepsize": 5, "label": "Breath time"}
+            "breathTime":{"min":0, "max":600, "stepsize": 5, "label": "Breath time"},
+            "holdTime":{"min":0, "max":600, "stepsize": 5, "label": "Hold time"},
+            "walkTime":{"min":0, "max":300, "stepsize": 5, "label": "Walk time"},
+
         }
     }
     ItemEditor {
@@ -200,12 +216,16 @@ import "../common"
             onClicked: {
 
                 ///AWdebug
-                if (sessionType == "CO2"){
+                if (itemEditor.currentEditableType == "CO2"){
                     configSeriesScene.currentSession = generateCO2Session()
                     console.log(" **** generated CO2 session=", currentSession)
                }
-                else if (sessionType == "O2"){
+                else if (itemEditor.currentEditableType == "O2"){
                     configSeriesScene.currentSession = generateO2Session()
+                    console.log(" **** generated O2 session=", currentSession)
+                }
+                else if (itemEditor.currentEditableType == "WALK"){
+                    configSeriesScene.currentSession = generateWalkSession()
                     console.log(" **** generated O2 session=", currentSession)
                 }
                 runSessionScene.sessionSelected(currentSession)

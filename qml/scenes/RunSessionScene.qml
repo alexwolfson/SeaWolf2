@@ -61,9 +61,9 @@ SceneBase {
       text: "Back"
       // anchor the button to the gameWindowAnchorItem to be on the edge of the screen on any device
       anchors.right: runSessionScene.gameWindowAnchorItem.right
-      anchors.rightMargin: 10
+      anchors.rightMargin: dp(10)
       anchors.top: runSessionScene.gameWindowAnchorItem.top
-      anchors.topMargin: 10
+      anchors.topMargin: dp(10)
       onClicked: backButtonPressed()
   }
 
