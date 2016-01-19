@@ -11,7 +11,7 @@ import VPlayApps 1.0
 import "../common"
 SceneBase {
   id: runSessionScene
-  property var runColors: {"brth" : "red", "hold" : "green", "walk" : "blue"}
+  property var runColors: {"brth" : "tomato", "hold" : "green", "walk" : "steelblue"}
   property int brthIndx: 0
   property int holdIndx: 1
   property int walkIndx: 2

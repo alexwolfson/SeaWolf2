@@ -70,11 +70,10 @@ import "../common"
         mySession.unshift( {"time" : session.holdTime, "typeName" :"hold"});
         mySession.unshift( {"time" : session.breathTime, "typeName" :"brth"});
         // copy the last group
-        var currentSessionLength = mySession.length
         if (session.repeatLast){
-            mySession.unshift( mySession[currentSessionLength -1]);
-            mySession.unshift( mySession[currentSessionLength -2]);
-            mySession.unshift( mySession[currentSessionLength -3]);
+            mySession.unshift( mySession[mySession.length -1]);
+            mySession.unshift( mySession[mySession.length -2]);
+            mySession.unshift( mySession[mySession.length -3]);
         }
         for (var i = 0; i < cycles4Calculation; i++){
             //mySession[i] = new Array (3)
@@ -118,11 +117,10 @@ import "../common"
         mySession.unshift( {"time" : session.holdTime, "typeName" :"hold"});
         mySession.unshift( {"time" : session.breathTime, "typeName" :"brth"});
         // copy the last group
-        var currentSessionLength = mySession.length
         if (session.repeatLast){
-            mySession.unshift( mySession[currentSessionLength -1]);
-            mySession.unshift( mySession[currentSessionLength -2]);
-            mySession.unshift( mySession[currentSessionLength -3]);
+            mySession.unshift( mySession[mySession.length -1]);
+            mySession.unshift( mySession[mySession.length -2]);
+            mySession.unshift( mySession[mySession.length -3]);
         }
         for (var i = 0; i < cycles4Calculation; i++){
             // we are adding to the beginning of the array so the previous time is always in element 2 (if starting from 0)
@@ -200,19 +198,19 @@ import "../common"
         spacing: 3
 
         MenuButton {
-            text: "New Session"
+            text: "New"
             onClicked: levelEditor.createNewLevel()
         }
 
         MenuButton {
-            text: "Remove Session"
+            text: "Remove"
             onClicked: {
 
                 levelEditor.removeCurrentLevel()
             }
         }
         MenuButton {
-            text: "Save Session"
+            text: "Save"
             onClicked: {
 
                 ///AWdebug
@@ -235,7 +233,7 @@ import "../common"
         }
 
         MenuButton {
-            text: "Show All Session"
+            text: "Browse"
             onClicked: {
                 levelEditor.loadAllLevelsFromStorageLocation(levelEditor.authorGeneratedLevelsLocation)
                 levelSelectionList.visible = true
