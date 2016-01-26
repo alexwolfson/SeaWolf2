@@ -2,7 +2,8 @@
 #include <VPApplication>
 
 #include <QQmlApplicationEngine>
-
+#include "qmlfileaccess.h"
+#include <QDebug>
 
 int main(int argc, char *argv[])
 {
@@ -27,6 +28,16 @@ int main(int argc, char *argv[])
     //  vplay.setMainQmlFileName(QStringLiteral("qrc:/qml/Main.qml"));
 
     engine.load(QUrl(vplay.mainQmlFileName()));
+
+    //Unit test of QMLFileAccess
+    QMLFileAccess qfa;
+    qDebug() << "Path = " << qfa.getAccessiblePath();
+    qDebug() << "Open=" << qfa.qmlOpenFile("TestQMLRWFile");
+    qDebug() << "Wrote = " << qfa.qmlWrite("TEST");
+    QString qstr;
+    qDebug() << "Read = " << qfa.qmlRead(qstr);
+    qDebug() << qstr;
+
 
     return app.exec();
 }

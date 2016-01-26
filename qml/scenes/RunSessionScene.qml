@@ -222,7 +222,7 @@ SceneBase {
           id: walkControl
           z:100
           text: qsTr("Finish Walk")
-          enabled: true
+          enabled: false
           anchors.left: button1.right
           anchors.bottom: container.bottom
           anchors.bottomMargin: dp(60)
@@ -239,19 +239,25 @@ SceneBase {
       MenuButton {
           id: button2
           z:100
-          text: qsTr("Walk Back")
+          text: qsTr("Stop")
           anchors.left: walkControl.right
           anchors.bottom: container.bottom
           anchors.bottomMargin: dp(60)
           onClicked: {
+              timerBrth.isCurrent = false
+              timerHold.isCurrent = false
+              timerWalk.isCurrent = false
+              timerBrth.modelIndex = 0
               timerBrth.state = "initial"
+              timerHold.modelIndex = 1
               timerHold.state = "initial"
+              timerWalk.modelIndex = 2
               timerWalk.state = "initial"
               //apneaModel.get(apneaModel.index).isCurrent = false
               //apneaModel.index = 0
 
               walkControl.enabled = true
-              button2.enabled = false
+              //button2.enabled = false
           }
       }
       SoundEffectVPlay {
