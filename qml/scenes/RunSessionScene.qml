@@ -6,17 +6,30 @@ import QtQuick.Extras 1.4
 import QtQuick.Window 2.2
 import QtQuick.Layouts 1.2
 import QtMultimedia 5.5
+import QtQml 2.2
+
 import VPlay 2.0
 import VPlayApps 1.0
 import "../common"
+import com.seawolf.qmlfileaccess 1.0
+
+
 SceneBase {
   id: runSessionScene
   property var runColors: {"brth" : "tomato", "hold" : "green", "walk" : "steelblue"}
   property int brthIndx: 0
   property int holdIndx: 1
   property int walkIndx: 2
-  property SeaWolfControls timerHold:    timerHold
-  //property alias runSessionModel: container.apneaModel
+  property SeaWolfControls currentGauge
+  property var currentSession: {
+      "sessionName":configSeriesScene.sessionName,
+      "when":"ChangeMe", //Qt.formatDateTime(new Date(), "yyyy-MM-dd-hh-mm-ss"),
+      "eventName":["EndOfMeditativeZone", "EndOfComfortZone", "Contraction", "EndOfWalk", "brth" , "hold", "walk"],
+      "event":[],
+      "pulse":[]
+  }
+
+  //property alias currentGauge:timerHold.currentGauge
   //===================================================
   // signal indicating that current session is selected
   signal sessionSelected(var selectedSession)
@@ -32,7 +45,7 @@ SceneBase {
       timerHold.maximumValue = apneaModel.get(holdIndx).time
       timerWalk.maximumValue = apneaModel.get(walkIndx).time
   }
-  //---------------------------------------------------
+
 
   //===================================================
   // signal indicating that footer needs update shown time values
@@ -102,9 +115,9 @@ SceneBase {
           ListElement { time: 6; typeName: "brth";    isCurrent: false }
           ListElement { time: 7; typeName: "hold";    isCurrent: false }
           ListElement { time: 0; typeName: "walk";    isCurrent: false }
-          ListElement { time: 9; typeName: "brth";    isCurrent: false }
-          ListElement { time:10; typeName: "hold";    isCurrent: false }
-          ListElement { time: 0; typeName: "walk";    isCurrent: false }
+//          ListElement { time: 9; typeName: "brth";    isCurrent: false }
+//          ListElement { time:10; typeName: "hold";    isCurrent: false }
+//          ListElement { time: 0; typeName: "walk";    isCurrent: false }
       }
 
 
@@ -206,6 +219,9 @@ SceneBase {
           //anchors.horizontalCenter: root.horizontalCenter
           enabled: true
           clip: true
+          QMLFileAccess {
+              id:qfa
+          }
 
           onClicked: {
               timerBrth.modelIndex = 0
@@ -214,7 +230,12 @@ SceneBase {
               timerBrth.isCurrent = true
               //apneaModel.get(0).isCurrent = true
               walkControl.enabled = false
-              button2.enabled = true
+              button2.enabled = true;
+              runSessionScene.currentSession.when = Qt.formatDateTime(new Date(), "yyyy-MM-dd-hh-mm-ss");
+              currentGauge = timerBrth
+              //console.log("Time=", Qt.formatDateTime(new Date(), "yyyy-MM-dd-hh-mm-ss"))
+              console.log("Session:",runSessionScene.currentSession.sessionName, "started:",runSessionScene.currentSession.when)
+
           }
       }
 
@@ -260,6 +281,20 @@ SceneBase {
               //button2.enabled = false
           }
       }
+      MenuButton{
+          id: note1
+          z:100
+          text: qsTr("EndMedit")
+          anchors.left: button2.right
+          anchors.bottom: container.bottom
+          anchors.bottomMargin: dp(60)
+          onClicked: {
+              console.log("value=", currentGauge.value)
+              currentSession.event.push([0, currentGauge.value])
+          }
+          enabled:true
+      }
+
       SoundEffectVPlay {
               id: brthSnd
               volume: 1.0

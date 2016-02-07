@@ -6,6 +6,7 @@ import "../common"
     id: configSeriesScene
     property var currentSession
     property  string sessionType:"WALK"
+    property string sessionName
     MenuButton {
         z:100
         text: "Back"
@@ -226,9 +227,10 @@ import "../common"
                     configSeriesScene.currentSession = generateWalkSession()
                     console.log(" **** generated O2 session=", currentSession)
                 }
+                sessionName = session.name
                 runSessionScene.sessionSelected(currentSession)
                 levelEditor.saveCurrentLevel( {levelMetaData: {levelName: session.name}} )
-                levelEditor.saveCurrentLevel()
+                //levelEditor.saveCurrentLevel()
             }
         }
 

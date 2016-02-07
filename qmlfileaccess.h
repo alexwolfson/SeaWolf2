@@ -4,7 +4,6 @@
 #include <QObject>
 #include <QFile>
 #include <QString>
-
 #include <QDataStream>
 
 //! QML plugin that Read/Writes files on Android, Windows, Linux systems. IOS?
@@ -14,10 +13,19 @@ class QMLFileAccess : public QObject
 public:
     explicit QMLFileAccess(QObject *parent = 0);
     virtual ~QMLFileAccess();
-    QDataStream::Status qmlOpenFile(const QString FileName);
-    QDataStream::Status qmlRead(QString &s);
-    QDataStream::Status qmlWrite(QString s);
-    virtual QString getAccessiblePath();
+    //typedef QDataStream::Status QMLFileStatus;
+    enum QMLFileStatus {
+        Ok = 0,
+        ReadPastEnd,
+        ReadCorruptData,
+        WriteFailed
+    };
+
+    Q_ENUMS(QMLFileStatus)
+    Q_INVOKABLE QMLFileStatus qmlOpenFile(const QString FileName);
+    Q_INVOKABLE QString qmlRead();
+    Q_INVOKABLE QMLFileStatus qmlWrite(QString s);
+    Q_INVOKABLE virtual QString getAccessiblePath();
 signals:
 
 public slots:

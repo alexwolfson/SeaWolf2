@@ -6,3 +6,4 @@
 - Add music with ability to  choose
 - Add particles using particle editor as air bubble
 - Heart rate biofeedback
+- Refactor the architecture - SeaWolfControls are using RunSessionScene and RunSeessionScene uses SeaWolfControls

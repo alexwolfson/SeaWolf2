@@ -1,11 +1,11 @@
 #include "qmlfileaccess.h"
 #include <QStandardPaths>
 #include <QDir>
+
 #include <QDebug>
 
 QMLFileAccess::QMLFileAccess(QObject *parent) : QObject(parent)
 {
-
 }
 QMLFileAccess::~QMLFileAccess(){
     if (!m_qfile.isOpen()){
@@ -13,24 +13,26 @@ QMLFileAccess::~QMLFileAccess(){
     }
 }
 
-QDataStream::Status QMLFileAccess::qmlOpenFile(const QString fileName){
+QMLFileAccess::QMLFileStatus QMLFileAccess::qmlOpenFile(const QString fileName){
     m_fileName = fileName;
-    m_qfile.setFileName(getAccessiblePath() + m_fileName);
+    m_qfile.setFileName(getAccessiblePath() + "sessions" + m_fileName);
     m_qfile.open(QIODevice::ReadWrite);
     m_dataStream.setDevice(&m_qfile);
-    return m_dataStream.status();
+    return static_cast<QMLFileAccess::QMLFileStatus>(m_dataStream.status());
 }
 
-QDataStream::Status QMLFileAccess::qmlRead(QString &s){
+QString QMLFileAccess::qmlRead(){
+
+    QString s;
     m_qfile.seek(0);
     m_dataStream >> s;
-    return m_dataStream.status();
+    return s;
 }
 
-QDataStream::Status QMLFileAccess::qmlWrite(const QString s){
+QMLFileAccess::QMLFileStatus QMLFileAccess::qmlWrite(const QString s){
     m_qfile.seek(m_qfile.size());
     m_dataStream << s;
-    return m_dataStream.status();
+    return static_cast<QMLFileAccess::QMLFileStatus>(m_dataStream.status());
 }
 
 QString QMLFileAccess::getAccessiblePath(){

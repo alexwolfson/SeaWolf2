@@ -38,6 +38,14 @@ For sessions configurations saving in JSON
       ...
    ]
 }
+Results saving
+{
+"session":name,
+"when":date-time
+events:["EndOfMeditativeZone", "EndOfComfortZone, "Contraction", "EndOfWalk"]
+"events":[Number1:time, Number2:time]
+"pulse":[number,number, ...]
+}
 
 For the result saving in JSON
 

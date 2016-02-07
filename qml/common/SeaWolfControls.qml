@@ -4,8 +4,10 @@ import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
 import QtQuick.Extras 1.4
 import QtMultimedia 5.0
+import QtQuick.Dialogs 1.2
 import VPlay 2.0
-
+import org.example.io 1.0
+import com.seawolf.qmlfileaccess 1.0
 CircularGauge {
     id: gauge
     property real valueChange: 0
@@ -23,6 +25,21 @@ CircularGauge {
     property color needleColor: runColors[gaugeName]
     property int modelIndex:0
     property int maximumValue: gaugeModel.get(modelIndex).time
+
+    function saveSession() {
+        //var path=qfa.getAccessiblePath();
+        //console.log("Path = ", path);
+        var fullPath = runSessionScene.currentSession.sessionName + runSessionScene.currentSession.when;
+        console.log("fullPath=", fullPath, "Open=" , qfa.qmlOpenFile(fullPath));
+        console.log("Wrote = ", qfa.qmlWrite(JSON.stringify(runSessionScene.currentSession)));
+        var qstr = qfa.qmlRead();
+        console.log("Read = ", qstr);
+        //var data = runSessionScene.currentSession
+        //io.text = JSON.stringify(data, null, 4)
+        //io.write()
+    }
+
+
     onModelIndexChanged:{
         maximumValue = gaugeModel.get(modelIndex).time
     }
@@ -119,7 +136,7 @@ CircularGauge {
             return false
     }
     //trick to pass by reference
-    function loadNextCycle(gauge){
+    function loadNextCycleVal(gauge){
        if ((gauge[0].modelIndex + 3 < gaugeModel.count))
         {
             gauge[0].modelIndex += 3;
@@ -147,6 +164,9 @@ CircularGauge {
             onRunningChanged: {
                 // the step is over - go to the next step
                 if (running){
+                    var eventNb = runSessionScene.currentSession.eventName.indexOf(gaugeName);
+                    console.log("gaugeName=", gaugeName, "eventNb=", eventNb)
+                    runSessionScene.currentSession.event.push([eventNb, maximumValue])
                     thirtyTimer.interval= maximumValue * 1000 - 30000
                     if (thirtyTimer.interval > 0){
                         thirtyTimer.start()
@@ -165,15 +185,16 @@ CircularGauge {
                     // update 3 gauges if we are about to run the "breath"gauge
                     var bContinue = true
                     if (isLastInCycle()){
-                        loadNextCycle([gauge])
+                        loadNextCycleVal([gauge])
                         var prevNextModelIndex = nextGauge.modelIndex
                         console.log("prevNextModelIndex=", prevNextModelIndex)
-                        loadNextCycle([nextGauge])
+                        loadNextCycleVal([nextGauge])
                         console.log("******nextGauge.modelIndex=", nextGauge.modelIndex)
                         if (prevNextModelIndex === nextGauge.modelIndex) bContinue = false
                         //if we have 2 gauges only (no "walk" we need to prevent updating "hold" twice
                         if (nextGauge.nextGauge !== gauge){
-                            loadNextCycle([nextGauge.nextGauge])
+                            loadNextCycleVal([nextGauge.nextGauge])
+
                         }
                     }
                     console.log("bContinue=", bContinue)
@@ -184,14 +205,20 @@ CircularGauge {
                         gaugeModel.get(nextGauge.modelIndex).isCurrent = true
                         //seting up next gauge as current if it's time is not 0
                         nextGauge.state = "stateRun"
+                        //emit signal
+                        runSessionScene.currentGauge = nextGauge
                     }
                     else {
+                        // The session is over
                         loadIfNot0([nextGauge], 0)
                         loadIfNot0([nextGauge.nextGauge], 1)
-                        //if we have 2 gauges only (no "walk" we need to prevent updating "hold" twice
+                        //if we have 2 gauges only (no "walk") we need to prevent updating "hold" twice
                         if (nextGauge.nextGauge !== gauge){
                             loadIfNot0([nextGauge.nextGauge.nextGauge], 2)
                         }
+                        //save the session results
+                        //openDialog.open()
+                        saveSession()
 
                     }
                 }

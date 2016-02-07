@@ -3,6 +3,7 @@
 
 #include <QQmlApplicationEngine>
 #include "qmlfileaccess.h"
+#include <QtQml>
 #include <QDebug>
 
 int main(int argc, char *argv[])
@@ -17,6 +18,8 @@ int main(int argc, char *argv[])
     QQmlApplicationEngine engine;
     vplay.initialize(&engine);
 
+    qmlRegisterType<QMLFileAccess>("com.seawolf.qmlfileaccess", 1, 0, "QMLFileAccess");
+
     // use this during development
     // for PUBLISHING, use the entry point below
     vplay.setMainQmlFileName(QStringLiteral("qml/Main.qml"));
@@ -30,13 +33,13 @@ int main(int argc, char *argv[])
     engine.load(QUrl(vplay.mainQmlFileName()));
 
     //Unit test of QMLFileAccess
-    QMLFileAccess qfa;
-    qDebug() << "Path = " << qfa.getAccessiblePath();
-    qDebug() << "Open=" << qfa.qmlOpenFile("TestQMLRWFile");
-    qDebug() << "Wrote = " << qfa.qmlWrite("TEST");
-    QString qstr;
-    qDebug() << "Read = " << qfa.qmlRead(qstr);
-    qDebug() << qstr;
+//    QMLFileAccess qfa;
+//    qDebug() << "Path = " << qfa.getAccessiblePath();
+//    qDebug() << "Open=" << qfa.qmlOpenFile("TestQMLRWFile");
+//    qDebug() << "Wrote = " << qfa.qmlWrite("TEST");
+//    QString qstr;
+//    qDebug() << "Read = " << qfa.qmlRead(qstr);
+//    qDebug() << qstr;
 
 
     return app.exec();
