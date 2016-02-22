@@ -1,3 +1,5 @@
+QT += quick bluetooth
+
 # allows to add DEPLOYMENTFOLDERS and links to the V-Play library and QtCreator auto-completion
 CONFIG += v-play
 
@@ -9,7 +11,8 @@ DEPLOYMENTFOLDERS += assetsFolder
 
 # Add more folders to ship with the application here
 
-RESOURCES += #    resources.qrc # uncomment for publishing
+#RESOURCES += #    resources.qrc # uncomment for publishing
+RESOURCES += resources.qrc # uncomment for publishing
 
 # NOTE: for PUBLISHING, perform the following steps:
 # 1. comment the DEPLOYMENTFOLDERS += qmlFolder line above, to avoid shipping your qml files with the application (instead they get compiled to the app binary)
@@ -23,7 +26,9 @@ RESOURCES += #    resources.qrc # uncomment for publishing
 
 # The .cpp file which was generated for your project. Feel free to hack it.
 SOURCES += main.cpp \
-    qmlfileaccess.cpp
+    qmlfileaccess.cpp \
+    deviceinfo.cpp \
+    heartrate.cpp
 
 android {
     ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
@@ -56,4 +61,6 @@ DISTFILES += \
     LICENSE
 
 HEADERS += \
-    qmlfileaccess.h
+    qmlfileaccess.h \
+    deviceinfo.h \
+    heartrate.h

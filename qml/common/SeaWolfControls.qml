@@ -6,7 +6,6 @@ import QtQuick.Extras 1.4
 import QtMultimedia 5.0
 import QtQuick.Dialogs 1.2
 import VPlay 2.0
-import org.example.io 1.0
 import com.seawolf.qmlfileaccess 1.0
 CircularGauge {
     id: gauge
@@ -27,13 +26,15 @@ CircularGauge {
     property int maximumValue: gaugeModel.get(modelIndex).time
 
     function saveSession() {
-        //var path=qfa.getAccessiblePath();
-        //console.log("Path = ", path);
-        var fullPath = runSessionScene.currentSession.sessionName + runSessionScene.currentSession.when;
-        console.log("fullPath=", fullPath, "Open=" , qfa.qmlOpenFile(fullPath));
+        var path=qfa.getAccessiblePath("sessions");
+        console.log("Path = ", path);
+        var fileName = runSessionScene.currentSession.sessionName + runSessionScene.currentSession.when;
+        //qmlOpenFile will add path before fileName
+        console.log("fileName=", fileName, "Open=" , qfa.qmlOpenFile(path + fileName));
         console.log("Wrote = ", qfa.qmlWrite(JSON.stringify(runSessionScene.currentSession)));
         var qstr = qfa.qmlRead();
         console.log("Read = ", qstr);
+        console.log("Close=", qfa.qmlCloseFile());
         //var data = runSessionScene.currentSession
         //io.text = JSON.stringify(data, null, 4)
         //io.write()

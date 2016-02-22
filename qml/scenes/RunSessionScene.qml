@@ -257,6 +257,10 @@ SceneBase {
               }
          }
       }
+      FileDialog{
+          id: fileDialog
+      }
+
       MenuButton {
           id: button2
           z:100
@@ -265,6 +269,9 @@ SceneBase {
           anchors.bottom: container.bottom
           anchors.bottomMargin: dp(60)
           onClicked: {
+
+              fileDialog.open()
+
               timerBrth.isCurrent = false
               timerHold.isCurrent = false
               timerWalk.isCurrent = false
@@ -289,8 +296,8 @@ SceneBase {
           anchors.bottom: container.bottom
           anchors.bottomMargin: dp(60)
           onClicked: {
-              console.log("value=", currentGauge.value)
-              currentSession.event.push([0, currentGauge.value])
+              console.log("value=", Math.round(currentGauge.value))
+              currentSession.event.push([0, Math.round(currentGauge.value)])
           }
           enabled:true
       }

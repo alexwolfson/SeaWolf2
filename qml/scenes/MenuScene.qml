@@ -5,8 +5,8 @@ import "../common"
 
 SceneBase {
     id: menuScene
-    // signal indicating that the selectLevelScene should be displayed
-    signal selectLevelPressed
+    // signal indicating that the HrmSetupScene should be displayed
+    signal hrmSetupPressed
     // signal indicating that the creditsScene should be displayed
     signal creditsPressed
     // signal indicating that the aboutScene should be displayed
@@ -25,22 +25,6 @@ SceneBase {
         anchors.fill: parent
     }
 
-//    Rectangle {
-//        anchors.fill: parent.gameWindowAnchorItem
-//        color: "#47688e"
-//    }
-
-//    // use a BackgroundImage for performance improvements involving blending function and pixelFormat, especially important for Android!
-//    BackgroundImage {
-//        id:surfaceBackground
-//        source: "../../assets/img/surface.png"
-
-//        // use this if the image should be centered, which is the most common case
-//        // if the image should be aligned at the bottom, probably the whole scene should be aligned at the bottom,
-          //   and the image should be shited up by the delta between the imagesSize and the scene.y!
-//        anchors.centerIn: parent
-//    }
-    // the "logo"
     Text {
         anchors.horizontalCenter: parent.horizontalCenter
         y: dp(30)
@@ -69,15 +53,10 @@ SceneBase {
             anchors.horizontalCenter: parent.horizontalCenter
         }
         MenuButton {
-            text: "Levels"
-            onClicked: selectLevelPressed()
+            text: "HRM setup"
+            onClicked: hrmSetupPressed()
             anchors.horizontalCenter: parent.horizontalCenter
         }
-//        MenuButton {
-//            text: "Credits"
-//            onClicked: creditsPressed()
-//            anchors.horizontalCenter: parent.horizontalCenter
-//        }
         MenuButton {
             text: "Finish"
             onClicked: Qt.quit()

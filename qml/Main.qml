@@ -31,7 +31,7 @@ GameWindow {
         onAboutPressed: window.state = "about"
         onConfigSeriesPressed: window.state = "configSeries"
         onRunSessionPressed: window.state = "runSession"
-        onSelectLevelPressed: window.state = "selectLevel"
+        onHrmSetupPressed: window.state = "hrmSetup"
         onCreditsPressed: window.state = "credits"
         //onSessionCreated: configSeriesScene.generateCO2Session()
         // the menu scene is our start scene, so if back is pressed there we ask the user if he wants to quit the application
@@ -67,15 +67,13 @@ GameWindow {
         onBackButtonPressed: window.state = "menu"
     }
     // scene for selecting levels
-    SelectLevelScene {
-        id: selectLevelScene
-        onLevelPressed: {
-            // selectedLevel is the parameter of the levelPressed signal
+    HrmSetupScene {
+        id: hrmSetupScene
+//        onHrmSetupPressed: {
+//            gameScene.setLevel(selectedLevel)
+//            window.state = "hrmSetup"
 
-            gameScene.setLevel(selectedLevel)
-            window.state = "game"
-
-        }
+//        }
         onBackButtonPressed: window.state = "menu"
     }
 
@@ -118,9 +116,9 @@ GameWindow {
             PropertyChanges {target: window; activeScene: configSeriesScene}
         },
         State {
-            name: "selectLevel"
-            PropertyChanges {target: selectLevelScene; opacity: 1}
-            PropertyChanges {target: window; activeScene: selectLevelScene}
+            name: "hrmSetup"
+            PropertyChanges {target: hrmSetupScene; opacity: 1}
+            PropertyChanges {target: window; activeScene: hrmSetupScene}
         },
         State {
             name: "credits"
@@ -133,4 +131,9 @@ GameWindow {
             PropertyChanges {target: window; activeScene: gameScene}
         }
     ]
+    Loader {
+        id: pageLoader
+        anchors.fill: parent
+    }
+
 }

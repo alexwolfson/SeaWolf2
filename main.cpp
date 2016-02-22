@@ -5,6 +5,11 @@
 #include "qmlfileaccess.h"
 #include <QtQml>
 #include <QDebug>
+#include <QtCore/QLoggingCategory>
+#include <QQmlContext>
+#include <QGuiApplication>
+#include <QQuickView>
+#include "heartrate.h"
 
 int main(int argc, char *argv[])
 {
@@ -17,7 +22,9 @@ int main(int argc, char *argv[])
     // if you have older projects using Qt App wizards from previous QtCreator versions than 3.1, please change them to QQmlApplicationEngine
     QQmlApplicationEngine engine;
     vplay.initialize(&engine);
-
+    HeartRate heartRate;
+    QQmlContext * myContext = engine.rootContext();
+    myContext->setContextProperty("heartRate", &heartRate);
     qmlRegisterType<QMLFileAccess>("com.seawolf.qmlfileaccess", 1, 0, "QMLFileAccess");
 
     // use this during development

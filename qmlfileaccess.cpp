@@ -1,7 +1,6 @@
 #include "qmlfileaccess.h"
 #include <QStandardPaths>
 #include <QDir>
-
 #include <QDebug>
 
 QMLFileAccess::QMLFileAccess(QObject *parent) : QObject(parent)
@@ -15,10 +14,17 @@ QMLFileAccess::~QMLFileAccess(){
 
 QMLFileAccess::QMLFileStatus QMLFileAccess::qmlOpenFile(const QString fileName){
     m_fileName = fileName;
-    m_qfile.setFileName(getAccessiblePath() + "sessions" + m_fileName);
+    //m_qfile.setFileName(getAccessiblePath("sessions") + m_fileName);
+    m_qfile.setFileName(m_fileName);
     m_qfile.open(QIODevice::ReadWrite);
     m_dataStream.setDevice(&m_qfile);
     return static_cast<QMLFileAccess::QMLFileStatus>(m_dataStream.status());
+}
+
+QString QMLFileAccess::qmlCloseFile(){
+    m_dataStream.unsetDevice();
+    m_qfile.close();
+   return m_qfile.errorString();
 }
 
 QString QMLFileAccess::qmlRead(){
@@ -35,27 +41,13 @@ QMLFileAccess::QMLFileStatus QMLFileAccess::qmlWrite(const QString s){
     return static_cast<QMLFileAccess::QMLFileStatus>(m_dataStream.status());
 }
 
-QString QMLFileAccess::getAccessiblePath(){
-    QString path = QStandardPaths::standardLocations(QStandardPaths::DataLocation).value(0);
+QString QMLFileAccess::getAccessiblePath(const QString myDir){
+    //QString path = QStandardPaths::standardLocations(QStandardPaths::DataLocation).value(0);
+    QString path = QStandardPaths::writableLocation(QStandardPaths::DataLocation) + "/" + myDir;
     QDir dir(path);
     if (!dir.exists())
     dir.mkpath(path);
     if (!path.isEmpty() && !path.endsWith("/"))
     path += "/";
     return path;
-
 }
-/*
-const  QString fileName = path+"abc.txt";
-qDebug()<<fileName;
-QFile tf(fileName);
-tf.open(QIODevice::ReadWrite);
-tf.write("TEST");
-QString testString;
-tf.read(testString, 25);
-tf.close();
-if(QFile::exists(fileName))
-    qDebug()<<"abc.txt exists";
-else
-    qDebug()<<"abc.txt doesnt exists";
-*/
