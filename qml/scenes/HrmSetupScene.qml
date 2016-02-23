@@ -70,7 +70,7 @@ SceneBase {
                 Text {
                     id: selectText
                     color: "#3870BA"
-                    font.pixelSize: ds(34)
+                    font.pixelSize: dp(34)
                     anchors.centerIn: parent
                     text: "Select Device"
                 }
@@ -128,7 +128,7 @@ SceneBase {
                     height:dp(140)
                     width: parent.width
                     color: "#3870BA"
-                    border.color: "#F0EqBED"
+                    border.color: "#F0EBED"
                     border.width: dp(5)
                     radius: dp(15)
 
@@ -137,7 +137,7 @@ SceneBase {
                         onPressed: { box.color= "#3265A7"; box.height=110}
                         onClicked: {
                             heartRate.connectToService(modelData.deviceAddress);
-                            pageLoader.source="monitor.qml";
+                            pageLoader.source="qrc:/qml/common/monitor.qml";
                         }
                     }
 
@@ -172,7 +172,7 @@ SceneBase {
                 text: "Run Demo"
                 onButtonClick: {
                     heartRate.startDemo();
-                    pageLoader.source="monitor.qml";
+                    pageLoader.source="qrc:/qml/common/monitor.qml";
                 }
             }
 

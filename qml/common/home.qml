@@ -93,7 +93,7 @@ Rectangle {
                 height:100
                 anchors.horizontalCenter: parent.horizontalCenter
 
-                source: "busy_dark.png"
+                source: "/assets/img/busy_dark.png"
                 fillMode: Image.PreserveAspectFit
                 NumberAnimation on rotation { duration: 3000; from:0; to: 360; loops: Animation.Infinite}
             }
@@ -135,7 +135,7 @@ Rectangle {
                 onPressed: { box.color= "#3265A7"; box.height=110}
                 onClicked: {
                     heartRate.connectToService(modelData.deviceAddress);
-                    pageLoader.source="monitor.qml";
+                    pageLoader.source="qrc:/qml/common/monitor.qml";
                 }
             }
 
@@ -170,7 +170,7 @@ Rectangle {
         text: "Run Demo"
         onButtonClick: {
             heartRate.startDemo();
-            pageLoader.source="monitor.qml";
+            pageLoader.source="qrc:/qml/common/monitor.qml";
         }
     }
 

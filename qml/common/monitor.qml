@@ -42,7 +42,7 @@ import QtQuick 2.0
 import QtQuick.Particles 2.0
 
 Rectangle {
-    id: screenMonitor
+    id: screenmonitor
     color: "#F0EBED"
 
     Button {
@@ -97,7 +97,7 @@ Rectangle {
         width: 300
         height: width
         anchors.centerIn: parent
-        source: "blue_heart.png"
+        source: "/assets/img/blue_heart.png"
         fillMode: Image.PreserveAspectFit
         NumberAnimation on width {
             running: heartRate.hr > 0;
@@ -113,7 +113,7 @@ Rectangle {
             ImageParticle {
                 system: systwo
                 id: cptwo
-                source: "star.png"
+                source: "/assets/img/star.png"
                 colorVariation: 0.4
                 color: "#000000FF"
             }
@@ -144,7 +144,7 @@ Rectangle {
         buttonHeight: 0.1*parent.height
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.bottom
-        text: "Stop Monitoring"
+        text: "Stop monitoring"
         onButtonClick: {
             burstytwo.enabled = false;
             heartRate.disconnectService();
