@@ -42,7 +42,9 @@ CircularGauge {
 
 
     onModelIndexChanged:{
-        maximumValue = gaugeModel.get(modelIndex).time
+        if (gaugeModel != null ){
+              maximumValue = gaugeModel.get(modelIndex).time
+        }
     }
     style: CircularGaugeStyle {
         id: gaugeStyle
@@ -63,6 +65,19 @@ CircularGauge {
             antialiasing: true
             color: gauge.needleColor
         }
+        foreground: Item {
+            Image {
+                source:"/assets/img/blue_heart.png"
+                //source: "images/knob.png"
+                anchors.centerIn: parent
+                scale: {
+                    var idealHeight = __protectedScope.toPixels(0.5);
+                    var originalImageHeight = sourceSize.height;
+                    idealHeight / originalImageHeight;
+                }
+            }
+        }
+
         tickmark: Rectangle {
             implicitWidth: toPixels(0.06)
             antialiasing: true

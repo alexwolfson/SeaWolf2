@@ -3,7 +3,5 @@
         <file>qml</file>
         <file>qml/common</file>
         <file>qml/scenes</file>
-        <file>qml/levels</file>
     </qresource>
 </RCC>
-

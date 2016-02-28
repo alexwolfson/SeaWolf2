@@ -309,7 +309,7 @@ SceneBase {
       }
       SeaWolfControls {
           id:timerBrth
-          z:100
+          z:95
           gaugeName: "brth"
           enterStateSndEffect: brthSnd
           //gridView: sessionView
@@ -328,7 +328,7 @@ SceneBase {
       }
       SeaWolfControls {
           id:timerHold
-          z:100
+          z:95
           gaugeName:  "hold"
           enterStateSndEffect: holdSnd
           //gridView: sessionView
@@ -348,7 +348,7 @@ SceneBase {
       }
       SeaWolfControls {
           id:timerWalk
-          z:100
+          z:95
           gaugeName: "walk"
           enterStateSndEffect: walkSnd
           //gridView: sessionView
@@ -359,6 +359,20 @@ SceneBase {
           gaugeModel: apneaModel
           nextGauge: timerBrth
           //gaugeWalkControl: container.walkControl
+      }
+      Text {
+          id: hrValue
+          z:100
+          font.pixelSize: dp(24); font.bold: true
+          anchors.centerIn: parent
+
+          color: "white" //"#3870BA"
+          text: heartRate.hr
+          onTextChanged: {
+//              if (heartRate.hr > 0 && updatei != null && heartRate.numDevices() > 0) {
+//                  updatei.destroy()
+//              }
+          }
       }
   }
 }

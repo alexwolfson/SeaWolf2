@@ -45,6 +45,18 @@ Rectangle {
     id: screenmonitor
     color: "#F0EBED"
 
+    // back button to leave scene
+    MenuButton {
+        z:100
+        text: "Back"
+        // anchor the button to the gameWindowAnchorItem to be on the edge of the screen on any device
+        anchors.right: hrmSetupScene.gameWindowAnchorItem.right
+        anchors.rightMargin: dp(10)
+        anchors.top: hrmSetupScene.gameWindowAnchorItem.top
+        anchors.topMargin: dp(10)
+        onClicked: backButtonPressed()
+    }
+
     Button {
         id:menu
         buttonWidth: parent.width
@@ -101,8 +113,8 @@ Rectangle {
         fillMode: Image.PreserveAspectFit
         NumberAnimation on width {
             running: heartRate.hr > 0;
-            duration: heartRate.hr/60*250;
-            from:300; to: 350;
+            duration: heartRate.hr/60*1500;
+            from:dp(300); to: dp(350);
             loops: Animation.Infinite;
         }
 
@@ -123,8 +135,8 @@ Rectangle {
                 id: burstytwo
                 system: systwo
                 enabled: true
-                x: 160
-                y: 150
+                x: dp(160)
+                y: dp(150)
                 emitRate: heartRate.hr*100
                 maximumEmitted: 4000
                 acceleration: AngleDirection {angleVariation: 360; magnitude: 360; }

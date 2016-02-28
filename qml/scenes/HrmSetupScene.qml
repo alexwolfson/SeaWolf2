@@ -5,23 +5,15 @@ import "../common"
 SceneBase {
     id: hrmSetupScene
 
-    // signal indicating that a level has been selected
-    signal levelPressed(string selectedLevel)
-
-    // background
-    Rectangle {
-        anchors.fill: parent.gameWindowAnchorItem
-        color: "#ece468"
-    }
 
     // back button to leave scene
     MenuButton {
         z:100
         text: "Back"
         // anchor the button to the gameWindowAnchorItem to be on the edge of the screen on any device
-        anchors.right: runSessionScene.gameWindowAnchorItem.right
+        anchors.right: hrmSetupScene.gameWindowAnchorItem.right
         anchors.rightMargin: dp(10)
-        anchors.top: runSessionScene.gameWindowAnchorItem.top
+        anchors.top: hrmSetupScene.gameWindowAnchorItem.top
         anchors.topMargin: dp(10)
         onClicked: backButtonPressed()
     }
@@ -137,7 +129,8 @@ SceneBase {
                         onPressed: { box.color= "#3265A7"; box.height=110}
                         onClicked: {
                             heartRate.connectToService(modelData.deviceAddress);
-                            pageLoader.source="qrc:/qml/common/monitor.qml";
+                            runSessionPressed()
+                            //pageLoader.source="qrc:/qml/common/monitor.qml";
                         }
                     }
 
