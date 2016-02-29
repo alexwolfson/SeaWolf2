@@ -128,7 +128,7 @@ SceneBase {
                         anchors.fill: parent
                         onPressed: { box.color= "#3265A7"; box.height=110}
                         onClicked: {
-                            heartRate.connectToService(modelData.deviceAddress);
+                            heartRate.connectToService(modelData.deviceAddress)
                             runSessionPressed()
                             //pageLoader.source="qrc:/qml/common/monitor.qml";
                         }

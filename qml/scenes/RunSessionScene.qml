@@ -233,6 +233,7 @@ SceneBase {
               button2.enabled = true;
               runSessionScene.currentSession.when = Qt.formatDateTime(new Date(), "yyyy-MM-dd-hh-mm-ss");
               currentGauge = timerBrth
+              oneTimer.start()
               //console.log("Time=", Qt.formatDateTime(new Date(), "yyyy-MM-dd-hh-mm-ss"))
               console.log("Session:",runSessionScene.currentSession.sessionName, "started:",runSessionScene.currentSession.when)
 
@@ -286,6 +287,15 @@ SceneBase {
 
               walkControl.enabled = true
               //button2.enabled = false
+          }
+      }
+      Timer{
+          id: oneTimer
+          interval:1000
+          repeat:true
+          onTriggered:{
+              // update heart rate information
+              currentSession.pulse.push( Math.round(heartRate.hr))
           }
       }
       MenuButton{

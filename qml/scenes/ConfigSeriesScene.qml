@@ -66,7 +66,7 @@ import "../common"
         var mySession = []
         sessionType = "O2"
 
-        var cycles4Calculation = session.repeatLast ? session.numberOfCycles -1 : session.numberOfCycles;
+        var cycles4Calculation = session.repeatLast ? session.numberOfCycles - 2 : session.numberOfCycles - 1;
         mySession.unshift( {"time" : 0, "typeName" :"walk"});
         mySession.unshift( {"time" : session.holdTime, "typeName" :"hold"});
         mySession.unshift( {"time" : session.breathTime, "typeName" :"brth"});
@@ -113,7 +113,7 @@ import "../common"
         var mySession = []
         sessionType = "CO2"
 
-        var cycles4Calculation = session.repeatLast ? session.numberOfCycles -1 : session.numberOfCycles;
+        var cycles4Calculation = session.repeatLast ? session.numberOfCycles - 2 : session.numberOfCycles - 1;
         mySession.unshift( {"time" : 0, "typeName" :"walk"});
         mySession.unshift( {"time" : session.holdTime, "typeName" :"hold"});
         mySession.unshift( {"time" : session.breathTime, "typeName" :"brth"});
@@ -163,7 +163,7 @@ import "../common"
             // we are adding to the beginning of the array so the previous time is always in element 2 (if starting from 0)
             mySession.unshift( {"time": session.walkTime, "typeName": "walk"});
             mySession.unshift( {"time": session.holdTime, "typeName": "hold"});
-            mySession.unshift( {"time": session.walkTime, "typeName": "brth"});
+            mySession.unshift( {"time": session.breathTime, "typeName": "brth"});
         }
         return mySession
     }
