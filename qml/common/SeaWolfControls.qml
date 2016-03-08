@@ -67,7 +67,7 @@ CircularGauge {
         }
         foreground: Item {
             Image {
-                source:"/assets/img/blue_heart.png"
+                source:"../../assets/img/blue_heart.png"
                 //source: "images/knob.png"
                 anchors.centerIn: parent
                 scale: {
@@ -167,6 +167,14 @@ CircularGauge {
         //}
     }
 
+    function sessionIsOver(nextGauge){
+        loadIfNot0([nextGauge], 0)
+        loadIfNot0([nextGauge.nextGauge], 1)
+        //if we have 2 gauges only (no "walk") we need to prevent updating "hold" twice
+        if (nextGauge.nextGauge !== gauge){
+            loadIfNot0([nextGauge.nextGauge.nextGauge], 2)
+        }
+    }
     transitions:[
         Transition {
             from: "*"
@@ -180,7 +188,7 @@ CircularGauge {
             onRunningChanged: {
                 // the step is over - go to the next step
                 if (running){
-                    var eventNb = runSessionScene.currentSession.eventName.indexOf(gaugeName);
+                    var eventNb = runSessionScene.myEvents[gaugeName];
                     console.log("gaugeName=", gaugeName, "eventNb=", eventNb)
                     runSessionScene.currentSession.event.push([eventNb, maximumValue])
                     thirtyTimer.interval= maximumValue * 1000 - 30000
@@ -226,12 +234,9 @@ CircularGauge {
                     }
                     else {
                         // The session is over
-                        loadIfNot0([nextGauge], 0)
-                        loadIfNot0([nextGauge.nextGauge], 1)
-                        //if we have 2 gauges only (no "walk") we need to prevent updating "hold" twice
-                        if (nextGauge.nextGauge !== gauge){
-                            loadIfNot0([nextGauge.nextGauge.nextGauge], 2)
-                        }
+                        sessionIsOver(nextGauge)
+                        // show the session results
+
                         //save the session results
                         //openDialog.open()
                         saveSession()
