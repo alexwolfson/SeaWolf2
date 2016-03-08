@@ -12,7 +12,7 @@ import VPlay 2.0
 import VPlayApps 1.0
 import "../common"
 import com.seawolf.qmlfileaccess 1.0
-import "draw.js" as DrawGraph
+import "../common/draw.js" as DrawGraph
 
 
 SceneBase {
@@ -299,6 +299,11 @@ SceneBase {
       anchors.left: container.left
       anchors.horizontalCenter: container.horizontalCenter
       spacing: dp(8)
+       QMLFileAccess {
+            id:qfa
+        }
+
+
       Row{
           id:row1
           spacing:dp(8)
@@ -308,10 +313,6 @@ SceneBase {
               text: qsTr("Start")
               enabled: true
               clip: true
-//              QMLFileAccess {
-//                  id:qfa
-//              }
-
               onClicked: {
                   timerBrth.modelIndex = 0
 

@@ -240,6 +240,9 @@ CircularGauge {
                         //save the session results
                         //openDialog.open()
                         saveSession()
+                        heartRate.disconnectService();
+                        pageLoader.source = "results.qml";
+
 
                     }
                 }
