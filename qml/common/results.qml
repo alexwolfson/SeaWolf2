@@ -282,7 +282,7 @@ Rectangle {
         buttonHeight: 0.1*parent.height
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.bottom
-        text: "Start qrc:/qml/common/monitoring"
+        text: "Start monitoring"
         onButtonClick: {
             heartRate.connectToService(heartRate.deviceAddress());
             pageLoader.source="qrc:/qml/common/monitor.qml";

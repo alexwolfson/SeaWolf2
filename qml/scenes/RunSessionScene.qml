@@ -12,6 +12,7 @@ import VPlay 2.0
 import VPlayApps 1.0
 import "../common"
 import com.seawolf.qmlfileaccess 1.0
+import "draw.js" as DrawGraph
 
 
 SceneBase {
@@ -20,11 +21,12 @@ SceneBase {
   property int brthIndx: 0
   property int holdIndx: 1
   property int walkIndx: 2
+  property var myEvents:{"EndOfMeditativeZone":0, "EndOfComfortZone":1, "Contraction":2, "EndOfWalk":3, "brth":4 , "hold":5, "walk":6}
   property SeaWolfControls currentGauge
   property var currentSession: {
-      "sessionName":configSeriesScene.sessionName,
+      "sessionName":"TestSession",
       "when":"ChangeMe", //Qt.formatDateTime(new Date(), "yyyy-MM-dd-hh-mm-ss"),
-      "eventName":["EndOfMeditativeZone", "EndOfComfortZone", "Contraction", "EndOfWalk", "brth" , "hold", "walk"],
+      "eventNames":myEvents,
       "event":[],
       "pulse":[]
   }
@@ -115,9 +117,9 @@ SceneBase {
           ListElement { time: 6; typeName: "brth";    isCurrent: false }
           ListElement { time: 7; typeName: "hold";    isCurrent: false }
           ListElement { time: 0; typeName: "walk";    isCurrent: false }
-//          ListElement { time: 9; typeName: "brth";    isCurrent: false }
-//          ListElement { time:10; typeName: "hold";    isCurrent: false }
-//          ListElement { time: 0; typeName: "walk";    isCurrent: false }
+          ListElement { time: 9; typeName: "brth";    isCurrent: false }
+          ListElement { time:10; typeName: "hold";    isCurrent: false }
+          ListElement { time: 0; typeName: "walk";    isCurrent: false }
       }
 
 
@@ -207,88 +209,6 @@ SceneBase {
               }
           }
       }
-      MenuButton {
-          id: button1
-          z: 100
-          text: qsTr("Start")
-          anchors.leftMargin: dp(8)
-          anchors.bottom: container.bottom
-          anchors.bottomMargin: dp(60)
-          anchors.left: container.left
-          //isDefault: true
-          //anchors.horizontalCenter: root.horizontalCenter
-          enabled: true
-          clip: true
-          QMLFileAccess {
-              id:qfa
-          }
-
-          onClicked: {
-              timerBrth.modelIndex = 0
-
-              timerBrth.state = "stateRun";
-              timerBrth.isCurrent = true
-              //apneaModel.get(0).isCurrent = true
-              walkControl.enabled = false
-              button2.enabled = true;
-              runSessionScene.currentSession.when = Qt.formatDateTime(new Date(), "yyyy-MM-dd-hh-mm-ss");
-              currentGauge = timerBrth
-              oneTimer.start()
-              //console.log("Time=", Qt.formatDateTime(new Date(), "yyyy-MM-dd-hh-mm-ss"))
-              console.log("Session:",runSessionScene.currentSession.sessionName, "started:",runSessionScene.currentSession.when)
-
-          }
-      }
-
-      MenuButton {
-          id: walkControl
-          z:100
-          text: qsTr("Finish Walk")
-          enabled: false
-          anchors.left: button1.right
-          anchors.bottom: container.bottom
-          anchors.bottomMargin: dp(60)
-          onClicked: {
-              if (walkControl.text === qsTr("Finish Walk")){
-                  //enabled = false;
-                  timerWalk.state = "initial";
-                  timerWalk.maximumValue = timerWalk.value;
-                  walkControl.text = qsTr("Breath")
-                  walkControl.enabled = true
-              }
-         }
-      }
-      FileDialog{
-          id: fileDialog
-      }
-
-      MenuButton {
-          id: button2
-          z:100
-          text: qsTr("Stop")
-          anchors.left: walkControl.right
-          anchors.bottom: container.bottom
-          anchors.bottomMargin: dp(60)
-          onClicked: {
-
-              fileDialog.open()
-
-              timerBrth.isCurrent = false
-              timerHold.isCurrent = false
-              timerWalk.isCurrent = false
-              timerBrth.modelIndex = 0
-              timerBrth.state = "initial"
-              timerHold.modelIndex = 1
-              timerHold.state = "initial"
-              timerWalk.modelIndex = 2
-              timerWalk.state = "initial"
-              //apneaModel.get(apneaModel.index).isCurrent = false
-              //apneaModel.index = 0
-
-              walkControl.enabled = true
-              //button2.enabled = false
-          }
-      }
       Timer{
           id: oneTimer
           interval:1000
@@ -298,20 +218,6 @@ SceneBase {
               currentSession.pulse.push( Math.round(heartRate.hr))
           }
       }
-      MenuButton{
-          id: note1
-          z:100
-          text: qsTr("EndMedit")
-          anchors.left: button2.right
-          anchors.bottom: container.bottom
-          anchors.bottomMargin: dp(60)
-          onClicked: {
-              console.log("value=", Math.round(currentGauge.value))
-              currentSession.event.push([0, Math.round(currentGauge.value)])
-          }
-          enabled:true
-      }
-
       SoundEffectVPlay {
               id: brthSnd
               volume: 1.0
@@ -373,7 +279,7 @@ SceneBase {
       Text {
           id: hrValue
           z:100
-          font.pixelSize: dp(24); font.bold: true
+          font.pixelSize: sp(36); font.bold: true
           anchors.centerIn: parent
 
           color: "white" //"#3870BA"
@@ -385,4 +291,121 @@ SceneBase {
           }
       }
   }
+  Column {
+      id:col1
+      anchors.leftMargin: dp(8)
+      anchors.bottom: container.bottom
+      anchors.bottomMargin: dp(8)
+      anchors.left: container.left
+      anchors.horizontalCenter: container.horizontalCenter
+      spacing: dp(8)
+      Row{
+          id:row1
+          spacing:dp(8)
+          MenuButton {
+              id: button1
+              z: 100
+              text: qsTr("Start")
+              enabled: true
+              clip: true
+//              QMLFileAccess {
+//                  id:qfa
+//              }
+
+              onClicked: {
+                  timerBrth.modelIndex = 0
+
+                  timerBrth.state = "stateRun";
+                  timerBrth.isCurrent = true
+                  //apneaModel.get(0).isCurrent = true
+                  walkControl.enabled = false
+                  button2.enabled = true;
+                  runSessionScene.currentSession.when = Qt.formatDateTime(new Date(), "yyyy-MM-dd-hh-mm-ss");
+                  currentGauge = timerBrth
+                  oneTimer.start()
+                  //console.log("Time=", Qt.formatDateTime(new Date(), "yyyy-MM-dd-hh-mm-ss"))
+                  console.log("Session:",runSessionScene.currentSession.sessionName, "started:",runSessionScene.currentSession.when)
+
+              }
+          }
+
+          MenuButton {
+              id: walkControl
+              z:100
+              text: qsTr("Finish Walk")
+              enabled: false
+              onClicked: {
+                  if (walkControl.text === qsTr("Finish Walk")){
+                      //enabled = false;
+                      timerWalk.state = "initial";
+                      timerWalk.maximumValue = timerWalk.value;
+                      walkControl.text = qsTr("Breath")
+                      walkControl.enabled = true
+                  }
+             }
+          }
+          FileDialog{
+              id: fileDialog
+              folder:qfa.getAccessiblePath("sessions")
+          }
+
+          MenuButton {
+              id: button2
+              z:100
+              text: qsTr("Stop")
+              onClicked: {
+                  //timerBrth.sessionIsOver(timerBrth)
+                  //fileDialog.open()
+                  timerBrth.maximumValue = apneaModel.get(brthIndx).time
+                  timerHold.maximumValue = apneaModel.get(holdIndx).time
+                  timerWalk.maximumValue = apneaModel.get(walkIndx).time
+                  timerBrth.state = "initial"
+                  timerBrth.value = 0
+                  timerHold.state = "initial"
+                  timerHold.value = 0
+                  timerWalk.state = "initial"
+                  timerWalk.value = 0
+                  //apneaModel.get(apneaModel.index).isCurrent = false
+                  //apneaModel.index = 0
+
+                  walkControl.enabled = true
+                  //button2.enabled = false
+              }
+          }
+      }
+      Row{
+          id:row2
+          spacing:dp(8)
+          MenuButton{
+              id: note1
+              z:100
+              text: qsTr("EndMedit")
+              onClicked: {
+                  console.log("value=", Math.round(currentGauge.value))
+                  currentSession.event.push([myEvents["EndOfMeditativeZone"], Math.round(currentGauge.value)])
+              }
+              enabled:true
+          }
+          MenuButton{
+              id: note2
+              z:100
+              text: qsTr("EndComf")
+              onClicked: {
+                  console.log("value=", Math.round(currentGauge.value))
+                  currentSession.event.push([myEvents["EndOfComfortZone"], Math.round(currentGauge.value)])
+              }
+              enabled:true
+          }
+          MenuButton{
+              id: note3
+              z:100
+              text: qsTr("Cotract")
+              onClicked: {
+                  console.log("value=", Math.round(currentGauge.value))
+                  currentSession.event.push([myEvents["Contraction"], Math.round(currentGauge.value)])
+              }
+              enabled:true
+          }
+      }
+   }
 }
