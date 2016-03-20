@@ -299,7 +299,7 @@ SceneBase {
       anchors.left: container.left
       anchors.horizontalCenter: container.horizontalCenter
       spacing: dp(8)
-       QMLFileAccess {
+      QMLFileAccess {
             id:qfa
         }
 
@@ -380,7 +380,7 @@ SceneBase {
           MenuButton{
               id: note1
               z:100
-              text: qsTr("EndMedit")
+              text: qsTr("-Medit")
               onClicked: {
                   console.log("value=", Math.round(currentGauge.value))
                   currentSession.event.push([myEvents["EndOfMeditativeZone"], Math.round(currentGauge.value)])
@@ -390,7 +390,7 @@ SceneBase {
           MenuButton{
               id: note2
               z:100
-              text: qsTr("EndComf")
+              text: qsTr("-Cmfrt")
               onClicked: {
                   console.log("value=", Math.round(currentGauge.value))
                   currentSession.event.push([myEvents["EndOfComfortZone"], Math.round(currentGauge.value)])
@@ -400,7 +400,7 @@ SceneBase {
           MenuButton{
               id: note3
               z:100
-              text: qsTr("Cotract")
+              text: qsTr("Cntrct")
               onClicked: {
                   console.log("value=", Math.round(currentGauge.value))
                   currentSession.event.push([myEvents["Contraction"], Math.round(currentGauge.value)])

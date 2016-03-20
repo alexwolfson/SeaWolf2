@@ -6,6 +6,7 @@ import QtQuick.Extras 1.4
 import QtMultimedia 5.0
 import QtQuick.Dialogs 1.2
 import VPlay 2.0
+import QtQuick.Particles 2.0
 import com.seawolf.qmlfileaccess 1.0
 CircularGauge {
     id: gauge
@@ -67,14 +68,60 @@ CircularGauge {
         }
         foreground: Item {
             Image {
+                id:heartImage
+                property real pulseFactor: 1.0
                 source:"../../assets/img/blue_heart.png"
                 //source: "images/knob.png"
                 anchors.centerIn: parent
                 scale: {
                     var idealHeight = __protectedScope.toPixels(0.5);
                     var originalImageHeight = sourceSize.height;
-                    idealHeight / originalImageHeight;
+                    idealHeight / originalImageHeight * pulseFactor;
                 }
+                SequentialAnimation on pulseFactor{
+                    loops: Animation.Infinite
+                    running: heartRate.hr > 0;
+                    NumberAnimation{
+                        duration: heartRate.hr/60*1500;
+                        //easing.type: Easing.OutExpo;
+                        from:0.9; to: 1.1;
+                    }
+//                    NumberAnimation {
+//                        duration: heartRate.hr/60*1500;
+//                        easing.type: Easing.OutExpo;
+//                        from:1.1; to: 0.9;
+//                    }
+                }
+                ParticleSystem {
+                    id: systwo
+                    anchors.fill: parent
+
+                    ImageParticle {
+                        system: systwo
+                        id: cptwo
+                        source: "/assets/img/star.png"
+                        colorVariation: 0.4
+                        color: "#000000FF"
+                    }
+
+                    Emitter {
+                        //burst on click
+                        id: burstytwo
+                        system: systwo
+                        enabled: true
+                        anchors.centerIn: parent
+                        emitRate: heartRate.hr*100
+                        maximumEmitted: 4000
+                        acceleration: AngleDirection {angleVariation: 360; magnitude: 360; }
+                        size: 4
+                        endSize: 8
+                        sizeVariation: 4
+                    }
+
+
+                }
+
+
             }
         }
 

@@ -41,7 +41,7 @@ SceneBase {
             onMessageChanged: {
                 if (heartRate.message != "Scanning for devices..." && heartRate.message != "Low Energy device found. Scanning for more...") {
                     background.visible = false;
-                    demoMode.visible = true;
+                    //demoMode.visible = true;
                 }
                 else {
                     demoMode.visible = false;
@@ -153,19 +153,6 @@ SceneBase {
                         anchors.horizontalCenter: parent.horizontalCenter
                         color: "#F0EBED"
                     }
-                }
-            }
-
-            Button {
-                id:demoMode
-                buttonWidth: parent.width
-                buttonHeight: 0.1*parent.height
-                anchors.horizontalCenter: parent.horizontalCenter
-                anchors.bottom: scanAgain.top
-                text: "Run Demo"
-                onButtonClick: {
-                    heartRate.startDemo();
-                    pageLoader.source="qrc:/qml/common/monitor.qml";
                 }
             }
 

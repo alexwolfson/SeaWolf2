@@ -41,6 +41,7 @@
 
 import QtQuick 2.0
 import "draw.js" as DrawGraph
+import "../common"
 
 Rectangle {
     id: results
@@ -84,6 +85,16 @@ Rectangle {
         ctx.closePath()
     }
 
+    MenuButton {
+        z:100
+        text: "Back"
+        // anchor the button to the gameWindowAnchorItem to be on the edge of the screen on any device
+        anchors.right: parent.right
+        anchors.rightMargin: dp(10)
+        anchors.top: parent.top
+        anchors.topMargin: dp(10)
+        onClicked: backButtonPressed()
+    }
     Rectangle {
         id: res
         width: parent.width
