@@ -44,7 +44,7 @@ SceneBase {
                     //demoMode.visible = true;
                 }
                 else {
-                    demoMode.visible = false;
+                    //demoMode.visible = false;
                     background.visible = true;
                 }
             }
@@ -72,7 +72,7 @@ SceneBase {
                 id: spinner
                 width: parent.width
                 anchors.top: select.bottom
-                anchors.bottom: demoMode.top
+                //anchors.bottom: demoMode.top
                 visible: false
                 color: "#F0EBED"
                 z: 100
@@ -112,7 +112,7 @@ SceneBase {
                 width: parent.width
                 onModelChanged: spinner.visible=false
                 anchors.top: select.bottom
-                anchors.bottom: demoMode.top
+                //anchors.bottom: demoMode.top
                 model: heartRate.name
 
                 delegate: Rectangle {

@@ -17,11 +17,12 @@ import "../common/draw.js" as DrawGraph
 
 SceneBase {
   id: runSessionScene
-  property var runColors: {"brth" : "tomato", "hold" : "green", "walk" : "steelblue"}
+  property var runColors: {"brth" : "tomato", "hold" : "green", "walk" : "steelblue", "back" : "yellow"}
   property int brthIndx: 0
   property int holdIndx: 1
   property int walkIndx: 2
-  property var myEvents:{"EndOfMeditativeZone":0, "EndOfComfortZone":1, "Contraction":2, "EndOfWalk":3, "brth":4 , "hold":5, "walk":6}
+  property int backIndx: 3
+  property var myEvents:{"EndOfMeditativeZone":0, "EndOfComfortZone":1, "Contraction":2, "EndOfWalk":3, "brth":4 , "hold":5, "walk":6, "back":7}
   property SeaWolfControls currentGauge
   property var currentSession: {
       "sessionName":"TestSession",
@@ -30,6 +31,7 @@ SceneBase {
       "event":[],
       "pulse":[]
   }
+  property var gauge: [gaugeBrth, gaugeHold, gaugeWalk]
 
   //property alias currentGauge:timerHold.currentGauge
   //===================================================
@@ -43,9 +45,9 @@ SceneBase {
       for (step in listModelSrc){
           apneaModel.append({"time": listModelSrc[step].time, "typeName":listModelSrc[step].typeName, "isCurrent": false});
       }
-      timerBrth.maximumValue = apneaModel.get(brthIndx).time
-      timerHold.maximumValue = apneaModel.get(holdIndx).time
-      timerWalk.maximumValue = apneaModel.get(walkIndx).time
+      gaugeBrth.maximumValue = apneaModel.get(brthIndx).time
+      gaugeHold.maximumValue = apneaModel.get(holdIndx).time
+      gaugeWalk.maximumValue = apneaModel.get(walkIndx).time
   }
 
 
@@ -128,7 +130,7 @@ SceneBase {
           width: parent.width
           //height: parent.height
           anchors.margins: 1
-          anchors.bottom:viewFooter.top
+          anchors.top: parent.top
           anchors.fill: container
 
           cellWidth: (parent.width - 2 * anchors.margins) /12 - 3
@@ -136,35 +138,29 @@ SceneBase {
           clip: true
           model: apneaModel
           delegate: apneaDelegate
-          footer: viewFooter
+          //footer: viewFooter
 
           Component {
               id: apneaDelegate
               //property alias borderColor: wrapper.border.color
               Rectangle {
 
-                  // find if show that cell big and notifyFooter about changes if cell is "brth"
-                  function cellIsCurrent(index){
-                      if (index === -1) return false
-                      if (apneaModel.get(index).isCurrent){
-                          notifyFooter(index)
-                          return true
-                      } else return false
-                  }
                   property real myRadius: dp(5)
                   id: wrapper
-                  z:     cellIsCurrent(index) ? 100:10
-                  width: cellIsCurrent(index) ? 2* sessionView.cellWidth  : sessionView.cellWidth
-                  height:cellIsCurrent(index)? 2* sessionView.cellHeight + myRadius: sessionView.cellHeight
-                  radius:cellIsCurrent(index) ? 2 * myRadius: myRadius
+                  z:     isCurrent ? 100:10
+                  width: isCurrent ? 2* sessionView.cellWidth  : sessionView.cellWidth
+                  height:isCurrent ? 2* sessionView.cellHeight + myRadius: sessionView.cellHeight
+                  radius:isCurrent ? 2 * myRadius: myRadius
                   color: { if (index == -1) return "grey"; runColors[apneaModel.get(index).typeName]}
                   border.color: { if (index == -1) return "grey"; apneaModel.get(index).isCurrent? "white": "black"}
                   border.width: 2
+                  property int whatToShow: isCurrent ? Math.round(time - gauge[index%3].value) : time
                   Text {
                       id:timeText
                       anchors.centerIn: parent
+                      font.pointSize: Math.round(parent.height/3)
                       //font.pixelSize: dp(parent.height)
-                      text: "<b>" + time + "</b>"; color: "white"; style: Text.Raised; styleColor: "black"
+                      text: "<b>" + whatToShow + "</b>"; color: "white"; style: Text.Raised; styleColor: "black"
                       //text: index + ". " + typeName + " " + time + "sec."
 
                   }
@@ -173,41 +169,41 @@ SceneBase {
               }
           }
 
-          Component {
-              //anchors.horizontalCenter: container.horizontalCenter
-              id: viewFooter
-              RowLayout {
-                  id: viewFooterLayout
-                  spacing: dp(5)
-                  width: container.width - dp(2)
-                  height:dp(40)
+//          Component {
+//              //anchors.horizontalCenter: container.horizontalCenter
+//              id: viewFooter
+//              RowLayout {
+//                  id: viewFooterLayout
+//                  spacing: dp(5)
+//                  width: container.width - dp(2)
+//                  height:dp(40)
 
-                  Rectangle { id: brthFooter; width: (container.width )/3 ; height:  parent.height; radius: parent.spacing
-                      color: runColors.brth
-                      border.color: borderColorFooterBrth
-                      border.width: dp(2)
-                      Text { anchors.centerIn: parent
-                                 font.pixelSize: sp(18); text: qsTr("Breathe <b>%1</b> Sec").arg(timeFooterBrth); color: "white"; style: Text.Raised; styleColor: "black"  }
-                      Behavior on border.color {ColorAnimation{duration:500}}
-                  }
-                  Rectangle { id: holdFooter; width: (container.width )/3 ; height:  parent.height; radius: parent.spacing
-                      color: runColors.hold
-                      border.color: borderColorFooterHold
-                      border.width: dp(2)
-                      Text { anchors.centerIn: parent
-                                 font.pixelSize: sp(18); text: qsTr("Hold <b>%1</b> Sec").arg(timeFooterHold); color: "white"; style: Text.Raised; styleColor: "black"  }
-                      Behavior on border.color {ColorAnimation{duration:500}}
-                  }
-                  Rectangle { id: walkFooter; width: (container.width )/3 ; height:  parent.height; radius: parent.spacing
-                      color: runColors.walk
-                      border.color: borderColorFooterWalk
-                      border.width: dp(2)
-                      Text { anchors.centerIn: parent
-                                 font.pixelSize: sp(18); text: qsTr("Walk <b>%1</b> Sec").arg(timeFooterWalk); color: "white"; style: Text.Raised; styleColor: "black"  }
-                      Behavior on border.color {ColorAnimation{duration:500}}
-                  }
-              }
-          }
+//                  Rectangle { id: brthFooter; width: (container.width )/3 ; height:  parent.height; radius: parent.spacing
+//                      color: runColors.brth
+//                      border.color: borderColorFooterBrth
+//                      border.width: dp(2)
+//                      Text { anchors.centerIn: parent
+//                                 font.pixelSize: sp(18); text: qsTr("Breathe <b>%1</b> Sec").arg(timeFooterBrth); color: "white"; style: Text.Raised; styleColor: "black"  }
+//                      Behavior on border.color {ColorAnimation{duration:500}}
+//                  }
+//                  Rectangle { id: holdFooter; width: (container.width )/3 ; height:  parent.height; radius: parent.spacing
+//                      color: runColors.hold
+//                      border.color: borderColorFooterHold
+//                      border.width: dp(2)
+//                      Text { anchors.centerIn: parent
+//                                 font.pixelSize: sp(18); text: qsTr("Hold <b>%1</b> Sec").arg(timeFooterHold); color: "white"; style: Text.Raised; styleColor: "black"  }
+//                      Behavior on border.color {ColorAnimation{duration:500}}
+//                  }
+//                  Rectangle { id: walkFooter; width: (container.width )/3 ; height:  parent.height; radius: parent.spacing
+//                      color: runColors.walk
+//                      border.color: borderColorFooterWalk
+//                      border.width: dp(2)
+//                      Text { anchors.centerIn: parent
+//                                 font.pixelSize: sp(18); text: qsTr("Walk <b>%1</b> Sec").arg(timeFooterWalk); color: "white"; style: Text.Raised; styleColor: "black"  }
+//                      Behavior on border.color {ColorAnimation{duration:500}}
+//                  }
+//              }
+//          }
       }
       Timer{
           id: oneTimer
@@ -216,6 +212,7 @@ SceneBase {
           onTriggered:{
               // update heart rate information
               currentSession.pulse.push( Math.round(heartRate.hr))
+              //brthFooter.timerBrth.value
           }
       }
       SoundEffectVPlay {
@@ -224,7 +221,7 @@ SceneBase {
               source: "../../assets/sounds/breathe.wav"
       }
       SeaWolfControls {
-          id:timerBrth
+          id:gaugeBrth
           z:95
           gaugeName: "brth"
           enterStateSndEffect: brthSnd
@@ -232,10 +229,10 @@ SceneBase {
           modelIndex: brthIndx
           minAngle:     185
           // different angles, depenging if "walk" part is presented
-          maxAngle:     timerWalk.maximumValue === 0 ? 355 : 295
+          maxAngle:     gaugeWalk.maximumValue === 0 ? 355 : 295
           anchors.centerIn: parent
           gaugeModel: apneaModel
-          nextGauge:timerHold
+          nextGauge:gaugeHold
       }
       SoundEffectVPlay {
               id: holdSnd
@@ -243,18 +240,18 @@ SceneBase {
               source: "../../assets/sounds/hold.wav"
       }
       SeaWolfControls {
-          id:timerHold
+          id:gaugeHold
           z:95
           gaugeName:  "hold"
           enterStateSndEffect: holdSnd
           //gridView: sessionView
           modelIndex: holdIndx
           // different angles, depenging if "walk" part is presented
-          minAngle:     timerWalk.maximumValue === 0 ? 5 :-55
-          maxAngle:     timerWalk.maximumValue === 0 ? 175 : 55
+          minAngle:     gaugeWalk.maximumValue === 0 ? 5 :-55
+          maxAngle:     gaugeWalk.maximumValue === 0 ? 175 : 55
           anchors.centerIn: parent
           gaugeModel: apneaModel
-          nextGauge: timerWalk.maximumValue === 0 ? timerBrth : timerWalk
+          nextGauge: gaugeWalk.maximumValue === 0 ? gaugeBrth : gaugeWalk
       }
 
       SoundEffectVPlay {
@@ -263,7 +260,7 @@ SceneBase {
               source: "../../assets/sounds/walk.wav"
       }
       SeaWolfControls {
-          id:timerWalk
+          id:gaugeWalk
           z:95
           gaugeName: "walk"
           enterStateSndEffect: walkSnd
@@ -273,7 +270,7 @@ SceneBase {
           maxAngle:     175
           anchors.centerIn: parent
           gaugeModel: apneaModel
-          nextGauge: timerBrth
+          nextGauge: gaugeBrth
           //gaugeWalkControl: container.walkControl
       }
       Text {
@@ -314,15 +311,16 @@ SceneBase {
               enabled: true
               clip: true
               onClicked: {
-                  timerBrth.modelIndex = 0
+                  gaugeBrth.modelIndex = 0
+                  apneaModel.get(0).isCurrent = true
 
-                  timerBrth.state = "stateRun";
-                  timerBrth.isCurrent = true
+                  gaugeBrth.state = "stateRun";
+                  gaugeBrth.isCurrent = true
                   //apneaModel.get(0).isCurrent = true
                   walkControl.enabled = false
                   button2.enabled = true;
                   runSessionScene.currentSession.when = Qt.formatDateTime(new Date(), "yyyy-MM-dd-hh-mm-ss");
-                  currentGauge = timerBrth
+                  currentGauge = gaugeBrth
                   oneTimer.start()
                   //console.log("Time=", Qt.formatDateTime(new Date(), "yyyy-MM-dd-hh-mm-ss"))
                   console.log("Session:",runSessionScene.currentSession.sessionName, "started:",runSessionScene.currentSession.when)
@@ -338,8 +336,8 @@ SceneBase {
               onClicked: {
                   if (walkControl.text === qsTr("Finish Walk")){
                       //enabled = false;
-                      timerWalk.state = "initial";
-                      timerWalk.maximumValue = timerWalk.value;
+                      gaugeWalk.state = "initial";
+                      gaugeWalk.maximumValue = gaugeWalk.value;
                       walkControl.text = qsTr("Breath")
                       walkControl.enabled = true
                   }
@@ -357,15 +355,15 @@ SceneBase {
               onClicked: {
                   //timerBrth.sessionIsOver(timerBrth)
                   //fileDialog.open()
-                  timerBrth.maximumValue = apneaModel.get(brthIndx).time
-                  timerHold.maximumValue = apneaModel.get(holdIndx).time
-                  timerWalk.maximumValue = apneaModel.get(walkIndx).time
-                  timerBrth.state = "initial"
-                  timerBrth.value = 0
-                  timerHold.state = "initial"
-                  timerHold.value = 0
-                  timerWalk.state = "initial"
-                  timerWalk.value = 0
+                  gaugeBrth.maximumValue = apneaModel.get(brthIndx).time
+                  gaugeHold.maximumValue = apneaModel.get(holdIndx).time
+                  gaugeWalk.maximumValue = apneaModel.get(walkIndx).time
+                  gaugeBrth.state = "initial"
+                  gaugeBrth.value = 0
+                  gaugeHold.state = "initial"
+                  gaugeHold.value = 0
+                  gaugeWalk.state = "initial"
+                  gaugeWalk.value = 0
                   //apneaModel.get(apneaModel.index).isCurrent = false
                   //apneaModel.index = 0
 

@@ -93,7 +93,7 @@ Rectangle {
                 height:100
                 anchors.horizontalCenter: parent.horizontalCenter
 
-                source: "/assets/img/busy_dark.png"
+                source: "../../assets/img/busy_dark.png"
                 fillMode: Image.PreserveAspectFit
                 NumberAnimation on rotation { duration: 3000; from:0; to: 360; loops: Animation.Infinite}
             }

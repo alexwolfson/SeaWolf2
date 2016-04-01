@@ -8,6 +8,24 @@ GameWindow {
     width: dp(640)
     height: dp(960)
     //AWtest
+//    property var test: {
+//        console.log("hold" != "hold")
+//        console.log("hold" !== "hold")
+//        var s1="hold"
+//        var s2="hold"
+//        var s3= String("hold")
+//        var s4= String("hold")
+//        console.log(s1===s2)
+//        console.log(s1 != s2)
+//        console.log(!(s1===s2))
+//        console.log(s1 !== s2)
+//        console.log(s1 != s3)
+//        console.log(s1 !== s3)
+//        console.log(s3 != s4)
+//        console.log(s3 !== s4)
+//        return 3
+//    }
+
     property variant jsonTest
     property var currentSession
    // property ListModel currentModel: apneaModel

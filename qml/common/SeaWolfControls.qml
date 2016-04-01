@@ -24,7 +24,8 @@ CircularGauge {
     property real maxAngle:  45
     property color needleColor: runColors[gaugeName]
     property int modelIndex:0
-    property int maximumValue: gaugeModel.get(modelIndex).time
+    minimumValue: 0
+    maximumValue: gaugeModel.get(0).time
 
     function saveSession() {
         var path=qfa.getAccessiblePath("sessions");
@@ -44,7 +45,7 @@ CircularGauge {
 
     onModelIndexChanged:{
         if (gaugeModel != null ){
-              maximumValue = gaugeModel.get(modelIndex).time
+            maximumValue = gaugeModel.get(modelIndex).time
         }
     }
     style: CircularGaugeStyle {
@@ -86,11 +87,11 @@ CircularGauge {
                         //easing.type: Easing.OutExpo;
                         from:0.9; to: 1.1;
                     }
-//                    NumberAnimation {
-//                        duration: heartRate.hr/60*1500;
-//                        easing.type: Easing.OutExpo;
-//                        from:1.1; to: 0.9;
-//                    }
+                    //                    NumberAnimation {
+                    //                        duration: heartRate.hr/60*1500;
+                    //                        easing.type: Easing.OutExpo;
+                    //                        from:1.1; to: 0.9;
+                    //                    }
                 }
                 ParticleSystem {
                     id: systwo
@@ -99,7 +100,7 @@ CircularGauge {
                     ImageParticle {
                         system: systwo
                         id: cptwo
-                        source: "/assets/img/star.png"
+                        source: "../../assets/img/star.png"
                         colorVariation: 0.4
                         color: "#000000FF"
                     }
@@ -147,14 +148,14 @@ CircularGauge {
         }
     }
     SoundEffectVPlay {
-            id: thirtysnd
-            volume: 1.0
-            source: "../../assets/sounds/30sec.wav"
+        id: thirtysnd
+        volume: 1.0
+        source: "../../assets/sounds/30sec.wav"
     }
     SoundEffectVPlay {
-            id: tensnd
-            volume: 1.0
-            source: "../../assets/sounds/10sec.wav"
+        id: tensnd
+        volume: 1.0
+        source: "../../assets/sounds/10sec.wav"
     }
     states:[
         State {
@@ -180,8 +181,8 @@ CircularGauge {
         id: thirtyTimer
         interval:30000
         onTriggered:{
-                //when timer expired set it to 20 sec to play 10 sec left
-                thirtysnd.play()
+            //when timer expired set it to 20 sec to play 10 sec left
+            thirtysnd.play()
         }
     }
     Timer{
@@ -200,17 +201,18 @@ CircularGauge {
     }
     //trick to pass by reference
     function loadNextCycleVal(gauge){
-       if ((gauge[0].modelIndex + 3 < gaugeModel.count))
+        console.log("gaugeModel.count=", gaugeModel.count, "gauge[0].modelIndex",gauge[0].modelIndex)
+        if ((gauge[0].modelIndex + 3 < gaugeModel.count))
         {
             gauge[0].modelIndex += 3;
             //gauge[0].maximumValue = gaugeModel.get(gauge[0].modelIndex).time
 
         }
-   }
+    }
     function loadIfNot0(gauge, ind){
         //if (gauge[0] !== 0){
-            gauge[0].modelIndex = ind
-            //gauge[0].maximumValue = gaugeModel.get(gauge[0].modelIndex).time
+        gauge[0].modelIndex = ind
+        //gauge[0].maximumValue = gaugeModel.get(gauge[0].modelIndex).time
         //}
     }
 
@@ -230,10 +232,13 @@ CircularGauge {
             NumberAnimation{
                 target: gauge
                 property: "value"
-                duration: Math.abs(maximumValue - gauge.value) * 1000
+                duration: Math.abs(target.maximumValue) * 1000
+                from:0
+                to: target.maximumValue
             }
+            //onStarted: {
+            // the step is over - go to the next step
             onRunningChanged: {
-                // the step is over - go to the next step
                 if (running){
                     var eventNb = runSessionScene.myEvents[gaugeName];
                     console.log("gaugeName=", gaugeName, "eventNb=", eventNb)
@@ -247,8 +252,8 @@ CircularGauge {
                         tenTimer.start()
                     }
                     enterStateSndEffect.play()
-                 }
-
+                }
+                //onStopped:{
                 if ((!running) /*&& (gaugeModelElement.typeName === gaugeName)*/) {
                     //console.log("running=", running, "modelIndex=", modelIndex, "index=", gridView.delegate.index)
                     state = "initial";
@@ -261,11 +266,15 @@ CircularGauge {
                         console.log("prevNextModelIndex=", prevNextModelIndex)
                         loadNextCycleVal([nextGauge])
                         console.log("******nextGauge.modelIndex=", nextGauge.modelIndex)
-                        if (prevNextModelIndex === nextGauge.modelIndex) bContinue = false
+                        if (prevNextModelIndex === nextGauge.modelIndex)
+                            bContinue = false
                         //if we have 2 gauges only (no "walk" we need to prevent updating "hold" twice
-                        if (nextGauge.nextGauge !== gauge){
+                        var n1 = String(nextGauge.nextGauge.gaugeName)
+                        var n2 = String(gauge.gaugeName)
+                        console.log("localCompare=", n1.localeCompare(n2))
+                        if (0 !== n1.localeCompare(n2)){
+                            console.log("Loading next cycle")
                             loadNextCycleVal([nextGauge.nextGauge])
-
                         }
                     }
                     console.log("bContinue=", bContinue)
@@ -274,10 +283,10 @@ CircularGauge {
                         //nextGauge.modelIndex = modelIndex + 1
                         //skip the next gauge if it has 0 maximum value
                         gaugeModel.get(nextGauge.modelIndex).isCurrent = true
-                        //seting up next gauge as current if it's time is not 0
-                        nextGauge.state = "stateRun"
                         //emit signal
                         runSessionScene.currentGauge = nextGauge
+                        //seting up next gauge as current if it's time is not 0
+                        nextGauge.state = "stateRun"
                     }
                     else {
                         // The session is over
@@ -288,19 +297,20 @@ CircularGauge {
                         //openDialog.open()
                         saveSession()
                         heartRate.disconnectService();
-                        pageLoader.source = "results.qml";
+                        //pageLoader.source = "results.qml";
 
 
                     }
+                    // we are here as part of the transaction to running, so in case of next serie
+                    // we change all times!
                 }
-                // we are here as part of the transaction to running, so in case of next serie
-                // we change all times!
             }
+
         },
         Transition {
             from: "*"
             to: "initial"
-             NumberAnimation{
+            NumberAnimation{
                 target: gauge
                 property: "value"
                 duration: 1000
