@@ -4,7 +4,7 @@ import "../common"
 
   SceneBase {
     id: configSeriesScene
-    property var currentSession
+    property var currentSessionProperties
     property  string sessionType:"WALK"
     property string sessionName
     MenuButton {
@@ -96,7 +96,7 @@ import "../common"
         editableComponentMetaData: {
           "displayname" : "O2 Session"
         }
-        defaultGroup: "Session"
+        defaultGroup: "Click to choose Session"
         target:session
         properties: {
             "name": {label:"Session name"},
@@ -140,7 +140,7 @@ import "../common"
         editableComponentMetaData: {
           "displayname" : "CO2 Session"
         }
-        defaultGroup: "Session"
+        defaultGroup: "Click to choose Session"
 
         target:session
         properties: {
@@ -173,13 +173,13 @@ import "../common"
         editableComponentMetaData: {
           "displayname" : "Walk Session"
         }
-        defaultGroup: "Session"
+        defaultGroup: "Click to choose Session"
         target:session
         properties: {
             "name": {label:"Session name"},
             "numberOfCycles": {"min": 1, "max": 8, "stepsize": 1, "label": "Number of cycles" },
-            "breathTime":{"min":0, "max":600, "stepsize": 5, "label": "Breath time"},
-            "holdTime":{"min":0, "max":600, "stepsize": 5, "label": "Hold time"},
+            "breathTime":{"min":0, "max":180, "stepsize": 5, "label": "Breath time"},
+            "holdTime":{"min":0, "max":300, "stepsize": 5, "label": "Hold time"},
             "walkTime":{"min":0, "max":300, "stepsize": 5, "label": "Walk time"},
 
         }
@@ -216,19 +216,19 @@ import "../common"
 
                 ///AWdebug
                 if (itemEditor.currentEditableType == "CO2"){
-                    configSeriesScene.currentSession = generateCO2Session()
-                    console.log(" **** generated CO2 session=", currentSession)
+                    configSeriesScene.currentSessionProperties = generateCO2Session()
+                    console.log(" **** generated CO2 session=", currentSessionProperties)
                }
                 else if (itemEditor.currentEditableType == "O2"){
-                    configSeriesScene.currentSession = generateO2Session()
-                    console.log(" **** generated O2 session=", currentSession)
+                    configSeriesScene.currentSessionProperties = generateO2Session()
+                    console.log(" **** generated O2 session=", currentSessionProperties)
                 }
                 else if (itemEditor.currentEditableType == "WALK"){
-                    configSeriesScene.currentSession = generateWalkSession()
-                    console.log(" **** generated O2 session=", currentSession)
+                    configSeriesScene.currentSessionProperties = generateWalkSession()
+                    console.log(" **** generated O2 session=", currentSessionProperties)
                 }
                 sessionName = session.name
-                runSessionScene.sessionSelected(currentSession)
+                runSessionScene.sessionSelected(currentSessionProperties)
                 levelEditor.saveCurrentLevel( {levelMetaData: {levelName: session.name}} )
                 //levelEditor.saveCurrentLevel()
             }

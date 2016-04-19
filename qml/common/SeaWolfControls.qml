@@ -7,6 +7,7 @@ import QtMultimedia 5.0
 import QtQuick.Dialogs 1.2
 import VPlay 2.0
 import QtQuick.Particles 2.0
+import QtCharts 2.1
 import com.seawolf.qmlfileaccess 1.0
 CircularGauge {
     id: gauge
@@ -243,6 +244,10 @@ CircularGauge {
                     var eventNb = runSessionScene.myEvents[gaugeName];
                     console.log("gaugeName=", gaugeName, "eventNb=", eventNb)
                     runSessionScene.currentSession.event.push([eventNb, maximumValue])
+                    runSessionScene.currentHrSeries = runSessionScene.currentHrView.createSeries(ChartView.SeriesTypeLine, "", runSessionScene.axisX, runSessionScene.axisY);
+                    //runSessionScene.currentHrView.color =
+                    runSessionScene.currentHrSeries.color = runSessionScene.runColors[runSessionScene.currentGauge.gaugeName]
+
                     thirtyTimer.interval= maximumValue * 1000 - 30000
                     if (thirtyTimer.interval > 0){
                         thirtyTimer.start()
@@ -297,6 +302,8 @@ CircularGauge {
                         //openDialog.open()
                         saveSession()
                         heartRate.disconnectService();
+                        oneTimer.stop()
+                        sessionTime = 0.0;
                         //pageLoader.source = "results.qml";
 
 

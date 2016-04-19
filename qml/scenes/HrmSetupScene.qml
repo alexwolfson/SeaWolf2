@@ -103,6 +103,7 @@ SceneBase {
             }
 
             Component.onCompleted: {
+                heartRate.disconnectService()
                 heartRate.deviceSearch();
                 spinner.visible=true;
             }

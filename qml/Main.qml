@@ -7,25 +7,6 @@ GameWindow {
     id: window
     width: dp(640)
     height: dp(960)
-    //AWtest
-//    property var test: {
-//        console.log("hold" != "hold")
-//        console.log("hold" !== "hold")
-//        var s1="hold"
-//        var s2="hold"
-//        var s3= String("hold")
-//        var s4= String("hold")
-//        console.log(s1===s2)
-//        console.log(s1 != s2)
-//        console.log(!(s1===s2))
-//        console.log(s1 !== s2)
-//        console.log(s1 != s3)
-//        console.log(s1 !== s3)
-//        console.log(s3 != s4)
-//        console.log(s3 !== s4)
-//        return 3
-//    }
-
     property variant jsonTest
     property var currentSession
    // property ListModel currentModel: apneaModel
@@ -95,18 +76,6 @@ GameWindow {
         onBackButtonPressed: window.state = "menu"
     }
 
-    // credits scene
-    CreditsScene {
-        id: creditsScene
-        onBackButtonPressed: window.state = "menu"
-    }
-
-    // game scene to play a level
-    GameScene {
-        id: gameScene
-        onBackButtonPressed: window.state = "selectLevel"
-    }
-
     // menuScene is our first scene, so set the state to menu initially
     state: "menu"
     activeScene: menuScene
@@ -137,16 +106,6 @@ GameWindow {
             name: "hrmSetup"
             PropertyChanges {target: hrmSetupScene; opacity: 1}
             PropertyChanges {target: window; activeScene: hrmSetupScene}
-        },
-        State {
-            name: "credits"
-            PropertyChanges {target: creditsScene; opacity: 1}
-            PropertyChanges {target: window; activeScene: creditsScene}
-        },
-        State {
-            name: "game"
-            PropertyChanges {target: gameScene; opacity: 1}
-            PropertyChanges {target: window; activeScene: gameScene}
         }
     ]
     Loader {
