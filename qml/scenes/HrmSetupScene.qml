@@ -104,6 +104,7 @@ SceneBase {
 
             Component.onCompleted: {
                 heartRate.disconnectService()
+                console.log("Started new BT device search")
                 heartRate.deviceSearch();
                 spinner.visible=true;
             }
@@ -163,9 +164,14 @@ SceneBase {
                 buttonHeight: 0.1*parent.height
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.bottom: parent.bottom
-                text: "Menu"
-                onButtonClick: backButtonPressed()
-                //pageLoader.source="main.qml"
+                text: "Scan Again"
+                //onButtonClick: backButtonPressed()
+                onButtonClick: {
+                    heartRate.disconnectService()
+                    console.log("Started new BT device search")
+                    heartRate.deviceSearch();
+                    spinner.visible=true;
+                }
             }
         }
     }

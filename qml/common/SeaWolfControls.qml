@@ -59,15 +59,46 @@ CircularGauge {
         function toPixels(percentage) {
             return percentage * outerRadius;
         }
-        needle: Rectangle {
-            id: gaugeNeedle
-            property color needleColor: color
-            y: outerRadius * 0.15
-            implicitWidth: outerRadius * 0.03
-            implicitHeight: outerRadius * 0.9
-            antialiasing: true
-            color: gauge.needleColor
-        }
+//        needle: Rectangle {
+//            id: gaugeNeedle
+//            property color needleColor: color
+//            y: outerRadius * 0.15
+//            implicitWidth: outerRadius * 0.03
+//            implicitHeight: outerRadius * 0.9
+//            antialiasing: true
+//            color: gauge.needleColor
+//        }
+//        needle: Canvas {
+//            implicitWidth: needleBaseWidth
+//            implicitHeight: needleLength
+
+//            property real xCenter: width / 2
+//            property real yCenter: height / 2
+
+//            onPaint: {
+//                var ctx = getContext("2d");
+//                ctx.reset();
+
+//                ctx.beginPath();
+//                ctx.moveTo(xCenter, height);
+//                ctx.lineTo(xCenter - needleBaseWidth / 2, height - needleBaseWidth / 2);
+//                ctx.lineTo(xCenter - needleTipWidth / 2, 0);
+//                ctx.lineTo(xCenter, yCenter - needleLength);
+//                ctx.lineTo(xCenter, 0);
+//                ctx.closePath();
+//                ctx.fillStyle = Qt.rgba(0.66, 0, 0, 0.66);
+//                ctx.fill();
+
+//                ctx.beginPath();
+//                ctx.moveTo(xCenter, height)
+//                ctx.lineTo(width, height - needleBaseWidth / 2);
+//                ctx.lineTo(xCenter + needleTipWidth / 2, 0);
+//                ctx.lineTo(xCenter, 0);
+//                ctx.closePath();
+//                ctx.fillStyle = Qt.lighter(Qt.rgba(0.66, 0, 0, 0.66));
+//                ctx.fill();
+//            }
+//        }
         foreground: Item {
             Image {
                 id:heartImage

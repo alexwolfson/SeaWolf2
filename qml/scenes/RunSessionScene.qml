@@ -32,6 +32,7 @@ SceneBase {
                 "event":[],
                 "pulse":[]
     }
+    property real sessionDuration:0.0
     property var gauge: [gaugeBrth, gaugeHold, gaugeWalk]
     //property alias hrPoints: hrSeries
     property real sessionTime: 0.0
@@ -48,8 +49,10 @@ SceneBase {
         console.log("**** In fillListModel width ", listModelSrc)
         var step;
         apneaModel.clear();
+        sessionDuration = 0.0
         for (step in listModelSrc){
             apneaModel.append({"time": listModelSrc[step].time, "typeName":listModelSrc[step].typeName, "isCurrent": false});
+            sessionDuration += listModelSrc[step].time;
         }
         gaugeBrth.maximumValue = apneaModel.get(brthIndx).time
         gaugeHold.maximumValue = apneaModel.get(holdIndx).time
@@ -154,7 +157,7 @@ SceneBase {
 
                     property real myRadius: dp(5)
                     id: wrapper
-                    z:     isCurrent ? 100:60
+                    z:     isCurrent ? 100:95
                     width:  isCurrent ? 2* sessionView.cellWidth : sessionView.cellWidth
                     height: isCurrent ? 2* sessionView.cellWidth : sessionView.cellWidth
                     radius:isCurrent ? 2 * myRadius: myRadius
@@ -201,10 +204,10 @@ SceneBase {
         id:hrPlot
         width:parent.width
         height: dp(200)
-        anchors.top:apneaModel.bottom
-        //anchors.topMargin:
-        opacity:0.7
-        z:80
+        anchors.top: runSessionScene.top
+        anchors.topMargin:dp(60)
+        opacity:1.0
+        z:99
         ChartView {
             id:chartView
             //title: "Line"
@@ -216,7 +219,7 @@ SceneBase {
             ValueAxis {
                 id: axisX
                 min: 0
-                max: 180
+                max: sessionDuration
                 tickCount: 5
             }
 
@@ -243,10 +246,11 @@ SceneBase {
     // Gauges
     Item {
         id: gauges
-        width: parent.width * 0.5
+        width: runSessionScene.width * 0.8
         height: width
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top:hrPlot.bottom
+        anchors.topMargin: dp(8)
 
         SoundEffectVPlay {
             id: brthSnd
@@ -266,6 +270,8 @@ SceneBase {
             anchors.centerIn: parent
             gaugeModel: apneaModel
             nextGauge:gaugeHold
+            width:height
+            height:parent.height
         }
         SoundEffectVPlay {
             id: holdSnd
@@ -285,6 +291,8 @@ SceneBase {
             anchors.centerIn: parent
             gaugeModel: apneaModel
             nextGauge: gaugeWalk.maximumValue === 0 ? gaugeBrth : gaugeWalk
+            width:height
+            height:parent.height
         }
 
         SoundEffectVPlay {
@@ -305,6 +313,8 @@ SceneBase {
             gaugeModel: apneaModel
             nextGauge: gaugeBrth
             //gaugeWalkControl: container.walkControl
+            width:height
+            height:parent.height
         }
         Text {
             id: hrValue
@@ -320,128 +330,128 @@ SceneBase {
                 //              }
             }
         }
-        // Menu Buttons
-        Column {
-            id:buttons
-            //anchors.leftMargin: dp(8)
-            anchors.bottom: gauges.bottom
-            //anchors.topMargin: dp(8)
-            //anchors.left: gauges.left
-            anchors.horizontalCenter: gauges.horizontalCenter
-            spacing: dp(8)
-            QMLFileAccess {
-                id:qfa
+    } // End of gauges
+    // Menu Buttons
+    Column {
+        id:buttons
+        //anchors.leftMargin: dp(8)
+        anchors.bottom: runSessionScene.bottom
+        anchors.bottomMargin: dp(8)
+        //anchors.left: gauges.left
+        anchors.horizontalCenter: gauges.horizontalCenter
+        spacing: dp(8)
+        QMLFileAccess {
+            id:qfa
+        }
+
+
+        Row{
+            id:row1
+            spacing:dp(8)
+            MenuButton {
+                id: button1
+                z: 100
+                text: qsTr("Start")
+                enabled: true
+                clip: true
+                onClicked: {
+                    gaugeBrth.modelIndex = 0
+                    apneaModel.get(0).isCurrent = true
+
+                    gaugeBrth.state = "stateRun";
+                    gaugeBrth.isCurrent = true
+                    //apneaModel.get(0).isCurrent = true
+                    walkControl.enabled = false
+                    button2.enabled = true;
+                    runSessionScene.currentSession.when = Qt.formatDateTime(new Date(), "yyyy-MM-dd-hh-mm-ss");
+                    currentGauge = gaugeBrth
+                    chartView.removeAllSeries()
+                    currentHrSeries = chartView.createSeries(ChartView.SeriesTypeLine, "", axisX, axisY);
+                    currentHrSeries.color = runColors[currentGauge.gaugeName]
+                    oneTimer.start()
+                    //console.log("Time=", Qt.formatDateTime(new Date(), "yyyy-MM-dd-hh-mm-ss"))
+                    console.log("Session:",runSessionScene.currentSession.sessionName, "started:",runSessionScene.currentSession.when)
+
+                }
             }
 
-
-            Row{
-                id:row1
-                spacing:dp(8)
-                MenuButton {
-                    id: button1
-                    z: 100
-                    text: qsTr("Start")
-                    enabled: true
-                    clip: true
-                    onClicked: {
-                        gaugeBrth.modelIndex = 0
-                        apneaModel.get(0).isCurrent = true
-
-                        gaugeBrth.state = "stateRun";
-                        gaugeBrth.isCurrent = true
-                        //apneaModel.get(0).isCurrent = true
-                        walkControl.enabled = false
-                        button2.enabled = true;
-                        runSessionScene.currentSession.when = Qt.formatDateTime(new Date(), "yyyy-MM-dd-hh-mm-ss");
-                        currentGauge = gaugeBrth
-                        chartView.removeAllSeries()
-                        currentHrSeries = chartView.createSeries(ChartView.SeriesTypeLine, "", axisX, axisY);
-                        currentHrSeries.color = runColors[currentGauge.gaugeName]
-                        oneTimer.start()
-                        //console.log("Time=", Qt.formatDateTime(new Date(), "yyyy-MM-dd-hh-mm-ss"))
-                        console.log("Session:",runSessionScene.currentSession.sessionName, "started:",runSessionScene.currentSession.when)
-
-                    }
-                }
-
-                MenuButton {
-                    id: walkControl
-                    z:100
-                    text: qsTr("Finish Walk")
-                    enabled: false
-                    onClicked: {
-                        if (walkControl.text === qsTr("Finish Walk")){
-                            //enabled = false;
-                            gaugeWalk.state = "initial";
-                            gaugeWalk.maximumValue = gaugeWalk.value;
-                            walkControl.text = qsTr("Breath")
-                            walkControl.enabled = true
-                        }
-                    }
-                }
-                FileDialog{
-                    id: fileDialog
-                    folder:qfa.getAccessiblePath("sessions")
-                }
-
-                MenuButton {
-                    id: button2
-                    z:100
-                    text: qsTr("Stop")
-                    onClicked: {
-                        //timerBrth.sessionIsOver(timerBrth)
-                        //fileDialog.open()
-                        gaugeBrth.maximumValue = apneaModel.get(brthIndx).time
-                        gaugeHold.maximumValue = apneaModel.get(holdIndx).time
-                        gaugeWalk.maximumValue = apneaModel.get(walkIndx).time
-                        gaugeBrth.state = "initial"
-                        gaugeBrth.value = 0
-                        gaugeHold.state = "initial"
-                        gaugeHold.value = 0
-                        gaugeWalk.state = "initial"
-                        gaugeWalk.value = 0
-                        //apneaModel.get(apneaModel.index).isCurrent = false
-                        //apneaModel.index = 0
-
+            MenuButton {
+                id: walkControl
+                z:100
+                text: qsTr("Finish Walk")
+                enabled: false
+                onClicked: {
+                    if (walkControl.text === qsTr("Finish Walk")){
+                        //enabled = false;
+                        gaugeWalk.state = "initial";
+                        gaugeWalk.maximumValue = gaugeWalk.value;
+                        walkControl.text = qsTr("Breath")
                         walkControl.enabled = true
-                        //button2.enabled = false
                     }
                 }
             }
-            Row{
-                id:row2
-                spacing:dp(8)
-                MenuButton{
-                    id: note1
-                    z:100
-                    text: qsTr("-Medit")
-                    onClicked: {
-                        console.log("value=", Math.round(currentGauge.value))
-                        currentSession.event.push([myEvents["EndOfMeditativeZone"], Math.round(currentGauge.value)])
-                    }
-                    enabled:true
-                }
-                MenuButton{
-                    id: note2
-                    z:100
-                    text: qsTr("-Cmfrt")
-                    onClicked: {
-                        console.log("value=", Math.round(currentGauge.value))
-                        currentSession.event.push([myEvents["EndOfComfortZone"], Math.round(currentGauge.value)])
-                    }
-                    enabled:true
-                }
-                MenuButton{
-                    id: note3
-                    z:100
-                    text: qsTr("Cntrct")
-                    onClicked: {
-                        console.log("value=", Math.round(currentGauge.value))
-                        currentSession.event.push([myEvents["Contraction"], Math.round(currentGauge.value)])
-                    }
-                    enabled:true
+            FileDialog{
+                id: fileDialog
+                folder:qfa.getAccessiblePath("sessions")
+            }
+
+            MenuButton {
+                id: button2
+                z:100
+                text: qsTr("Stop")
+                onClicked: {
+                    //timerBrth.sessionIsOver(timerBrth)
+                    //fileDialog.open()
+                    gaugeBrth.maximumValue = apneaModel.get(brthIndx).time
+                    gaugeHold.maximumValue = apneaModel.get(holdIndx).time
+                    gaugeWalk.maximumValue = apneaModel.get(walkIndx).time
+                    gaugeBrth.state = "initial"
+                    gaugeBrth.value = 0
+                    gaugeHold.state = "initial"
+                    gaugeHold.value = 0
+                    gaugeWalk.state = "initial"
+                    gaugeWalk.value = 0
+                    //apneaModel.get(apneaModel.index).isCurrent = false
+                    //apneaModel.index = 0
+
+                    walkControl.enabled = true
+                    //button2.enabled = false
                 }
             }
         }
-    } // End of gauges
+        Row{
+            id:row2
+            spacing:dp(8)
+            MenuButton{
+                id: note1
+                z:100
+                text: qsTr("-Medit")
+                onClicked: {
+                    console.log("value=", Math.round(currentGauge.value))
+                    currentSession.event.push([myEvents["EndOfMeditativeZone"], Math.round(currentGauge.value)])
+                }
+                enabled:true
+            }
+            MenuButton{
+                id: note2
+                z:100
+                text: qsTr("-Cmfrt")
+                onClicked: {
+                    console.log("value=", Math.round(currentGauge.value))
+                    currentSession.event.push([myEvents["EndOfComfortZone"], Math.round(currentGauge.value)])
+                }
+                enabled:true
+            }
+            MenuButton{
+                id: note3
+                z:100
+                text: qsTr("Cntrct")
+                onClicked: {
+                    console.log("value=", Math.round(currentGauge.value))
+                    currentSession.event.push([myEvents["Contraction"], Math.round(currentGauge.value)])
+                }
+                enabled:true
+            }
+        }
+    }
 }
