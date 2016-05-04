@@ -85,7 +85,7 @@ void HeartRate::addDevice(const QBluetoothDeviceInfo &device)
 //! [devicediscovery-3]
         DeviceInfo *dev = new DeviceInfo(device);
         m_devices.append(dev);
-        setMessage("Low Energy device " + device.name() + "[" + device.address().toString() + "] found. Scanning for more...");
+        setMessage("Low Energy device found. Scanning for more...");
 //! [devicediscovery-4]
     }
     //...

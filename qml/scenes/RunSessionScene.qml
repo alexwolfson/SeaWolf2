@@ -40,6 +40,8 @@ SceneBase {
     property alias axisX: axisX
     property alias axisY: axisY
     property LineSeries currentHrSeries
+    property real minHr:10
+    property real maxHr:150
     //property alias currentGauge:timerHold.currentGauge
     //===================================================
     // signal indicating that current session is selected
@@ -194,6 +196,15 @@ SceneBase {
             //hrPoints.append(100, 100)
             console.log("**HR:",currentGauge.value, heartRate.hr)
             currentHrSeries.append(sessionTime, heartRate.hr)
+//            if (minHr > heartRate.hr){
+//                minHr = heartRate.hr
+//                axisY.min = minHr
+//            }
+//            if (maxHr < heartRate.hr){
+//                maxHr = heartRate.hr
+//                axisY.max = maxHr
+//            }
+
             chartView.update()
             //hrPoints.append(sessionTime, heartRate.hr)
             //brthFooter.timerBrth.value
@@ -205,7 +216,7 @@ SceneBase {
         width:parent.width
         height: dp(200)
         anchors.top: runSessionScene.top
-        anchors.topMargin:dp(60)
+        anchors.topMargin:dp(50)
         opacity:1.0
         z:99
         ChartView {
@@ -218,16 +229,17 @@ SceneBase {
             legend.visible: false
             ValueAxis {
                 id: axisX
+                labelFormat:d
                 min: 0
                 max: sessionDuration
-                tickCount: 5
+                tickCount: 7
             }
 
             ValueAxis {
                 id: axisY
-                min: - 10
-                max: 180
-                tickCount:5
+                min: minHr
+                max: maxHr
+                tickCount:7
 
             }
 
