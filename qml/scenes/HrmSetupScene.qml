@@ -113,7 +113,8 @@ SceneBase {
                 id: theListView
                 width: parent.width
                 onModelChanged: spinner.visible=false
-                anchors.top: select.bottom
+                anchors.fill: parent
+                //anchors.top: select.bottom
                 //anchors.bottom: demoMode.top
                 model: heartRate.name
 

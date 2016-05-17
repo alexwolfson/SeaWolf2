@@ -159,16 +159,16 @@ CircularGauge {
         }
 
         tickmark: Rectangle {
-            implicitWidth: toPixels(0.06)
+            implicitWidth: outerRadius * 0.06
             antialiasing: true
-            implicitHeight: toPixels(0.06)
+            implicitHeight: outerRadius * 0.06
             color: gauge.needleColor
             border.color: "black"
         }
         minorTickmark: Rectangle{
-            implicitWidth: toPixels(0.03)
+            implicitWidth: outerRadius * 0.03
             antialiasing: true
-            implicitHeight: toPixels(0.08)
+            implicitHeight: outerRadius * 0.08
             color: gauge.needleColor
             border.color: "black"
         }

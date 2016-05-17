@@ -38,8 +38,9 @@
 ** $QT_END_LICENSE$
 **
 ****************************************************************************/
-
+#include <QQmlContext>
 #include "heartrate.h"
+extern QQmlContext * myContext;
 
 HeartRate::HeartRate():
     m_currentDevice(QBluetoothDeviceInfo()), foundHeartRateService(false),
@@ -70,6 +71,7 @@ void HeartRate::deviceSearch()
 {
     qDeleteAll(m_devices);
     m_devices.clear();
+    Q_EMIT nameChanged();
     //! [devicediscovery-2]
     m_deviceDiscoveryAgent->start();
     //! [devicediscovery-2]
@@ -86,6 +88,9 @@ void HeartRate::addDevice(const QBluetoothDeviceInfo &device)
         DeviceInfo *dev = new DeviceInfo(device);
         m_devices.append(dev);
         setMessage("Low Energy device found. Scanning for more...");
+        //myContext->setContextProperty("heartRate", this);
+        Q_EMIT nameChanged();
+
 //! [devicediscovery-4]
     }
     //...
@@ -96,6 +101,7 @@ void HeartRate::scanFinished()
 {
     if (m_devices.size() == 0)
         setMessage("No Low Energy devices found");
+    //myContext->setContextProperty("heartRate", this);
     Q_EMIT nameChanged();
 }
 

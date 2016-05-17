@@ -213,8 +213,9 @@ SceneBase {
     // Plot
     Rectangle{
         id:hrPlot
-        width:parent.width
+        width:parent.width + dp(50)
         height: dp(200)
+        anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: runSessionScene.top
         anchors.topMargin:dp(50)
         opacity:1.0
@@ -224,12 +225,13 @@ SceneBase {
             //title: "Line"
             anchors.fill: parent
             antialiasing: true
+            theme: ChartView.ChartThemeBlueIcy
             //width:parent.width/2
             //height:200
             legend.visible: false
             ValueAxis {
                 id: axisX
-                labelFormat:d
+                labelFormat:"%.0f"
                 min: 0
                 max: sessionDuration
                 tickCount: 7
@@ -237,6 +239,7 @@ SceneBase {
 
             ValueAxis {
                 id: axisY
+                labelFormat:"%.0f"
                 min: minHr
                 max: maxHr
                 tickCount:7
