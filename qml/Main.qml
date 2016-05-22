@@ -5,8 +5,8 @@ import "common"
 
 GameWindow {
     id: window
-    width: dp(640)
-    height: dp(960)
+    width: dp(1080)
+    height: dp(1920)
     property variant jsonTest
     property var currentSession
    // property ListModel currentModel: apneaModel

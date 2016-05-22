@@ -171,7 +171,7 @@ SceneBase {
                         id:timeText
                         anchors.centerIn: parent
                         //font.pointSize: Math.round(parent.height/4)
-                        font.pixelSize: Math.round(dp(parent.height/2))
+                        font.pixelSize: Math.round(sp(parent.height))
                         text: "<b>" + whatToShow + "</b>"; color: "white"; style: Text.Raised; styleColor: "black"
                         //text: index + ". " + typeName + " " + time + "sec."
 
@@ -213,36 +213,39 @@ SceneBase {
     // Plot
     Rectangle{
         id:hrPlot
-        width:parent.width + dp(50)
+        width:parent.width // + dp(50)
         height: dp(200)
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: runSessionScene.top
-        anchors.topMargin:dp(50)
+        anchors.topMargin: sessionView.cellWidth * 3
         opacity:1.0
         z:99
         ChartView {
             id:chartView
-            //title: "Line"
+            title: currentSession.sessionName + " " + currentSession.when
             anchors.fill: parent
+            anchors.margins: -dp(40)
             antialiasing: true
             theme: ChartView.ChartThemeBlueIcy
             //width:parent.width/2
             //height:200
+            //legend
             legend.visible: false
             ValueAxis {
                 id: axisX
                 labelFormat:"%.0f"
+                labelsFont: {font.pixelsize = sp(36)}
                 min: 0
                 max: sessionDuration
                 tickCount: 7
             }
-
             ValueAxis {
                 id: axisY
                 labelFormat:"%.0f"
+                labelsFont: {font.pixelsize = sp(36)}
                 min: minHr
                 max: maxHr
-                tickCount:7
+                tickCount:6
 
             }
 
@@ -253,7 +256,7 @@ SceneBase {
               axisX:axisX
               axisY:axisY
               XYPoint { x: 0; y: 0 }
-            //                  XYPoint { x: 50; y: 50 }
+                              XYPoint { x: 50; y: 50 }
             }
         }
     } //End Of Plot
@@ -265,7 +268,7 @@ SceneBase {
         height: width
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top:hrPlot.bottom
-        anchors.topMargin: dp(8)
+        anchors.topMargin: dp(20)
 
         SoundEffectVPlay {
             id: brthSnd
@@ -336,7 +339,7 @@ SceneBase {
             z:100
             font.pixelSize: sp(36); font.bold: true
             anchors.centerIn: parent
-
+            style: Text.Raised;
             color: "white" //"#3870BA"
             text: heartRate.hr
             onTextChanged: {
