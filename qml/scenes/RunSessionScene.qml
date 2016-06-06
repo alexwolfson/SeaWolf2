@@ -18,17 +18,32 @@ import "../common/draw.js" as DrawGraph
 
 SceneBase {
     id: runSessionScene
+    anchors.top: runSessionScene.gameWindowAnchorItem.top
     property var runColors: {"brth" : "tomato", "hold" : "green", "walk" : "steelblue", "back" : "yellow"}
     property int brthIndx: 0
     property int holdIndx: 1
     property int walkIndx: 2
     property int backIndx: 3
-    property var myEvents:{"EndOfMeditativeZone":0, "EndOfComfortZone":1, "Contraction":2, "EndOfWalk":3, "brth":4 , "hold":5, "walk":6, "back":7}
+    property var myEventsNm2Nb:{"EndOfMeditativeZone":0, "EndOfComfortZone":1, "Contraction":2, "EndOfWalk":3, "brth":4 , "hold":5, "walk":6, "back":7}
+    function invert (obj) {
+
+      var new_obj = {};
+
+      for (var prop in obj) {
+        if(obj.hasOwnProperty(prop)) {
+          new_obj[obj[prop]] = prop;
+        }
+      }
+
+      return new_obj;
+    }
+    property var myEventsNb2Nm:invert(myEventsNm2Nb)
+    property var sessionSteps: [myEventsNm2Nb["brth"], myEventsNm2Nb["brth"], myEventsNm2Nb["hold"], myEventsNm2Nb["walk"], myEventsNm2Nb["back"] ]
     property SeaWolfControls currentGauge
     property var currentSession: {
         "sessionName":"TestSession",
                 "when":"ChangeMe", //Qt.formatDateTime(new Date(), "yyyy-MM-dd-hh-mm-ss"),
-                "eventNames":myEvents,
+                "eventNames":myEventsNm2Nb,
                 "event":[],
                 "pulse":[]
     }
@@ -45,22 +60,76 @@ SceneBase {
     //property alias currentGauge:timerHold.currentGauge
     //===================================================
     // signal indicating that current session is selected
-    signal sessionSelected(var selectedSession)
+    signal sessionSelected(var sessionName, var selectedSession)
     //called by onSessionSelected
-    function fillListModel(listModelSrc){
-        console.log("**** In fillListModel width ", listModelSrc)
+    function setupSession(sessionName, selectedSession){
+        console.log("**** In setupSession width ", sessionName, ":", selectedSession)
         var step;
         apneaModel.clear();
         sessionDuration = 0.0
-        for (step in listModelSrc){
-            apneaModel.append({"time": listModelSrc[step].time, "typeName":listModelSrc[step].typeName, "isCurrent": false});
-            sessionDuration += listModelSrc[step].time;
+        for (step in selectedSession){
+            apneaModel.append({"time": selectedSession[step].time, "typeName":selectedSession[step].typeName, "isCurrent": false});
+            sessionDuration += selectedSession[step].time;
         }
         gaugeBrth.maximumValue = apneaModel.get(brthIndx).time
         gaugeHold.maximumValue = apneaModel.get(holdIndx).time
         gaugeWalk.maximumValue = apneaModel.get(walkIndx).time
+        currentSession.sessionName = sessionName
+    }
+    function getSesssionHRMin(session){
+        var hrMin=999
+        var i
+        for (i = 0; i < session.pulse.length; i++ ){
+            if (session.pulse[i] < hrMin){
+                hrMin = session.pulse[i]
+            }
+        }
+        return hrMin
+    }
+    function getSesssionHRMax(session){
+        var hrMax=0
+        var i
+        for (i = 0; i < session.pulse.length; i++ ){
+            if (session.pulse[i] > hrMax){
+                hrMax = session.pulse[i]
+            }
+        }
+        return hrMax
     }
 
+    function showSessionGraph(p_session, p_chartView){
+        var hrMin = getSesssionHRMin(p_session);
+        var hrMax = getSesssionHRMax(p_session);
+        var currentHrSeries
+        p_chartView.axes[1].min = (hrMin - 5);
+        p_chartView.axes[1].max = (hrMax + 5);
+        //p_chartView.axes[0].min = 0;
+        //p_chartView.axes[0].max = p_session.pulse.length
+//        var currentIndex = 0;
+//        var evt;
+//        p_chartView.removeAllSeries();
+//        var evtStartTime = 0;
+//        for (var i = 0; i < p_session.event.length; i++){
+//            evt = p_session.event[i]
+//            var evtName = myEventsNb2Nm[evt[0]]
+//            //only use events like brth, hold, walk, back
+//            if (!(runColors[evtName] === undefined)){
+//                //console.log("step = ", evtName, "step duration = ", evt[1])
+//                currentHrSeries = p_chartView.createSeries(ChartView.SeriesTypeLine, "", p_chartView.axisX, p_chartView.axisY);
+//                //p_chartView.chart().setAxisX(axisX, currentHrSeries);
+//                currentHrSeries.color = runColors[evtName]
+//                for (var j = 0; j < evt[1]; j++){
+//                    currentHrSeries.append( currentHrSeries.pulse[j])
+//                    //AWDEBUG
+//                    //currentHrSeries.append(Math.round(50 + j))
+//                    p_chartView.update()
+
+//                }
+//                evtStartTime += evt[1]
+//            }
+//        }
+        p_chartView.update()
+    }
 
     //===================================================
     // signal indicating that footer needs update shown time values
@@ -90,7 +159,6 @@ SceneBase {
         // anchor the button to the gameWindowAnchorItem to be on the edge of the screen on any device
         anchors.right: runSessionScene.gameWindowAnchorItem.right
         anchors.rightMargin: dp(10)
-        anchors.top: runSessionScene.gameWindowAnchorItem.top
         anchors.topMargin: dp(10)
         onClicked: backButtonPressed()
     }
@@ -171,7 +239,7 @@ SceneBase {
                         id:timeText
                         anchors.centerIn: parent
                         //font.pointSize: Math.round(parent.height/4)
-                        font.pixelSize: Math.round(sp(parent.height))
+                        font.pixelSize: Math.round(sp(2/3*parent.height))
                         text: "<b>" + whatToShow + "</b>"; color: "white"; style: Text.Raised; styleColor: "black"
                         //text: index + ". " + typeName + " " + time + "sec."
 
@@ -194,27 +262,17 @@ SceneBase {
             // update heart rate information
             currentSession.pulse.push( Math.round(heartRate.hr))
             //hrPoints.append(100, 100)
-            console.log("**HR:",currentGauge.value, heartRate.hr)
+            //console.log("**HR:",currentGauge.value, heartRate.hr)
             currentHrSeries.append(sessionTime, heartRate.hr)
-//            if (minHr > heartRate.hr){
-//                minHr = heartRate.hr
-//                axisY.min = minHr
-//            }
-//            if (maxHr < heartRate.hr){
-//                maxHr = heartRate.hr
-//                axisY.max = maxHr
-//            }
-
-            chartView.update()
-            //hrPoints.append(sessionTime, heartRate.hr)
-            //brthFooter.timerBrth.value
+            showSessionGraph(currentSession,chartView)
+            //chartView.update()
         }
     }
     // Plot
     Rectangle{
         id:hrPlot
         width:parent.width // + dp(50)
-        height: dp(200)
+        height: dp(180)
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: runSessionScene.top
         anchors.topMargin: sessionView.cellWidth * 3
@@ -227,14 +285,11 @@ SceneBase {
             anchors.margins: -dp(40)
             antialiasing: true
             theme: ChartView.ChartThemeBlueIcy
-            //width:parent.width/2
-            //height:200
-            //legend
             legend.visible: false
             ValueAxis {
                 id: axisX
                 labelFormat:"%.0f"
-                labelsFont: {font.pixelsize = sp(36)}
+                labelsFont: Qt.font({pixelSize : sp(10)})
                 min: 0
                 max: sessionDuration
                 tickCount: 7
@@ -242,7 +297,7 @@ SceneBase {
             ValueAxis {
                 id: axisY
                 labelFormat:"%.0f"
-                labelsFont: {font.pixelsize = sp(36)}
+                labelsFont: Qt.font({pixelSize : sp(10)})
                 min: minHr
                 max: maxHr
                 tickCount:6
@@ -255,8 +310,8 @@ SceneBase {
               opacity: 1
               axisX:axisX
               axisY:axisY
-              XYPoint { x: 0; y: 0 }
-                              XYPoint { x: 50; y: 50 }
+              XYPoint { x: 0;  y: 0 }
+              XYPoint { x: 50; y: 50 }
             }
         }
     } //End Of Plot
@@ -264,7 +319,7 @@ SceneBase {
     // Gauges
     Item {
         id: gauges
-        width: runSessionScene.width * 0.8
+        width: runSessionScene.width * 0.6
         height: width
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top:hrPlot.bottom
@@ -446,7 +501,7 @@ SceneBase {
                 text: qsTr("-Medit")
                 onClicked: {
                     console.log("value=", Math.round(currentGauge.value))
-                    currentSession.event.push([myEvents["EndOfMeditativeZone"], Math.round(currentGauge.value)])
+                    currentSession.event.push([myEventsNm2Nb["EndOfMeditativeZone"], Math.round(currentGauge.value)])
                 }
                 enabled:true
             }
@@ -456,7 +511,10 @@ SceneBase {
                 text: qsTr("-Cmfrt")
                 onClicked: {
                     console.log("value=", Math.round(currentGauge.value))
-                    currentSession.event.push([myEvents["EndOfComfortZone"], Math.round(currentGauge.value)])
+                    currentSession.event.push([myEventsNm2Nb["EndOfComfortZone"], Math.round(currentGauge.value)])
+                    //AWDEDUG
+                    showSessionGraph(currentSession, chartView)
+
                 }
                 enabled:true
             }
@@ -466,7 +524,7 @@ SceneBase {
                 text: qsTr("Cntrct")
                 onClicked: {
                     console.log("value=", Math.round(currentGauge.value))
-                    currentSession.event.push([myEvents["Contraction"], Math.round(currentGauge.value)])
+                    currentSession.event.push([myEventsNm2Nb["Contraction"], Math.round(currentGauge.value)])
                 }
                 enabled:true
             }

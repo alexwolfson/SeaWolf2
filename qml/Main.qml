@@ -61,7 +61,7 @@ GameWindow {
     // Running Session Scene
     RunSessionScene {
         id: runSessionScene
-        onSessionSelected: fillListModel(selectedSession)
+        onSessionSelected: setupSession(sessionName, selectedSession)
         onNotifyFooter: updateFooter(currentIndex)
         onBackButtonPressed: window.state = "menu"
     }

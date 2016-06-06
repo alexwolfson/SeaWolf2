@@ -272,7 +272,7 @@ CircularGauge {
             // the step is over - go to the next step
             onRunningChanged: {
                 if (running){
-                    var eventNb = runSessionScene.myEvents[gaugeName];
+                    var eventNb = runSessionScene.myEventsNm2Nb[gaugeName];
                     console.log("gaugeName=", gaugeName, "eventNb=", eventNb)
                     runSessionScene.currentSession.event.push([eventNb, maximumValue])
                     runSessionScene.currentHrSeries = runSessionScene.currentHrView.createSeries(ChartView.SeriesTypeLine, "", runSessionScene.axisX, runSessionScene.axisY);

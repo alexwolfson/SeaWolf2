@@ -228,8 +228,8 @@ import "../common"
                     console.log(" **** generated O2 session=", currentSessionProperties)
                 }
                 sessionName = session.name
-                runSessionScene.sessionSelected(currentSessionProperties)
-                levelEditor.saveCurrentLevel( {levelMetaData: {levelName: session.name}} )
+                runSessionScene.sessionSelected(sessionName, currentSessionProperties)
+                levelEditor.saveCurrentLevel( {levelMetaData: {levelName: session.name}, customData:currentSessionProperties} )
                 //levelEditor.saveCurrentLevel()
             }
         }
