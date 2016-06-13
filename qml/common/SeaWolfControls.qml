@@ -25,6 +25,7 @@ CircularGauge {
     property real maxAngle:  45
     property color needleColor: runColors[gaugeName]
     property int modelIndex:0
+    property int typesDim:runSessionScene.gauge.length
     minimumValue: 0
     maximumValue: gaugeModel.get(0).time
 
@@ -226,7 +227,7 @@ CircularGauge {
     }
     // It means that the next one is "brth"
     function isLastInCycle(){
-        if (nextGauge.modelIndex % 3 ===  0)
+        if (nextGauge.modelIndex % typesDim ===  0)
             return true
         else
             return false
@@ -234,9 +235,9 @@ CircularGauge {
     //trick to pass by reference
     function loadNextCycleVal(gauge){
         console.log("gaugeModel.count=", gaugeModel.count, "gauge[0].modelIndex",gauge[0].modelIndex)
-        if ((gauge[0].modelIndex + 3 < gaugeModel.count))
+        if ((gauge[0].modelIndex + typesDim < gaugeModel.count))
         {
-            gauge[0].modelIndex += 3;
+            gauge[0].modelIndex += typesDim;
             //gauge[0].maximumValue = gaugeModel.get(gauge[0].modelIndex).time
 
         }
@@ -254,6 +255,7 @@ CircularGauge {
         //if we have 2 gauges only (no "walk") we need to prevent updating "hold" twice
         if (nextGauge.nextGauge !== gauge){
             loadIfNot0([nextGauge.nextGauge.nextGauge], 2)
+            loadIfNot0([nextGauge.nextGauge.nextGauge.nextGauge], 3)
         }
     }
     transitions:[
@@ -319,7 +321,16 @@ CircularGauge {
                         //nextGauge.modelIndex = modelIndex + 1
                         //skip the next gauge if it has 0 maximum value
                         gaugeModel.get(nextGauge.modelIndex).isCurrent = true
-                        //emit signal
+                        if ("walk" == runSessionScene.currentGauge.gaugeName){
+                            runSessionScene.currentGauge.visible = false
+                            runSessionScene.gauge[backIndx].visible = true
+                        }
+                        if ("back" == runSessionScene.currentGauge.gaugeName){
+                            runSessionScene.currentGauge.visible = false
+                            runSessionScene.gauge[walkIndx].visible = true
+                        }
+
+                        //emit signala
                         runSessionScene.currentGauge = nextGauge
                         //seting up next gauge as current if it's time is not 0
                         nextGauge.state = "stateRun"

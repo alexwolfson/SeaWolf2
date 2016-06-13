@@ -23,7 +23,7 @@ GameWindow {
         id: entityManager
     }
 
-    // menu sceneapneaModel.get(view.currentIndex - view.currentIndex % 3 + pr.type).ti
+    // menu sceneapneaModel.get(view.currentIndex - view.currentIndex % typesDim + pr.type).ti
     MenuScene {
         id: menuScene
         // listen to the button signals of the scene and change the state according to it

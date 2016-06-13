@@ -28,6 +28,7 @@ import "../common"
         property int breathTime:5
         property int breathDecrement:1
         property int walkTime:120
+        property int backTime:120
     }
     LevelEditor {
       id: levelEditor
@@ -155,14 +156,15 @@ import "../common"
     }
     // Create a JSON array representing the current session
     // Do we need to make it robust, check for ranges, etc. ?
-    function generateWalkSession (){
+    function generateWalkSession (gaugeName){
         var mySession = []
         sessionType = "WALK"
 
         for (var i = 0; i < session.numberOfCycles; i++){
             // we are adding to the beginning of the array so the previous time is always in element 2 (if starting from 0)
-            mySession.unshift( {"time": session.walkTime, "typeName": "walk"});
-            mySession.unshift( {"time": session.holdTime, "typeName": "hold"});
+            mySession.unshift( {"time": session.walkTime,   "typeName": "back"});
+            mySession.unshift( {"time": session.walkTime,   "typeName": "walk"});
+            mySession.unshift( {"time": session.holdTime,   "typeName": "hold"});
             mySession.unshift( {"time": session.breathTime, "typeName": "brth"});
         }
         return mySession
@@ -225,7 +227,7 @@ import "../common"
                 }
                 else if (itemEditor.currentEditableType == "WALK"){
                     configSeriesScene.currentSessionProperties = generateWalkSession()
-                    console.log(" **** generated O2 session=", currentSessionProperties)
+                    console.log(" **** generated WALK session=", currentSessionProperties)
                 }
                 sessionName = session.name
                 runSessionScene.sessionSelected(sessionName, currentSessionProperties)
