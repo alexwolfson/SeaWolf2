@@ -256,6 +256,9 @@ CircularGauge {
         if (nextGauge.nextGauge !== gauge){
             loadIfNot0([nextGauge.nextGauge.nextGauge], 2)
             loadIfNot0([nextGauge.nextGauge.nextGauge.nextGauge], 3)
+            //make walk gauge visible
+            nextGauge.nextGauge.nextGauge.nextGauge.visible=false
+            nextGauge.nextGauge.nextGauge.visible=true
         }
     }
     transitions:[
@@ -296,7 +299,7 @@ CircularGauge {
                     //console.log("running=", running, "modelIndex=", modelIndex, "index=", gridView.delegate.index)
                     state = "initial";
                     gaugeModel.get(modelIndex).isCurrent = false
-                    // update 3 gauges if we are about to run the "breath"gauge
+                    // update all gauges if we are about to run the "breath"gauge
                     var bContinue = true
                     if (isLastInCycle()){
                         loadNextCycleVal([gauge])
@@ -311,9 +314,9 @@ CircularGauge {
                         var n2 = String(gauge.gaugeName)
                         console.log("localCompare=", n1.localeCompare(n2))
                         if (0 !== n1.localeCompare(n2)){
-                            console.log("Loading next cycle")
                             loadNextCycleVal([nextGauge.nextGauge])
-                        }
+                            loadNextCycleVal([nextGauge.nextGauge.nextGauge])
+                         }
                     }
                     console.log("bContinue=", bContinue)
                     //var nextActiveGauge = nextGauge.maximumValue != 0 ? nextGauge : nextGauge.nextGauge

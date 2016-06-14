@@ -74,6 +74,7 @@ SceneBase {
         gaugeBrth.maximumValue = apneaModel.get(brthIndx).time
         gaugeHold.maximumValue = apneaModel.get(holdIndx).time
         gaugeWalk.maximumValue = apneaModel.get(walkIndx).time
+        gaugeBack.maximumValue = apneaModel.get(backIndx).time
         currentSession.sessionName = sessionName
     }
     function getSesssionHRMin(session){
@@ -103,8 +104,8 @@ SceneBase {
         var currentHrSeries
         p_chartView.axes[1].min = (hrMin - 5);
         p_chartView.axes[1].max = (hrMax + 5);
-        //p_chartView.axes[0].min = 0;
-        //p_chartView.axes[0].max = p_session.pulse.length
+        p_chartView.axes[0].min = 0;
+        p_chartView.axes[0].max = p_session.pulse.length
 //        var currentIndex = 0;
 //        var evt;
 //        p_chartView.removeAllSeries();
@@ -294,7 +295,7 @@ SceneBase {
                 labelFormat:"%.0f"
                 //labelsFont: Qt.font({pixelSize : sp(10)})
                 min: 0
-                max: sessionDuration
+                max: SessionDuration
                 tickCount: 7
             }
             ValueAxis {
