@@ -68,6 +68,7 @@ import "../common"
         sessionType = "O2"
 
         var cycles4Calculation = session.repeatLast ? session.numberOfCycles - 2 : session.numberOfCycles - 1;
+        mySession.unshift( {"time" : 0, "typeName" :"back"});
         mySession.unshift( {"time" : 0, "typeName" :"walk"});
         mySession.unshift( {"time" : session.holdTime, "typeName" :"hold"});
         mySession.unshift( {"time" : session.breathTime, "typeName" :"brth"});
@@ -76,13 +77,15 @@ import "../common"
             mySession.unshift( mySession[mySession.length -1]);
             mySession.unshift( mySession[mySession.length -2]);
             mySession.unshift( mySession[mySession.length -3]);
+            mySession.unshift( mySession[mySession.length -4]);
         }
         for (var i = 0; i < cycles4Calculation; i++){
             //mySession[i] = new Array (3)
-             mySession.unshift( {"time": 0, "typeName": "walk"});
-            console.log("***** mySession=", mySession[0].time, mySession[1].time, mySession[2].time)
+            mySession.unshift( {"time": 0, "typeName": "back"});
+            mySession.unshift( {"time": 0, "typeName": "walk"});
+            console.log("***** mySession=", mySession[0].time, mySession[1].time, mySession[2].time, mySession[3].time)
             // we are adding to the beginning of the array so the previous time is always in element 2 (if starting from 0)
-            mySession.unshift( {"time": mySession[2].time - session.holdIncrement, "typeName": "hold"});
+            mySession.unshift( {"time": mySession[3].time - session.holdIncrement, "typeName": "hold"});
             mySession.unshift( {"time": session.breathTime, "typeName": "brth"});
             console.log("***** mySession=", mySession[0].time, mySession[1].time, mySession[2].time)
         }
@@ -115,6 +118,7 @@ import "../common"
         sessionType = "CO2"
 
         var cycles4Calculation = session.repeatLast ? session.numberOfCycles - 2 : session.numberOfCycles - 1;
+        mySession.unshift( {"time" : 0, "typeName" :"back"});
         mySession.unshift( {"time" : 0, "typeName" :"walk"});
         mySession.unshift( {"time" : session.holdTime, "typeName" :"hold"});
         mySession.unshift( {"time" : session.breathTime, "typeName" :"brth"});
@@ -123,12 +127,14 @@ import "../common"
             mySession.unshift( mySession[mySession.length -1]);
             mySession.unshift( mySession[mySession.length -2]);
             mySession.unshift( mySession[mySession.length -3]);
+            mySession.unshift( mySession[mySession.length -4]);
         }
         for (var i = 0; i < cycles4Calculation; i++){
             // we are adding to the beginning of the array so the previous time is always in element 2 (if starting from 0)
+            mySession.unshift( {"time": 0, "typeName": "back"});
             mySession.unshift( {"time": 0, "typeName": "walk"});
             mySession.unshift( {"time": session.holdTime, "typeName": "hold"});
-            mySession.unshift( {"time": mySession[2].time + session.breathDecrement, "typeName": "brth"});
+            mySession.unshift( {"time": mySession[3].time + session.breathDecrement, "typeName": "brth"});
         }
 
         return mySession
