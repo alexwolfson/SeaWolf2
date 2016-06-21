@@ -277,9 +277,12 @@ CircularGauge {
             // the step is over - go to the next step
             onRunningChanged: {
                 if (running){
-                    var eventNb = runSessionScene.myEventsNm2Nb[gaugeName];
-                    console.log("gaugeName=", gaugeName, "eventNb=", eventNb)
-                    runSessionScene.currentSession.event.push([eventNb, maximumValue])
+                    // Add start event with it's duration
+                    //if (!gaugeName in ["walk", "back"] ){
+                        var eventNb = runSessionScene.myEventsNm2Nb[gaugeName];
+                        console.log("gaugeName=", gaugeName, "eventNb=", eventNb)
+                        runSessionScene.currentSession.event.push([eventNb, maximumValue])
+                    //}
                     runSessionScene.currentHrSeries = runSessionScene.currentHrView.createSeries(ChartView.SeriesTypeLine, "", runSessionScene.axisX, runSessionScene.axisY);
                     //runSessionScene.currentHrView.color =
                     runSessionScene.currentHrSeries.color = runSessionScene.runColors[runSessionScene.currentGauge.gaugeName]
@@ -324,6 +327,9 @@ CircularGauge {
                         //nextGauge.modelIndex = modelIndex + 1
                         //skip the next gauge if it has 0 maximum value
                         gaugeModel.get(nextGauge.modelIndex).isCurrent = true
+                        if (("hold" == runSessionScene.currentGauge.gaugeName) && ("walk" == nextGauge.gaugeName) ){
+                            runSessionScene.walkControl.enabled=true
+                        }
                         if ("walk" == runSessionScene.currentGauge.gaugeName){
                             runSessionScene.currentGauge.visible = false
                             runSessionScene.gauge[backIndx].visible = true

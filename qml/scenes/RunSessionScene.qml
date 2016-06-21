@@ -19,7 +19,7 @@ import "../common/draw.js" as DrawGraph
 SceneBase {
     id: runSessionScene
     anchors.top: runSessionScene.gameWindowAnchorItem.top
-    property var runColors: {"brth" : "tomato", "hold" : "green", "walk" : "steelblue", "back" : "orange"}
+    property var runColors: {"brth" : "tomato", "hold" : "green", "walk" : "lightblue", "back" : "orange"}
     property int brthIndx: 0
     property int holdIndx: 1
     property int walkIndx: 2
@@ -40,6 +40,7 @@ SceneBase {
     property var myEventsNb2Nm:invert(myEventsNm2Nb)
     property var sessionSteps: [myEventsNm2Nb["brth"], myEventsNm2Nb["brth"], myEventsNm2Nb["hold"], myEventsNm2Nb["walk"], myEventsNm2Nb["back"] ]
     property SeaWolfControls currentGauge
+    property alias walkControl:walkControl
     property var currentSession: {
         "sessionName":"TestSession",
                 "when":"ChangeMe", //Qt.formatDateTime(new Date(), "yyyy-MM-dd-hh-mm-ss"),
@@ -462,6 +463,9 @@ SceneBase {
                     //apneaModel.get(0).isCurrent = true
                     walkControl.enabled = false
                     button2.enabled = true;
+                    currentSession.event=[]
+                    currentSession.pulse=[]
+                    walkControl.text= qsTr("Finish Walk")
                     runSessionScene.currentSession.when = Qt.formatDateTime(new Date(), "yyyy-MM-dd-hh-mm-ss");
                     currentGauge = gaugeBrth
                     chartView.removeAllSeries()
@@ -478,14 +482,17 @@ SceneBase {
                 id: walkControl
                 z:100
                 text: qsTr("Finish Walk")
-                enabled: false
+                enabled: true
                 onClicked: {
                     if (walkControl.text === qsTr("Finish Walk")){
                         //enabled = false;
                         gaugeWalk.state = "initial";
-                        gaugeWalk.maximumValue = gaugeWalk.value;
+                        //gaugeWalk.maximumValue = gaugeWalk.value;
                         walkControl.text = qsTr("Walk Back")
                         walkControl.enabled = true
+                    } else if(walkControl.text === qsTr("Walk Back")){
+                        gaugeBack.state = "initial"
+                        walkControl.enabled = false
                     }
                 }
             }
