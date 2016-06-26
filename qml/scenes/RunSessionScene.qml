@@ -488,11 +488,14 @@ SceneBase {
                         //enabled = false;
                         gaugeWalk.state = "initial";
                         //gaugeWalk.maximumValue = gaugeWalk.value;
-                        walkControl.text = qsTr("Walk Back")
+                        walkControl.text = qsTr("Finish Back")
                         walkControl.enabled = true
-                    } else if(walkControl.text === qsTr("Walk Back")){
+                        gaugeWalk.stopVoiceTimers();
+                    } else if(walkControl.text === qsTr("Finish Back")){
                         gaugeBack.state = "initial"
+                        walkControl.text = qsTr("Finish Walk");
                         walkControl.enabled = false
+                        gaugeBack.stopVoiceTimers();
                     }
                 }
             }

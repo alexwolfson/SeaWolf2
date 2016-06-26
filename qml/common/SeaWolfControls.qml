@@ -29,6 +29,21 @@ CircularGauge {
     minimumValue: 0
     maximumValue: gaugeModel.get(0).time
 
+    function startVoiceTimers(){
+        thirtyTimer.interval= maximumValue * 1000 - 30000
+        if (thirtyTimer.interval > 0){
+            thirtyTimer.start()
+        }
+        tenTimer.interval = maximumValue * 1000 - 10000
+        if (tenTimer.interval > 0){
+            tenTimer.start()
+        }
+    }
+    function stopVoiceTimers(){
+            thirtyTimer.stop()
+            tenTimer.stop()
+    }
+
     function saveSession() {
         var path=qfa.getAccessiblePath("sessions");
         console.log("Path = ", path);
@@ -286,15 +301,7 @@ CircularGauge {
                     runSessionScene.currentHrSeries = runSessionScene.currentHrView.createSeries(ChartView.SeriesTypeLine, "", runSessionScene.axisX, runSessionScene.axisY);
                     //runSessionScene.currentHrView.color =
                     runSessionScene.currentHrSeries.color = runSessionScene.runColors[runSessionScene.currentGauge.gaugeName]
-
-                    thirtyTimer.interval= maximumValue * 1000 - 30000
-                    if (thirtyTimer.interval > 0){
-                        thirtyTimer.start()
-                    }
-                    tenTimer.interval = maximumValue * 1000 - 10000
-                    if (tenTimer.interval > 0){
-                        tenTimer.start()
-                    }
+                    startVoiceTimers()
                     enterStateSndEffect.play()
                 }
                 //onStopped:{
