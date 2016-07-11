@@ -97,4 +97,6 @@ State {
     PropertyChanges {target: runSessionScene; opacity: 1}
     PropertyChanges {target: window; activeScene: runSessionScene}
 },
-
+Installation on Ubuntu 16.04
+sudo apt-get install mesa-common-dev
+sudo apt-get install libglu1-mesa-dev freeglut3-dev mesa-common-dev

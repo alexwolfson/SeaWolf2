@@ -1,5 +1,7 @@
-import VPlay 2.0
-import QtQuick 2.0
+//import VPlay 2.0
+import QtQuick 2.5
+import QtQuick.Controls 1.4
+
 import QtQuick.Layouts 1.2
 import "../common"
 
@@ -70,9 +72,9 @@ SceneBase {
         source: "../../assets/img/SeaWolf.png"
         width: dp(160)
         height: dp(160)
-        anchors.right: menuScene.gameWindowAnchorItem.right
-        anchors.rightMargin: 10
-        anchors.bottom: menuScene.gameWindowAnchorItem.bottom
-        anchors.bottomMargin: 10
+        anchors.right: parent.right
+        anchors.rightMargin: dp(10)
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: dp(10)
     }
 }

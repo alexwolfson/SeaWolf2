@@ -1,24 +1,24 @@
 import QtQuick 2.5
 import QtQuick.Controls 1.4
-import QtQuick.Dialogs 1.2
 import QtQuick.Controls.Styles 1.4
+import QtQuick.Dialogs 1.2
 import QtQuick.Extras 1.4
-import QtQuick.Window 2.2
 import QtQuick.Layouts 1.2
-import QtMultimedia 5.5
+import QtMultimedia 5.6
 import QtQml 2.2
 import QtCharts 2.1
 
-import VPlay 2.0
-import VPlayApps 1.0
+//import VPlay 2.0
+//import VPlayApps 1.0
 import "../common"
 import com.seawolf.qmlfileaccess 1.0
-import "../common/draw.js" as DrawGraph
+//import "../common/draw.js" as DrawGraph
 
 
 SceneBase {
     id: runSessionScene
-    anchors.top: runSessionScene.gameWindowAnchorItem.top
+    anchors.fill: parent
+    //anchors.top: runSessionScene.gameWindowAnchorItem.top
     property var runColors: {"brth" : "tomato", "hold" : "green", "walk" : "lightblue", "back" : "orange"}
     property int brthIndx: 0
     property int holdIndx: 1
@@ -40,7 +40,7 @@ SceneBase {
     property var myEventsNb2Nm:invert(myEventsNm2Nb)
     property var sessionSteps: [myEventsNm2Nb["brth"], myEventsNm2Nb["brth"], myEventsNm2Nb["hold"], myEventsNm2Nb["walk"], myEventsNm2Nb["back"] ]
     property SeaWolfControls currentGauge
-    property alias walkControl:walkControl
+    function enableWalkControl(){walkControl.enabled=true}
     property var currentSession: {
         "sessionName":"TestSession",
                 "when":"ChangeMe", //Qt.formatDateTime(new Date(), "yyyy-MM-dd-hh-mm-ss"),
@@ -52,9 +52,10 @@ SceneBase {
     property var gauge: [gaugeBrth, gaugeHold, gaugeWalk, gaugeBack]
     //property alias hrPoints: hrSeries
     property real sessionTime: 0.0
-    property alias currentHrView: chartView
-    property alias axisX: axisX
-    property alias axisY: axisY
+    function setupCurrentHrSeries(){
+        currentHrSeries = chartView.createSeries(ChartView.SeriesTypeLine, "", axisX, axisY);
+        currentHrSeries.color = runColors[currentGauge.gaugeName]
+    }
     property LineSeries currentHrSeries
     property real minHr:10
     property real maxHr:150
@@ -155,18 +156,22 @@ SceneBase {
         borderColorFooterWalk = index % typesDim === walkIndx ? "white" : "black"
     }
     //---------------------------------------------------
-    MenuButton {
-        z:100
-        text: "Back"
-        // anchor the button to the gameWindowAnchorItem to be on the edge of the screen on any device
-        anchors.right: runSessionScene.gameWindowAnchorItem.right
-        anchors.rightMargin: dp(10)
-        anchors.topMargin: dp(10)
-        onClicked: backButtonPressed()
-    }
+//    MenuButton {
+//        z:100
+//        text: "Back"
+//        // anchor the button to the gameWindowAnchorItem to be on the edge of the screen on any device
+//        anchors.right: parent.right
+//        anchors.rightMargin: dp(10)
+//        anchors.topMargin: dp(10)
+//        onClicked: backButtonPressed()
+//    }
     //Apnea Model - top cells with times
     Item {
         id: apneaModelContainer
+        width: parent.width
+        height: parent.height
+        anchors.fill: parent
+        anchors.horizontalCenter: parent.horizontalCenter;
         Image {
             z:90
             id: bkgImg
@@ -175,262 +180,259 @@ SceneBase {
             opacity: 0.4
             anchors.fill: parent
         }
-        width: parent.width
-        height: parent.height
-        anchors.fill: parent
-        anchors.horizontalCenter: parent.horizontalCenter;
+        Text {text: "Test text"}
 
         // List elements are created dynamically, when fillListModel is called
-        ListModel {
-            id: apneaModel
-            //the following 3 properties will be used as indexes
-            //added something so user will not be confused if runs before configuring
-            //          ListElement { time: 3; typeName: "brth";    isCurrent: false }
-            //          ListElement { time: 4; typeName: "hold";    isCurrent: false }
-            //          ListElement { time: 5; typeName: "walk";    isCurrent: false }
-            //          ListElement { time: 6; typeName: "brth";    isCurrent: false }
-            //          ListElement { time: 7; typeName: "hold";    isCurrent: false }
-            //          ListElement { time: 8; typeName: "walk";    isCurrent: false }
-            //          ListElement { time: 9; typeName: "brth";    isCurrent: false }
-            //          ListElement { time:10; typeName: "hold";    isCurrent: false }
-            //          ListElement { time:11; typeName: "walk";    isCurrent: false }
+//        ListModel {
+//            id: apneaModel
+//            //the following 3 properties will be used as indexes
+//            //added something so user will not be confused if runs before configuring
+//            //          ListElement { time: 3; typeName: "brth";    isCurrent: false }
+//            //          ListElement { time: 4; typeName: "hold";    isCurrent: false }
+//            //          ListElement { time: 5; typeName: "walk";    isCurrent: false }
+//            //          ListElement { time: 6; typeName: "brth";    isCurrent: false }
+//            //          ListElement { time: 7; typeName: "hold";    isCurrent: false }
+//            //          ListElement { time: 8; typeName: "walk";    isCurrent: false }
+//            //          ListElement { time: 9; typeName: "brth";    isCurrent: false }
+//            //          ListElement { time:10; typeName: "hold";    isCurrent: false }
+//            //          ListElement { time:11; typeName: "walk";    isCurrent: false }
 
-            ListElement { time: 3; typeName: "brth";    isCurrent: false }
-            ListElement { time: 4; typeName: "hold";    isCurrent: false }
-            ListElement { time: 5; typeName: "walk";    isCurrent: false }
-            ListElement { time: 5; typeName: "back";    isCurrent: false }
-            ListElement { time: 6; typeName: "brth";    isCurrent: false }
-            ListElement { time: 7; typeName: "hold";    isCurrent: false }
-            ListElement { time: 8; typeName: "walk";    isCurrent: false }
-            ListElement { time: 8; typeName: "back";    isCurrent: false }
-            ListElement { time: 9; typeName: "brth";    isCurrent: false }
-            ListElement { time:10; typeName: "hold";    isCurrent: false }
-            ListElement { time:11; typeName: "walk";    isCurrent: false }
-            ListElement { time:11; typeName: "back";    isCurrent: false }
-        }
+//            ListElement { time: 3; typeName: "brth";    isCurrent: false }
+//            ListElement { time: 4; typeName: "hold";    isCurrent: false }
+//            ListElement { time: 5; typeName: "walk";    isCurrent: false }
+//            ListElement { time: 5; typeName: "back";    isCurrent: false }
+//            ListElement { time: 6; typeName: "brth";    isCurrent: false }
+//            ListElement { time: 7; typeName: "hold";    isCurrent: false }
+//            ListElement { time: 8; typeName: "walk";    isCurrent: false }
+//            ListElement { time: 8; typeName: "back";    isCurrent: false }
+//            ListElement { time: 9; typeName: "brth";    isCurrent: false }
+//            ListElement { time:10; typeName: "hold";    isCurrent: false }
+//            ListElement { time:11; typeName: "walk";    isCurrent: false }
+//            ListElement { time:11; typeName: "back";    isCurrent: false }
+//        }
 
 
-        GridView {
-            id: sessionView
-            width: parent.width
-            //height: parent.height
-            anchors.margins: 1
-            anchors.top: parent.top
-            anchors.fill: apneaModelContainer
+//        GridView {
+//            id: sessionView
+//            width: parent.width
+//            //height: parent.height
+//            anchors.margins: 1
+//            anchors.top: parent.top
+//            anchors.fill: apneaModelContainer
 
-            cellWidth: (parent.width - 2 * anchors.margins) /12 - 3
-            cellHeight: cellWidth
-            clip: true
-            model: apneaModel
-            delegate: apneaDelegate
-            //footer: viewFooter
+//            cellWidth: (parent.width - 2 * anchors.margins) /12 - 3
+//            cellHeight: cellWidth
+//            clip: true
+//            model: apneaModel
+//            delegate: apneaDelegate
+//            //footer: viewFooter
 
-            Component {
-                id: apneaDelegate
-                //property alias borderColor: wrapper.border.color
-                Rectangle {
+//            Component {
+//                id: apneaDelegate
+//                //property alias borderColor: wrapper.border.color
+//                Rectangle {
 
-                    property real myRadius: dp(5)
-                    id: wrapper
-                    z:      isCurrent ? 100:95
-                    width:  isCurrent ? 2* sessionView.cellWidth : sessionView.cellWidth
-                    height: isCurrent ? 2* sessionView.cellWidth : sessionView.cellWidth
-                    radius: isCurrent ? 2 * myRadius: myRadius
-                    color: { if (index == -1) return "grey"; runColors[apneaModel.get(index).typeName]}
-                    border.color: { if (index == -1) return "grey"; apneaModel.get(index).isCurrent? "white": "black"}
-                    border.width: 2
-                    property int whatToShow: isCurrent ? Math.round(time - gauge[index % gauge.length].value) : time
-                    Text {
-                        id:timeText
-                        anchors.centerIn: parent
-                        //font.pointSize: Math.round(parent.height/4)
-                        font.pixelSize: Math.round(sp(2/3*parent.height))
-                        text: "<b>" + whatToShow + "</b>"; color: "white"; style: Text.Raised; styleColor: "black"
-                        //text: index + ". " + typeName + " " + time + "sec."
+//                    property real myRadius: dp(5)
+//                    id: wrapper
+//                    z:      isCurrent ? 100:95
+//                    width:  isCurrent ? 2* sessionView.cellWidth : sessionView.cellWidth
+//                    height: isCurrent ? 2* sessionView.cellWidth : sessionView.cellWidth
+//                    radius: isCurrent ? 2 * myRadius: myRadius
+//                    color: { if (index == -1) return "grey"; runColors[apneaModel.get(index).typeName]}
+//                    border.color: { if (index == -1) return "grey"; apneaModel.get(index).isCurrent? "white": "black"}
+//                    border.width: 2
+//                    property int whatToShow: isCurrent ? Math.round(time - gauge[index % gauge.length].value) : time
+//                    Text {
+//                        id:timeText
+//                        anchors.centerIn: parent
+//                        //font.pointSize: Math.round(parent.height/4)
+//                        font.pixelSize: Math.round(dp(2/3*parent.height))
+//                        text: "<b>" + whatToShow + "</b>"; color: "white"; style: Text.Raised; styleColor: "black"
+//                        //text: index + ". " + typeName + " " + time + "sec."
 
-                    }
-                    Behavior on width {NumberAnimation{duration:500}}
-                    Behavior on height {NumberAnimation{duration:500}}
-                }
-            }
+//                    }
+//                    Behavior on width {NumberAnimation{duration:500}}
+//                    Behavior on height {NumberAnimation{duration:500}}
+//                }
+//            }
 
-        }
+//        }
     } // End Of Apnea Model and times grid
 
-    Timer{
-        id: oneTimer
-        interval:1000
-        repeat:true
+//    Timer{
+//        id: oneTimer
+//        interval:1000
+//        repeat:true
 
-        onTriggered:{
-            sessionTime++
-            // update heart rate information
-            currentSession.pulse.push( Math.round(heartRate.hr))
-            //hrPoints.append(100, 100)
-            //console.log("**HR:",currentGauge.value, heartRate.hr)
-            currentHrSeries.append(sessionTime, heartRate.hr)
-            showSessionGraph(currentSession,chartView)
-            //chartView.update()
-        }
-    }
-    // Plot
-    Rectangle{
-        id:hrPlot
-        width:parent.width // + dp(50)
-        height: dp(180)
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.top: runSessionScene.top
-        anchors.topMargin: sessionView.cellWidth * 3
-        opacity:1.0
-        z:99
-        ChartView {
-            id:chartView
-            title: currentSession.sessionName + " " + currentSession.when
-            anchors.fill: parent
-            anchors.margins: -dp(40)
-            antialiasing: true
-            theme: ChartView.ChartThemeBlueIcy
-            legend.visible: false
-            ValueAxis {
-                id: axisX
-                labelFormat:"%.0f"
-                //labelsFont: Qt.font({pixelSize : sp(10)})
-                min: 0
-                max: SessionDuration
-                tickCount: 7
-            }
-            ValueAxis {
-                id: axisY
-                labelFormat:"%.0f"
-                //labelsFont: Qt.font({pixelSize : sp(10)})
-                min: minHr
-                max: maxHr
-                tickCount:6
+//        onTriggered:{
+//            sessionTime++
+//            // update heart rate information
+//            currentSession.pulse.push( Math.round(heartRate.hr))
+//            //hrPoints.append(100, 100)
+//            //console.log("**HR:",currentGauge.value, heartRate.hr)
+//            currentHrSeries.append(sessionTime, heartRate.hr)
+//            showSessionGraph(currentSession,chartView)
+//            //chartView.update()
+//        }
+//    }
+//    // Plot
+//    Rectangle{
+//        id:hrPlot
+//        width:parent.width // + dp(50)
+//        height: dp(180)
+//        anchors.horizontalCenter: parent.horizontalCenter
+//        anchors.top: runSessionScene.top
+//        anchors.topMargin: sessionView.cellWidth * 3
+//        opacity:1.0
+//        z:99
+//        ChartView {
+//            id:chartView
+//            title: currentSession.sessionName + " " + currentSession.when
+//            anchors.fill: parent
+//            anchors.margins: -dp(40)
+//            antialiasing: true
+//            theme: ChartView.ChartThemeBlueIcy
+//            legend.visible: false
+//            ValueAxis {
+//                id: axisX
+//                labelFormat:"%.0f"
+//                //labelsFont: Qt.font({pixelSize : sp(10)})
+//                min: 0
+//                max: sessionDuration
+//                tickCount: 7
+//            }
+//            ValueAxis {
+//                id: axisY
+//                labelFormat:"%.0f"
+//                //labelsFont: Qt.font({pixelSize : sp(10)})
+//                min: minHr
+//                max: maxHr
+//                tickCount:6
 
-            }
+//            }
 
-            LineSeries {
-              id: hrSeries
-              name: "Heart Rate"
-              opacity: 1
-              axisX:axisX
-              axisY:axisY
-              XYPoint { x: 0;  y: 0 }
-              XYPoint { x: 50; y: 50 }
-            }
-        }
-    } //End Of Plot
+//            LineSeries {
+//              id: hrSeries
+//              name: "Heart Rate"
+//              opacity: 1
+//              axisX:axisX
+//              axisY:axisY
+//              XYPoint { x: 0;  y: 0 }
+//              XYPoint { x: 50; y: 50 }
+//            }
+//        }
+//    } //End Of Plot
 
-    // Gauges
-    Item {
-        id: gauges
-        width: runSessionScene.width * 0.6
-        height: width
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.top:hrPlot.bottom
-        anchors.topMargin: dp(20)
+//    // Gauges
+//    Item {
+//        id: gauges
+//        width: runSessionScene.width * 0.6
+//        height: width
+//        anchors.horizontalCenter: parent.horizontalCenter
+//        anchors.top:hrPlot.bottom
+//        anchors.topMargin: dp(20)
 
-        SoundEffectVPlay {
-            id: brthSnd
-            volume: 1.0
-            source: "../../assets/sounds/breathe.wav"
-        }
-        SeaWolfControls {
-            id:gaugeBrth
-            z:95
-            gaugeName: "brth"
-            enterStateSndEffect: brthSnd
-            //gridView: sessionView
-            modelIndex: brthIndx
-            minAngle:     185
-            // different angles, depenging if "walk" part is presented
-            maxAngle:     gaugeWalk.maximumValue === 0 ? 355 : 295
-            anchors.centerIn: parent
-            gaugeModel: apneaModel
-            nextGauge:gaugeHold
-            width:height
-            height:parent.height
-        }
-        SoundEffectVPlay {
-            id: holdSnd
-            volume: 1.0
-            source: "../../assets/sounds/hold.wav"
-        }
-        SeaWolfControls {
-            id:gaugeHold
-            z:95
-            gaugeName:  "hold"
-            enterStateSndEffect: holdSnd
-            //gridView: sessionView
-            modelIndex: holdIndx
-            // different angles, depenging if "walk" part is presented
-            minAngle:     gaugeWalk.maximumValue === 0 ? 5 :-55
-            maxAngle:     gaugeWalk.maximumValue === 0 ? 175 : 55
-            anchors.centerIn: parent
-            gaugeModel: apneaModel
-            nextGauge: gaugeWalk.maximumValue === 0 ? gaugeBrth : gaugeWalk
-            width:height
-            height:parent.height
-        }
+//        SoundEffect {
+//            id: brthSnd
+//            volume: 1.0
+//            source: "../../assets/sounds/breathe.wav"
+//        }
+//        SeaWolfControls {
+//            id:gaugeBrth
+//            z:95
+//            gaugeName: "brth"
+//            enterStateSndEffect: brthSnd
+//            //gridView: sessionView
+//            modelIndex: brthIndx
+//            minAngle:     185
+//            // different angles, depenging if "walk" part is presented
+//            maxAngle:     gaugeWalk.maximumValue === 0 ? 355 : 295
+//            anchors.centerIn: parent
+//            gaugeModel: apneaModel
+//            nextGauge:gaugeHold
+//            width:height
+//            height:parent.height
+//        }
+//        SoundEffect {
+//            id: holdSnd
+//            volume: 1.0
+//            source: "../../assets/sounds/hold.wav"
+//        }
+//        SeaWolfControls {
+//            id:gaugeHold
+//            z:95
+//            gaugeName:  "hold"
+//            enterStateSndEffect: holdSnd
+//            //gridView: sessionView
+//            modelIndex: holdIndx
+//            // different angles, depenging if "walk" part is presented
+//            minAngle:     gaugeWalk.maximumValue === 0 ? 5 :-55
+//            maxAngle:     gaugeWalk.maximumValue === 0 ? 175 : 55
+//            anchors.centerIn: parent
+//            gaugeModel: apneaModel
+//            nextGauge: gaugeWalk.maximumValue === 0 ? gaugeBrth : gaugeWalk
+//            width:height
+//            height:parent.height
+//        }
 
-        SoundEffectVPlay {
-            id: walkSnd
-            volume: 1.0
-            source: "../../assets/sounds/walk.wav"
-        }
-        SeaWolfControls {
-            id:gaugeWalk
-            z:95
-            gaugeName: "walk"
-            enterStateSndEffect: walkSnd
-            //gridView: sessionView
-            modelIndex: walkIndx
-            minAngle:     65
-            maxAngle:     175
-            anchors.centerIn: parent
-            gaugeModel: apneaModel
-            nextGauge: gaugeBack
-            //gaugeWalkControl: container.walkControl
-            width:height
-            height:parent.height
-        }
-        SoundEffectVPlay {
-            id: backSnd
-            volume: 1.0
-            source: "../../assets/sounds/back.wav"
-        }
-        SeaWolfControls {
-            id:gaugeBack
-            z:95
-            gaugeName: "back"
-            enterStateSndEffect: backSnd
-            //gridView: sessionView
-            modelIndex: backIndx
-            minAngle:     65
-            maxAngle:     175
-            anchors.centerIn: parent
-            gaugeModel: apneaModel
-            nextGauge: gaugeBrth
-            //gaugeWalkControl: container.walkControl
-            width:height
-            height:parent.height
-            visible: false
-        }
-        Text {
-            id: hrValue
-            z:100
-            font.pixelSize: sp(36); font.bold: true
-            anchors.centerIn: parent
-            style: Text.Raised;
-            color: "white" //"#3870BA"
-            text: heartRate.hr
-            onTextChanged: {
-                //              if (heartRate.hr > 0 && updatei != null && heartRate.numDevices() > 0) {
-                //                  updatei.destroy()
-                //              }
-            }
-        }
-    } // End of gauges
+//        SoundEffect {
+//            id: walkSnd
+//            volume: 1.0
+//            source: "../../assets/sounds/walk.wav"
+//        }
+//        SeaWolfControls {
+//            id:gaugeWalk
+//            z:95
+//            gaugeName: "walk"
+//            enterStateSndEffect: walkSnd
+//            //gridView: sessionView
+//            modelIndex: walkIndx
+//            minAngle:     65
+//            maxAngle:     175
+//            anchors.centerIn: parent
+//            gaugeModel: apneaModel
+//            nextGauge: gaugeBack
+//            //gaugeWalkControl: container.walkControl
+//            width:height
+//            height:parent.height
+//        }
+//        SoundEffect {
+//            id: backSnd
+//            volume: 1.0
+//            source: "../../assets/sounds/back.wav"
+//        }
+//        SeaWolfControls {
+//            id:gaugeBack
+//            z:95
+//            gaugeName: "back"
+//            enterStateSndEffect: backSnd
+//            //gridView: sessionView
+//            modelIndex: backIndx
+//            minAngle:     65
+//            maxAngle:     175
+//            anchors.centerIn: parent
+//            gaugeModel: apneaModel
+//            nextGauge: gaugeBrth
+//            //gaugeWalkControl: container.walkControl
+//            width:height
+//            height:parent.height
+//            visible: false
+//        }
+//        Text {
+//            id: hrValue
+//            z:100
+//            font.pixelSize: dp(36); font.bold: true
+//            anchors.centerIn: parent
+//            style: Text.Raised;
+//            color: "white" //"#3870BA"
+//            text: heartRate.hr
+//            onTextChanged: {
+//                //              if (heartRate.hr > 0 && updatei != null && heartRate.numDevices() > 0) {
+//                //                  updatei.destroy()
+//                //              }
+//            }
+//        }
+//    } // End of gauges
     // Menu Buttons
     Column {
         id:buttons

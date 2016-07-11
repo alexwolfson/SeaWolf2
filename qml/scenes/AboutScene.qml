@@ -1,24 +1,14 @@
-import VPlay 2.0
+//import VPlay 2.0
 import QtQuick 2.5
 import QtQuick.Controls 1.4
 import "../common"
 SceneBase{
     id: aboutScene
-    MenuButton {
-        text: "Back"
-        // anchor the button to the gameWindowAnchorItem to be on the edge of the screen on any device
-        anchors.right: aboutScene.gameWindowAnchorItem.right
-        anchors.rightMargin: 10
-        anchors.top: aboutScene.gameWindowAnchorItem.top
-        anchors.topMargin: 10
-        onClicked: backButtonPressed()
-    }
 
     Item{
         id: aboutText
         anchors.fill: parent
         anchors.topMargin:25 //TODO generalize
-        // back button to leave scene
 
         Text {
 

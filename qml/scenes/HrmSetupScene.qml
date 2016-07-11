@@ -1,23 +1,11 @@
-import VPlay 2.0
-import QtQuick 2.0
+//import VPlay 2.0
+import QtQuick 2.5
+import QtQuick.Controls 1.4
+
 import "../common"
 
 SceneBase {
     id: hrmSetupScene
-
-
-    // back button to leave scene
-    MenuButton {
-        z:100
-        text: "Back"
-        // anchor the button to the gameWindowAnchorItem to be on the edge of the screen on any device
-        anchors.right: hrmSetupScene.gameWindowAnchorItem.right
-        anchors.rightMargin: dp(10)
-        anchors.top: hrmSetupScene.gameWindowAnchorItem.top
-        anchors.topMargin: dp(10)
-        onClicked: backButtonPressed()
-    }
-
     Item {
         id: container
         Image {

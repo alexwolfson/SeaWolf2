@@ -1,17 +1,39 @@
-import VPlay 2.0
-import QtQuick 2.0
-
-Scene {
+//import VPlay 2.0
+import QtQuick 2.5
+import QtQuick.Controls 1.4
+import QtQuick.Window 2.2
+import "."
+Tab {
     id: sceneBase
+    // back button to leave scene
+    property int default_pix_density: 4  //pixel density of my current screen
+    property int scale_factor: Screen.pixelDensity/default_pix_density
+    function dp(pix){
+        return pix * scale_factor
+    }
+
+    MenuButton {
+        z:100
+        text: "Back"
+        // anchor the button to the gameWindowAnchorItem to be on the edge of the screen on any device
+        anchors.right: parent.right
+        anchors.rightMargin: dp(10)
+        anchors.top: parent.top
+        anchors.topMargin: dp(10)
+        onClicked: backButtonPressed()
+    }
+    // signal indicating that the current Scene should be terminated
+    signal backButtonPressed
+
 
     // by default, set the opacity to 0 - this is changed from the main.qml with PropertyChanges
-    opacity: 0
+    //opacity: 0
     // we set the visible property to false if opacity is 0 because the renderer skips invisible items, this is an performance improvement
-    visible: opacity > 0
+    //visible: opacity > 0
     // if the scene is invisible, we disable it. In Qt 5, components are also enabled if they are invisible.
     //   This means any MouseArea in the Scene would still be active even we hide the Scene,
     //   since we do not want this to happen, we disable the Scene (and therefore also its children) if it is hidden
-    enabled: visible
+    //active: visible
 
     // every change in opacity will be done with an animation
     Behavior on opacity {

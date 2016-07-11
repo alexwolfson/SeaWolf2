@@ -1,8 +1,7 @@
-QT += quick bluetooth
+QT += quick bluetooth widgets
 
 # allows to add DEPLOYMENTFOLDERS and links to the V-Play library and QtCreator auto-completion
-CONFIG += v-play
-
+#CONFIG += v-play
 qmlFolder.source = qml
 DEPLOYMENTFOLDERS += qmlFolder # comment for publishing
 
@@ -58,9 +57,76 @@ DISTFILES += \
     android/build.gradle \
     android/gradle/wrapper/gradle-wrapper.properties \
     android/gradlew.bat \
-    LICENSE
+    LICENSE \
+    qml/common/draw.js \
+    qml/config.json \
+    android/res/values/strings.xml \
+    assets/sounds/10sec.wav \
+    assets/sounds/30sec.wav \
+    assets/sounds/back.wav \
+    assets/sounds/breathe.wav \
+    assets/sounds/hold.wav \
+    assets/sounds/walk.wav \
+    android/res/drawable-hdpi/ic_launcher.png \
+    android/res/drawable-hdpi/icon.png \
+    android/res/drawable-ldpi/icon.png \
+    android/res/drawable-mdpi/ic_launcher.png \
+    android/res/drawable-mdpi/icon.png \
+    android/res/drawable-xhdpi/ic_launcher.png \
+    android/res/drawable-xxhdpi/ic_launcher.png \
+    assets/img/blue_heart.png \
+    assets/img/blue_heart_small.png \
+    assets/img/busy_dark.png \
+    assets/img/SeaWolf.png \
+    assets/img/star.png \
+    assets/img/surface.png \
+    assets/img/vplay-logo.png \
+    ios/Def-568h@2x.png \
+    ios/Def-667h@2x.png \
+    ios/Def-Portrait-736h@3x.png \
+    ios/Def-Portrait.png \
+    ios/Def-Portrait@2x.png \
+    ios/Def.png \
+    ios/Def@2x.png \
+    ios/Icon-60.png \
+    ios/Icon-60@2x.png \
+    ios/Icon-60@3x.png \
+    ios/Icon-72.png \
+    ios/Icon-72@2x.png \
+    ios/Icon-76.png \
+    ios/Icon-76@2x.png \
+    ios/Icon-Small-40.png \
+    ios/Icon-Small-40@2x.png \
+    ios/Icon-Small-50.png \
+    ios/Icon-Small-50@2x.png \
+    ios/Icon.png \
+    ios/Icon@2x.png \
+    win/app_icon.ico \
+    assets/img/SeaWolf.xcf \
+    assets/img/surface.xcf \
+    win/app_icon.rc \
+    android/gradle.properties \
+    android/local.properties \
+    qml/common/Button.qml \
+    qml/common/dialog.qml \
+    qml/common/home.qml \
+    qml/common/MenuButton.qml \
+    qml/common/monitor.qml \
+    qml/common/Point.qml \
+    qml/common/SceneBase.qml \
+    qml/common/SeaWolfButton.qml \
+    qml/common/SeaWolfControls.qml \
+    qml/scenes/AboutScene.qml \
+    qml/scenes/ConfigSeriesScene.qml \
+    qml/scenes/HrmSetupScene.qml \
+    qml/scenes/MenuScene.qml \
+    qml/scenes/RunSessionScene.qml \
+    qml/Main.qml
 
 HEADERS += \
     qmlfileaccess.h \
     deviceinfo.h \
     heartrate.h
+
+RESOURCES += \
+    resources.qrc

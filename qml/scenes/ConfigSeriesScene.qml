@@ -1,22 +1,13 @@
-import VPlay 2.0
-import QtQuick 2.0
+//import VPlay 2.0
+import QtQuick 2.5
+import QtQuick.Controls 1.4
 import "../common"
 
-  SceneBase {
+SceneBase {
     id: configSeriesScene
     property var currentSessionProperties
     property  string sessionType:"WALK"
     property string sessionName
-    MenuButton {
-        z:100
-        text: "Back"
-        // anchor the button to the gameWindowAnchorItem to be on the edge of the screen on any device
-        anchors.right: configSeriesScene.gameWindowAnchorItem.right
-        anchors.rightMargin: 10
-        anchors.top: configSeriesScene.gameWindowAnchorItem.top
-        anchors.topMargin: 10
-        onClicked: backButtonPressed()
-    }
 
     Item{
         id: session
@@ -30,6 +21,7 @@ import "../common"
         property int walkTime:120
         property int backTime:120
     }
+    /*
     LevelEditor {
       id: levelEditor
       anchors.fill: parent
@@ -198,7 +190,7 @@ import "../common"
       //anchors.bottomMargin: buttonsRow.height
 
     }
-
+*/
     Row {
         id: buttonsRow
         anchors.bottom: parent.bottom

@@ -1,5 +1,5 @@
-import QtQuick 2.0
-import VPlay 2.0
+import QtQuick 2.5
+//import VPlay 2.0
 Rectangle {
     id: button
     // this will be the default size, it is same size as the contained text + some padding
@@ -26,7 +26,7 @@ Rectangle {
     Text {
         id: buttonText
         anchors.centerIn: parent
-        font.pixelSize: sp (30)
+        font.pixelSize: dp (30)
         color: "black"
     }
 

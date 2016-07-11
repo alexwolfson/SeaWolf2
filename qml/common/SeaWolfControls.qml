@@ -3,9 +3,9 @@ import QtQuick.Window 2.1
 import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
 import QtQuick.Extras 1.4
-import QtMultimedia 5.0
+import QtMultimedia 5.6
 import QtQuick.Dialogs 1.2
-import VPlay 2.0
+//import VPlay 2.0
 import QtQuick.Particles 2.0
 import QtCharts 2.1
 import com.seawolf.qmlfileaccess 1.0
@@ -15,7 +15,7 @@ CircularGauge {
     value: 0
     anchors.verticalCenter: parent.verticalCenter
     property string gaugeName: "brth"
-    property  SoundEffectVPlay enterStateSndEffect
+    property  SoundEffect enterStateSndEffect
     //property GridView gridView
     property ListModel gaugeModel //: runSessionScene.runSessionModel
     property CircularGauge nextGauge
@@ -195,12 +195,12 @@ CircularGauge {
             styleColor: gauge.needleColor
         }
     }
-    SoundEffectVPlay {
+    SoundEffect {
         id: thirtysnd
         volume: 1.0
         source: "../../assets/sounds/30sec.wav"
     }
-    SoundEffectVPlay {
+    SoundEffect {
         id: tensnd
         volume: 1.0
         source: "../../assets/sounds/10sec.wav"
@@ -298,9 +298,7 @@ CircularGauge {
                         console.log("gaugeName=", gaugeName, "eventNb=", eventNb)
                         runSessionScene.currentSession.event.push([eventNb, maximumValue])
                     //}
-                    runSessionScene.currentHrSeries = runSessionScene.currentHrView.createSeries(ChartView.SeriesTypeLine, "", runSessionScene.axisX, runSessionScene.axisY);
-                    //runSessionScene.currentHrView.color =
-                    runSessionScene.currentHrSeries.color = runSessionScene.runColors[runSessionScene.currentGauge.gaugeName]
+                    runSessionScene.setupCurrentHrSeries()
                     startVoiceTimers()
                     enterStateSndEffect.play()
                 }
@@ -335,7 +333,7 @@ CircularGauge {
                         //skip the next gauge if it has 0 maximum value
                         gaugeModel.get(nextGauge.modelIndex).isCurrent = true
                         if (("hold" == runSessionScene.currentGauge.gaugeName) && ("walk" == nextGauge.gaugeName) ){
-                            runSessionScene.walkControl.enabled=true
+                            runSessionScene.enableWalkControl()
                         }
                         if ("walk" == runSessionScene.currentGauge.gaugeName){
                             runSessionScene.currentGauge.visible = false

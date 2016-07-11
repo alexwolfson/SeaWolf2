@@ -1,7 +1,8 @@
-#include <QApplication>
-#include <VPApplication>
+#include <QtWidgets/QApplication>
+//#include <VPApplication>
 
 #include <QQmlApplicationEngine>
+#include <QApplication>
 #include "qmlfileaccess.h"
 #include <QtQml>
 #include <QDebug>
@@ -16,12 +17,12 @@ int main(int argc, char *argv[])
 
     QApplication app(argc, argv);
 
-    VPApplication vplay;
+    //VPApplication vplay;
 
     // QQmlApplicationEngine is the preferred way to start qml projects since Qt 5.2
     // if you have older projects using Qt App wizards from previous QtCreator versions than 3.1, please change them to QQmlApplicationEngine
     QQmlApplicationEngine engine;
-    vplay.initialize(&engine);
+    //vplay.initialize(&engine);
     HeartRate heartRate;
     QQmlContext * myContext = engine.rootContext();
     myContext->setContextProperty("heartRate", &heartRate);
@@ -29,7 +30,7 @@ int main(int argc, char *argv[])
 
     // use this during development
     // for PUBLISHING, use the entry point below
-    vplay.setMainQmlFileName(QStringLiteral("qml/Main.qml"));
+    //vplay.setMainQmlFileName(QStringLiteral("qml/Main.qml"));
 
     // use this instead of the above call to avoid deployment of the qml files and compile them into the binary with qt's resource system qrc
     // this is the preferred deployment option for publishing games to the app stores, because then your qml files and js files are protected
@@ -37,7 +38,7 @@ int main(int argc, char *argv[])
     // also see the .pro file for more details
     //  vplay.setMainQmlFileName(QStringLiteral("qrc:/qml/Main.qml"));
 
-    engine.load(QUrl(vplay.mainQmlFileName()));
+    engine.load(QUrl("qrc:/qml/Main.qml"));
 
     //Unit test of QMLFileAccess
 //    QMLFileAccess qfa;
