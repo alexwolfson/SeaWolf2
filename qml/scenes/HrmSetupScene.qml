@@ -1,5 +1,5 @@
 //import VPlay 2.0
-import QtQuick 2.5
+import QtQuick 2.7
 import QtQuick.Controls 1.4
 
 import "../common"
@@ -8,16 +8,10 @@ SceneBase {
     id: hrmSetupScene
     Item {
         id: container
-        Image {
-            id: bkgImg
-            source: "../../assets/img/surface.png"
-            fillMode: Image.PreserveAspectCrop
-            opacity: 0.4
-            anchors.fill: parent
-        }
         width: parent.width
         height: parent.height
         anchors.fill: parent
+        anchors.topMargin:tabHeaderHight
         anchors.horizontalCenter: parent.horizontalCenter;
 
         Rectangle {
@@ -28,7 +22,7 @@ SceneBase {
             property string message: heartRate.message
             onMessageChanged: {
                 if (heartRate.message != "Scanning for devices..." && heartRate.message != "Low Energy device found. Scanning for more...") {
-                    background.visible = false;
+                    background.visible = true;
                     //demoMode.visible = true;
                 }
                 else {
@@ -44,7 +38,7 @@ SceneBase {
                 height: dp(80)
                 color: "#F0EBED"
                 border.color: "#3870BA"
-                border.width: 2
+                border.width: dp(2)
                 radius: dp(10)
 
                 Text {
@@ -60,6 +54,7 @@ SceneBase {
                 id: spinner
                 width: parent.width
                 anchors.top: select.bottom
+                anchors.topMargin: dp(15)
                 //anchors.bottom: demoMode.top
                 visible: false
                 color: "#F0EBED"
@@ -127,7 +122,7 @@ SceneBase {
 
                     Text {
                         id: device
-                        font.pixelSize: sp(30)
+                        font.pixelSize: dp(30)
                         text: modelData.deviceName
                         anchors.top: parent.top
                         anchors.topMargin: dp(5)
@@ -137,7 +132,7 @@ SceneBase {
 
                     Text {
                         id: deviceAddress
-                        font.pixelSize: sp(30)
+                        font.pixelSize: dp(30)
                         text: modelData.deviceAddress
                         anchors.bottom: parent.bottom
                         anchors.bottomMargin: dp(5)

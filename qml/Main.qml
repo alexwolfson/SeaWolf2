@@ -1,5 +1,5 @@
 //#import VPlay 2.0
-import QtQuick 2.5
+import QtQuick 2.7
 import QtQuick.Window 2.2
 import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
@@ -8,25 +8,28 @@ import "./common"
 
 Window {
     id:window
+    //AW: Duplication vs SceneBase - need to fix
     property real default_pix_density: 4  //pixel density of my current screen
     property real scale_factor: Screen.pixelDensity/default_pix_density
     function dp(pix){
-        console.log("Screen.pixelDensity = ", Screen.pixelDensity)
+        //console.log("Screen.pixelDensity = ", Screen.pixelDensity)
         return pix * scale_factor
     }
     visible:true
-    width: dp(1080)
+    width: dp(500)
     //for some reason dp(1920) created binding loop and dependence of NONNotifiable factor
-    height: 1920 *scale_factor
+    height: 900 *scale_factor
 
     TabView {
-        id: frame
+        id: tabView
         anchors.fill: parent
         anchors.margins: 4
         AboutScene{   title: "About"}
         HrmSetupScene{ title: "HRM"}
         RunSessionScene{ title: "Run"}
-        Tab { title: "Tab 3" }
+        Tab { title: "Finish"
+            onLoaded: Qt.quit()
+        }
         visible:true
         style: TabViewStyle {
             frameOverlap: 1
@@ -34,7 +37,7 @@ Window {
                 color: styleData.selected ? "steelblue" :"lightsteelblue"
                 border.color:  "steelblue"
                 implicitWidth: Math.max(text.width + dp(4), dp(80))
-                implicitHeight: dp(20)
+                implicitHeight: dp(30)
                 radius: dp(2)
                 Text {
                     id: text
@@ -43,35 +46,17 @@ Window {
                     color: styleData.selected ? "white" : "black"
                 }
             }
-            frame: Rectangle { color: "steelblue" }
+            frame:     Image {
+                //z:90
+                id: bkgImg
+                source: "../../assets/img/surface.png"
+                fillMode: Image.PreserveAspectCrop
+                opacity: 0.4
+                anchors.fill: parent
+            }
+
         }
     }
-
-//            frameOverlap: 1
-//             tab: Rectangle {
-//                 color: styleData.selected ? "steelblue" :"lightsteelblue"
-//                 border.color:  "steelblue"
-//                 implicitWidth: Math.max(text.width + 4, dp(80))
-//                 implicitHeight: dp(20)
-//                 radius: 2
-//                 Text {
-//                     id: text
-//                     anchors.centerIn: parent
-//                     TabView {
-//                         anchors.fill: parent
-//                         anchors.margins: 4
-//                          Tab {
-//                              title: "Green"
-//                              Rectangle { color: "green" }
-//                          }
-//                          style: TabViewStyle {
-//                     text: styleData.title
-//                     color: styleData.selected ? "white" : "black"
-//                 }
-//             }
-//             frame: Rectangle { color: "steelblue" }
-//         }
-//     }
 
 //    TabView {
 //          id: frame
@@ -157,10 +142,10 @@ Window {
 //            //PropertyChanges {target: window; activeFocusItem: hrmSetupScene}
 //        }
 //    ]
-//    Loader {
-//        id: pageLoader
-//        anchors.fill: parent
-//    }
+    Loader {
+        id: pageLoader
+        anchors.fill: parent
+    }
 }
 
 

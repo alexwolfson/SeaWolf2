@@ -25,7 +25,9 @@ CircularGauge {
     property real maxAngle:  45
     property color needleColor: runColors[gaugeName]
     property int modelIndex:0
-    property int typesDim:runSessionScene.gauge.length
+    //Is set, whhen RunSessionScene is loaded
+    property int typesDim
+    //:runSessionScene.runGauge.length
     minimumValue: 0
     maximumValue: gaugeModel.get(0).time
 
