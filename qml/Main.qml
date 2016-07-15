@@ -6,8 +6,8 @@ import QtQuick.Controls.Styles 1.4
 import "./scenes"
 import "./common"
 
-Window {
-    id:window
+ApplicationWindow {
+    id:root
     //AW: Duplication vs SceneBase - need to fix
     property real default_pix_density: 4  //pixel density of my current screen
     property real scale_factor: Screen.pixelDensity/default_pix_density
@@ -28,7 +28,7 @@ Window {
         HrmSetupScene{ title: "HRM"}
         RunSessionScene{ title: "Run"}
         Tab { title: "Finish"
-            onLoaded: Qt.quit()
+            onActiveChanged: Qt.quit()
         }
         visible:true
         style: TabViewStyle {
