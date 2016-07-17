@@ -10,16 +10,26 @@ ApplicationWindow {
     id:root
     //AW: Duplication vs SceneBase - need to fix
     property real default_pix_density: 4  //pixel density of my current screen
-    property real scale_factor: Screen.pixelDensity/default_pix_density
+    property real scale_factor: {
+        var sfDen   = Screen.pixelDensity/default_pix_density
+        var sfWidth = Screen.width / 500
+        var sfHeight  = Screen.height / 900
+        return Math.min(sfDen, sfWidth, sfHeight)
+    }
+    property int firstTime:1
     function dp(pix){
-        //console.log("Screen.pixelDensity = ", Screen.pixelDensity)
+        if (firstTime){
+            console.log("Screen.pixelDensity = ", Screen.pixelDensity, "scale_factor = ", scale_factor)
+            firstTime = 0
+        }
         return pix * scale_factor
     }
+    //Is set, whhen RunSessionScene is loaded
+    property int typesDim
     visible:true
     width: dp(500)
     //for some reason dp(1920) created binding loop and dependence of NONNotifiable factor
-    height: 900 *scale_factor
-
+    height: dp(900)
     TabView {
         id: tabView
         anchors.fill: parent
@@ -37,7 +47,7 @@ ApplicationWindow {
                 color: styleData.selected ? "steelblue" :"lightsteelblue"
                 border.color:  "steelblue"
                 implicitWidth: Math.max(text.width + dp(4), dp(80))
-                implicitHeight: dp(30)
+                implicitHeight: dp(40)
                 radius: dp(2)
                 Text {
                     id: text

@@ -8,10 +8,10 @@ Tab {
     active:true
     // back button to leave scene
     property int default_pix_density: 4  //pixel density of my current screen
-    property int scale_factor: Screen.pixelDensity/default_pix_density
-    function dp(pix){
-        return pix * scale_factor
-    }
+//    property int scale_factor: Screen.pixelDensity/default_pix_density
+//    function dp(pix){
+//        return pix * scale_factor
+//    }
     property int tabHeaderHight:dp(30)
     // by default, set the opacity to 0 - this is changed from the main.qml with PropertyChanges
     //opacity: 0

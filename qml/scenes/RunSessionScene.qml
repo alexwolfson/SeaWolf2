@@ -12,8 +12,7 @@ import QtCharts 2.1
 //import VPlayApps 1.0
 import "../common"
 import com.seawolf.qmlfileaccess 1.0
-//import "../common/draw.js" as DrawGraph
-
+//import "../common/draw.
 
 SceneBase {
     id: runSessionScene
@@ -31,7 +30,7 @@ SceneBase {
       return new_obj;
     }
     function setupCurrentHrSeries(){
-        currentHrSeries = chartView.createSeries(ChartView.SeriesTypeLine, "", axisX, axisY);
+        currentHrSeries = currentChartView.createSeries(ChartView.SeriesTypeLine, "", currentAxisX, currentAxisY);
         currentHrSeries.color = runColors[currentGauge.gaugeName]
     }
 
@@ -104,9 +103,10 @@ SceneBase {
 //        }
         p_chartView.update()
     }
-    function enableWalkControl(){walkControl.enabled=true}
+    function enableWalkControl(){currentWalkControl.enabled=true}
     //anchors.fill: parent
     //anchors.top: runSessionScene.gameWindowAnchorItem.top
+    //property alias walkControl: walkControl
     property var runColors: {"brth" : "tomato", "hold" : "green", "walk" : "lightblue", "back" : "orange"}
     property int brthIndx: 0
     property int holdIndx: 1
@@ -125,12 +125,16 @@ SceneBase {
     }
     property real sessionDuration:0.0
     property var runGauge
-    onLoaded: {runGauge = [gaugeBrth, gaugeHold, gaugeWalk, gaugeBack];
-               SeaWolfControls.typesDim = runGauge.lengtch
-    }
     //property alias hrPoints: hrSeries
     property real sessionTime: 0.0
+    //The set of properties that are created to get around the
+    // loading of the Tab. Not all of the Tab's elements are simultaniously available
+    // so we create top level properties that are set by Component.onComplete() when lower level elements are created
     property LineSeries currentHrSeries
+    property ChartView  currentChartView
+    property ValueAxis  currentAxisX
+    property ValueAxis  currentAxisY
+    property MenuButton currentWalkControl
     property real minHr:10
     property real maxHr:150
     //property alias currentGauge:timerHold.currentGauge
@@ -151,6 +155,7 @@ SceneBase {
         width: parent.width
         //hight:50
         anchors.top:parent.top
+        //anchors.topMargin:tabHeaderHight
         //height: parent.height
         //anchors.fill: parent
         anchors.horizontalCenter: parent.horizontalCenter;
@@ -201,7 +206,7 @@ SceneBase {
 
                         property real myRadius: dp(5)
                         id: wrapper
-                        z:      isCurrent ? 100:95
+                        z:      {var zdeep=isCurrent ? 100:95; /*console.log("isCurrent, index, zdeep", isCurrent, index, zdeep);*/return zdeep}
                         width:  isCurrent ? 2* sessionView.cellWidth : sessionView.cellWidth
                         height: isCurrent ? 2* sessionView.cellWidth : sessionView.cellWidth
                         radius: isCurrent ? 2 * myRadius: myRadius
@@ -209,6 +214,7 @@ SceneBase {
                         border.color: { if (index == -1) return "grey"; apneaModel.get(index).isCurrent? "white": "black"}
                         border.width: 2
                         function whatToShow() {
+
                            var wts = isCurrent ? Math.round(time - runGauge[index % runGauge.length].value) : time
                            return wts
                         }
@@ -216,7 +222,7 @@ SceneBase {
                             id:timeText
                             anchors.centerIn: parent
                             //font.pointSize: Math.round(parent.height/4)
-                            font.pixelSize: Math.round(dp(2/3*parent.height))
+                            font.pixelSize: Math.round(dp(1/3*parent.height))
                             text: "<b>" + parent.whatToShow() + "</b>"; color: "white"; style: Text.Raised; styleColor: "black"
                             //text: index + ". " + typeName + " " + time + "sec."
 
@@ -232,7 +238,7 @@ SceneBase {
 
         Column{
         anchors.top:parent.top
-        anchors.topMargin: dp(60)
+        anchors.topMargin: 3 * sessionView.cellWidth -spacing //dp(120)
         id:runColumn
         width:parent.width
         //height:parent.height
@@ -264,7 +270,7 @@ SceneBase {
         Rectangle{
             id:hrPlot
             width:parent.width // + dp(50)
-            height: dp(180)
+            height: runSessionScene.height/3
             anchors.horizontalCenter: parent.horizontalCenter
             //anchors.top: runSessionScene.top
             //anchors.topMargin: sessionView.cellWidth * 3
@@ -272,9 +278,14 @@ SceneBase {
             z:50
             ChartView {
                 id:chartView
+//                margins.bottom:dp(0)
+//                margins.left:  dp(0)
+//                margins.right: dp(0)
+//                margins.top:   dp(0)
+
                 title: currentSession.sessionName + " " + currentSession.when
                 anchors.fill: parent
-                anchors.margins: -dp(30)
+                //anchors.margins: -dp(30)
                 antialiasing: true
                 theme: ChartView.ChartThemeBlueIcy
                 //legend:{visible: false}
@@ -305,7 +316,13 @@ SceneBase {
                   XYPoint { x: 0;  y: 0 }
                   XYPoint { x: 50; y: 50 }
                 }
+                Component.onCompleted:{
+                    currentChartView = chartView
+                    currentAxisX     = axisX
+                    currentAxisY     = axisY
+                }
             }
+
         } //End Of Plot
         Item {
             id: gauges
@@ -415,6 +432,11 @@ SceneBase {
                     //              }
                 }
             }
+            Component.onCompleted: {
+                runGauge = [gaugeBrth, gaugeHold, gaugeWalk, gaugeBack];
+                root.typesDim = runGauge.length
+            }
+
         } // End of gauges
 
 
@@ -435,6 +457,7 @@ SceneBase {
                 clip: true
                 onClicked: {
                     gaugeBrth.modelIndex = 0
+                    currentGauge = gaugeBrth
                     apneaModel.get(0).isCurrent = true
 
                     gaugeBrth.state = "stateRun";
@@ -446,7 +469,6 @@ SceneBase {
                     currentSession.pulse=[]
                     walkControl.text= qsTr("Finish Walk")
                     runSessionScene.currentSession.when = Qt.formatDateTime(new Date(), "yyyy-MM-dd-hh-mm-ss");
-                    currentGauge = gaugeBrth
                     chartView.removeAllSeries()
                     currentHrSeries = chartView.createSeries(ChartView.SeriesTypeLine, "", axisX, axisY);
                     currentHrSeries.color = runColors[currentGauge.gaugeName]
@@ -548,9 +570,11 @@ SceneBase {
                 enabled:true
             }
         }
-   }
-//     Component.onCompleted: {
+        Component.onCompleted:{
+            currentWalkControl = walkControl
+        }
 
-//     }
-    }
+      }
+   }
 }
+

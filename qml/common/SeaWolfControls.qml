@@ -25,8 +25,6 @@ CircularGauge {
     property real maxAngle:  45
     property color needleColor: runColors[gaugeName]
     property int modelIndex:0
-    //Is set, whhen RunSessionScene is loaded
-    property int typesDim
     //:runSessionScene.runGauge.length
     minimumValue: 0
     maximumValue: gaugeModel.get(0).time
@@ -339,11 +337,11 @@ CircularGauge {
                         }
                         if ("walk" == runSessionScene.currentGauge.gaugeName){
                             runSessionScene.currentGauge.visible = false
-                            runSessionScene.gauge[backIndx].visible = true
+                            runSessionScene.runGauge[backIndx].visible = true
                         }
                         if ("back" == runSessionScene.currentGauge.gaugeName){
                             runSessionScene.currentGauge.visible = false
-                            runSessionScene.gauge[walkIndx].visible = true
+                            runSessionScene.runGauge[walkIndx].visible = true
                         }
 
                         //emit signala

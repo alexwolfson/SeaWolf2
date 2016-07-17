@@ -41,48 +41,50 @@ SceneBase {
                 border.width: dp(2)
                 radius: dp(10)
 
+//                Text {
+//                    id: selectText
+//                    color: "#3870BA"
+//                    font.pixelSize: dp(34)
+//                    anchors.centerIn: parent
+//                    text: "Select Device"
+//                }
                 Text {
-                    id: selectText
-                    color: "#3870BA"
-                    font.pixelSize: dp(34)
-                    anchors.centerIn: parent
-                    text: "Select Device"
+                    id: infotext
+                    anchors.left: parent.left
+                    anchors.top: background.bottom
+                    text: heartRate.message
+                    color: "#8F8F8F"
                 }
-            }
-
-            Rectangle {
-                id: spinner
-                width: parent.width
-                anchors.top: select.bottom
-                anchors.topMargin: dp(15)
-                //anchors.bottom: demoMode.top
-                visible: false
-                color: "#F0EBED"
-                z: 100
-
                 Rectangle {
-                    id: inside
-                    anchors.centerIn: parent
-                    Image {
-                        id: background
+                    id: spinner
+                    //width: dp(100)
+                    anchors.top: select.top
+                    anchors.topMargin: dp(15)
+                    anchors.bottomMargin: dp(15)
+                    anchors.right: select.right
+                    //anchors.bottom: demoMode.top
+                    visible: false
+                    color: "#F0EBED"
+                    z: 100
 
-                        width:dp(100)
-                        height:dp(100)
-                        anchors.horizontalCenter: parent.horizontalCenter
+                    Rectangle {
+                        id: inside
+                        anchors.centerIn: parent
+                        Image {
+                            id: background
 
-                        source: "../../assets/img/busy_dark.png"
-                        fillMode: Image.PreserveAspectFit
-                        NumberAnimation on rotation { duration: 3000; from:0; to: 360; loops: Animation.Infinite}
-                    }
+                            width:dp(70)
+                            height:dp(70)
+                            anchors.horizontalCenter: parent.horizontalCenter
 
-                    Text {
-                        id: infotext
-                        anchors.horizontalCenter: parent.horizontalCenter
-                        anchors.top: background.bottom
-                        text: heartRate.message
-                        color: "#8F8F8F"
+                            source: "../../assets/img/busy_dark.png"
+                            fillMode: Image.PreserveAspectFit
+                            NumberAnimation on rotation { duration: 3000; from:0; to: 360; loops: Animation.Infinite}
+                        }
+
                     }
                 }
+
             }
 
             Component.onCompleted: {
@@ -112,7 +114,7 @@ SceneBase {
 
                     MouseArea {
                         anchors.fill: parent
-                        onPressed: { box.color= "#3265A7"; box.height=110}
+                        onPressed: { box.color= "#3265A7"; box.height=dp(110)}
                         onClicked: {
                             heartRate.connectToService(modelData.deviceAddress)
                             runSessionPressed()
@@ -122,7 +124,7 @@ SceneBase {
 
                     Text {
                         id: device
-                        font.pixelSize: dp(30)
+                        font.pixelSize: dp(20)
                         text: modelData.deviceName
                         anchors.top: parent.top
                         anchors.topMargin: dp(5)
@@ -132,7 +134,7 @@ SceneBase {
 
                     Text {
                         id: deviceAddress
-                        font.pixelSize: dp(30)
+                        font.pixelSize: dp(20)
                         text: modelData.deviceAddress
                         anchors.bottom: parent.bottom
                         anchors.bottomMargin: dp(5)
