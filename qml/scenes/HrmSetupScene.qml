@@ -51,7 +51,7 @@ SceneBase {
                 Text {
                     id: infotext
                     anchors.left: parent.left
-                    anchors.top: background.bottom
+                    anchors.top: parent.top
                     text: heartRate.message
                     color: "#8F8F8F"
                 }

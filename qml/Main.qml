@@ -34,12 +34,13 @@ ApplicationWindow {
         id: tabView
         anchors.fill: parent
         anchors.margins: 4
-        AboutScene{   title: "About"}
+        ConfigSeriesScene{ title: "Conf"}
         HrmSetupScene{ title: "HRM"}
         RunSessionScene{ title: "Run"}
         Tab { title: "Finish"
             onActiveChanged: Qt.quit()
         }
+        AboutScene{   title: "About"}
         visible:true
         style: TabViewStyle {
             frameOverlap: 1

@@ -86,5 +86,6 @@
         <file>resources.qrc</file>
         <file>SeaWolf2.pro</file>
         <file>TODO</file>
+        <file>qml/common/SeaWolfInput.qml</file>
     </qresource>
 </RCC>

@@ -1,6 +1,8 @@
 //import VPlay 2.0
 import QtQuick 2.7
-import QtQuick.Controls 1.4
+import QtQuick.Controls 2.0
+import QtQuick.Layouts 1.2
+
 import "../common"
 
 SceneBase {
@@ -8,47 +10,129 @@ SceneBase {
     property var currentSessionProperties
     property  string sessionType:"WALK"
     property string sessionName
+    property int numberOfCycles
 
     Item{
         id: session
         property string name
-        property int numberOfCycles
+        //property alias numberOfCycles:nbOfCycles.result
         property bool repeatLast:false
-        property int holdTime:20
-        property int holdIncrement:1
-        property int breathTime:5
-        property int breathDecrement:1
+        property int minBreathTime:5
+        property int breathDecrement:5
+        property int maxHoldTime:20
+        property int holdIncrement:5
         property int walkTime:120
         property int backTime:120
-    }
-    /*
-    LevelEditor {
-      id: levelEditor
-      anchors.fill: parent
-      applicationJSONLevelsDirectory: "jsonSessions/"
-//      toRemoveEntityTypes: [ "platform", "platformGoal", "stars", "obstacle" ]
-//      toStoreEntityTypes: [ "platform", "platformGoal", "stars", "obstacle" ]
-      Component.onCompleted: {
-          loadAllLevelsFromStorageLocation(applicationJSONLevelsLocation)
-      }
-    }
+        width: root.width
+        height: root.height
+        visible:true
+        anchors.leftMargin: dp(20)
+        //flags: Qt.Dialog
+        //modality: Qt.ApplicationModal
 
-    LevelSelectionList {
-        id: levelSelectionList
-        width: 150
-        z: 3
-        // at the beginning it is invisible, only gets visible after a click on the Levels button
-        visible: false
-        anchors.centerIn: parent
-        levelMetaDataArray: levelEditor.authorGeneratedLevels
-        //levelMetaDataArray: levelEditor.applicationJSONLevels
+         ColumnLayout {
+            //z:100
+            id: mainLayout
+            //columns: 2
+            //rowSpacing: 5
+            //columnSpacing: 5
+            anchors {
+                top: parent.top;
+                left: parent.left
+                right: parent.right
+                leftMargin: dp(20)
+                topMargin: dp(20)
+            }
+            Row {
+                id: buttonsRow
+//                anchors.bottom: parent.bottom
+//                anchors.left: parent.left
+//                anchors.right: parent.right
+                spacing: 3
 
-        onLevelSelected: {
-            levelEditor.loadSingleLevel(levelData)
-            // make invisible afterwards
-            levelSelectionList.visible = false
+                MenuButton {
+                    text: "New CO2"
+                    onClicked: {
+                        holdIncrementEdit.visible  = false
+                        breathDecrementEdi.visible = true
+                        walkTimeEdit.visible       = false
+                        backTimeEdit.visible       = false
+                        sessionType                = "CO2"
+                    }
+                }
+
+                MenuButton {
+                    text: "New O2"
+                    onClicked: {
+                        holdIncrementEdit.visible  = true
+                        breathDecrementEdi.visible = false
+                        walkTimeEdit.visible       = false
+                        backTimeEdit.visible       = false
+                        sessionType                = "O2"
+                    }
+                }
+                MenuButton {
+                    text: "New WALK"
+                    onClicked: {
+                        holdIncrementEdit.visible  = false
+                        breathDecrementEdi.visible = false
+                        walkTimeEdit.visible       = true
+                        backTimeEdit.visible       = true
+                        sessionType                = "WALK"
+                    }
+                }
+                MenuButton {
+                    text: "Save"
+                    onClicked: {
+
+                        ///AWdebug
+                        if (sessionType == "CO2"){
+                            configSeriesScene.currentSessionProperties = generateCO2Session()
+                            console.log(" **** generated CO2 session=", currentSessionProperties)
+                       }
+                        else if (sessionType == "O2"){
+                            configSeriesScene.currentSessionProperties = generateO2Session()
+                            console.log(" **** generated O2 session=", currentSessionProperties)
+                        }
+                        else if (sessionType == "WALK"){
+                            configSeriesScene.currentSessionProperties = generateWalkSession()
+                            console.log(" **** generated WALK session=", currentSessionProperties)
+                        }
+                        sessionName = session.name
+                        runSessionScene.sessionSelected(sessionName, currentSessionProperties)
+                      //  levelEditor.saveCurrentLevel( {levelMetaData: {levelName: session.name}, customData:currentSessionProperties} )
+                    }
+                }
+
+//                MenuButton {
+//                    text: "Browse"
+//                    onClicked: {
+//                        levelEditor.loadAllLevelsFromStorageLocation(levelEditor.authorGeneratedLevelsLocation)
+//                        levelSelectionList.visible = true
+//                    }
+//                }
+            }
+
+            //Label { text: qsTr("sessionName") }
+            SeaWolfInput { type:"str";  lbl: qsTr("sessionName");    sft:"Session"; onResult: {configSeriesScene.sessionName=res}}
+            SeaWolfInput{ type:"int";   lbl: qsTr("numberOfCycles"); ift:"6";       onResult: {numberOfCycles=res}}
+            SeaWolfInput{ type:"switch";lbl: qsTr("repeatLast")}
+            SeaWolfInput{ type:"int";   lbl: qsTr("minBreathTime");  ift:"15";      onResult: {minBtratheTime=res}}
+            SeaWolfInput{ id:breathDecrementEdi; type:"int";   lbl: qsTr("breathDecrement");ift:"15";      onResult: {breathDecrement=res}}
+            SeaWolfInput{ type:"int";   lbl: qsTr("maxHoldTime");    ift:"120";     onResult: {maxHoldTime=res}}
+            SeaWolfInput{ id:holdIncrementEdit; type:"int";   lbl: qsTr("holdIncrement");  ift:"15";      onResult: {holdIncrement=res}}
+            SeaWolfInput{ id:walkTimeEdit; type:"int";   lbl: qsTr("walkTime");       ift:"120";     onResult: {walkTime=res}}
+            SeaWolfInput{ id:backTimeEdit; type:"int";   lbl: qsTr("walkBackTime");   ift:"120";     onResult: {walkBackTime=res}}
         }
-    }
+//    LevelEditor {
+//      id: levelEditor
+//      anchors.fill: parent
+//      applicationJSONLevelsDirectory: "jsonSessions/"
+//      Component.onCompleted: {
+//          loadAllLevelsFromStorageLocation(applicationJSONLevelsLocation)
+//      }
+//    }
+
     // had trouble with multidimension arrays in javascript function, so stated to use 1 dimension
     function get2DimIndex(dim0, dim1){
         return 3 * dim0 + dim1
@@ -86,6 +170,8 @@ SceneBase {
 
     }
 
+}
+    /*
     EditableComponent {
         id:o2
         editableType: "O2"
@@ -191,72 +277,7 @@ SceneBase {
 
     }
 */
-    Row {
-        id: buttonsRow
-        anchors.bottom: parent.bottom
-        anchors.left: parent.left
-        anchors.right: parent.right
-        spacing: 3
 
-        MenuButton {
-            text: "New"
-            onClicked: levelEditor.createNewLevel()
-        }
 
-        MenuButton {
-            text: "Remove"
-            onClicked: {
-
-                levelEditor.removeCurrentLevel()
-            }
-        }
-        MenuButton {
-            text: "Save"
-            onClicked: {
-
-                ///AWdebug
-                if (itemEditor.currentEditableType == "CO2"){
-                    configSeriesScene.currentSessionProperties = generateCO2Session()
-                    console.log(" **** generated CO2 session=", currentSessionProperties)
-               }
-                else if (itemEditor.currentEditableType == "O2"){
-                    configSeriesScene.currentSessionProperties = generateO2Session()
-                    console.log(" **** generated O2 session=", currentSessionProperties)
-                }
-                else if (itemEditor.currentEditableType == "WALK"){
-                    configSeriesScene.currentSessionProperties = generateWalkSession()
-                    console.log(" **** generated WALK session=", currentSessionProperties)
-                }
-                sessionName = session.name
-                runSessionScene.sessionSelected(sessionName, currentSessionProperties)
-                levelEditor.saveCurrentLevel( {levelMetaData: {levelName: session.name}, customData:currentSessionProperties} )
-                //levelEditor.saveCurrentLevel()
-            }
-        }
-
-        MenuButton {
-            text: "Browse"
-            onClicked: {
-                levelEditor.loadAllLevelsFromStorageLocation(levelEditor.authorGeneratedLevelsLocation)
-                levelSelectionList.visible = true
-            }
-        }
-    }
-
-//    LevelSelectionList {
-//          id: levelSelectionList
-//          // at the beginning it is invisible, only gets visible after a click on the Levels button
-//          visible: false
-//          anchors.right: parent.right // position on the right
-
-//          // this connects the stored levels from the player with the level list
-//          levelMetaDataArray: levelEditor.authorGeneratedLevels
-
-//          onLevelSelected: {
-//            levelEditor.loadSingleLevel(levelData)
-//            // make invisible afterwards
-//            levelSelectionList.visible = false
-//          }
-
-//      }
-  }// end of Scene
+//    }
+}// end of Scene

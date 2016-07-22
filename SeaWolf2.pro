@@ -121,7 +121,8 @@ DISTFILES += \
     qml/scenes/HrmSetupScene.qml \
     qml/scenes/MenuScene.qml \
     qml/scenes/RunSessionScene.qml \
-    qml/Main.qml
+    qml/Main.qml \
+    qml/common/SeaWolfInput.qml
 
 HEADERS += \
     qmlfileaccess.h \
