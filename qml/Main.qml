@@ -35,8 +35,8 @@ ApplicationWindow {
         anchors.fill: parent
         anchors.margins: 4
         ConfigSeriesScene{ title: "Conf"}
-        HrmSetupScene{ title: "HRM"}
         RunSessionScene{ title: "Run"}
+        HrmSetupScene{ title: "HRM"}
         Tab { title: "Finish"
             onActiveChanged: Qt.quit()
         }

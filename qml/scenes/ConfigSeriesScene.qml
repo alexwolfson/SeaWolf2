@@ -54,7 +54,7 @@ SceneBase {
                     text: "New CO2"
                     onClicked: {
                         holdIncrementEdit.visible  = false
-                        breathDecrementEdi.visible = true
+                        breathDecrementEdit.visible = true
                         walkTimeEdit.visible       = false
                         backTimeEdit.visible       = false
                         sessionType                = "CO2"
@@ -65,7 +65,7 @@ SceneBase {
                     text: "New O2"
                     onClicked: {
                         holdIncrementEdit.visible  = true
-                        breathDecrementEdi.visible = false
+                        breathDecrementEdit.visible = false
                         walkTimeEdit.visible       = false
                         backTimeEdit.visible       = false
                         sessionType                = "O2"
@@ -75,7 +75,7 @@ SceneBase {
                     text: "New WALK"
                     onClicked: {
                         holdIncrementEdit.visible  = false
-                        breathDecrementEdi.visible = false
+                        breathDecrementEdit.visible = false
                         walkTimeEdit.visible       = true
                         backTimeEdit.visible       = true
                         sessionType                = "WALK"
@@ -84,8 +84,6 @@ SceneBase {
                 MenuButton {
                     text: "Save"
                     onClicked: {
-
-                        ///AWdebug
                         if (sessionType == "CO2"){
                             configSeriesScene.currentSessionProperties = generateCO2Session()
                             console.log(" **** generated CO2 session=", currentSessionProperties)
@@ -116,9 +114,9 @@ SceneBase {
             //Label { text: qsTr("sessionName") }
             SeaWolfInput { type:"str";  lbl: qsTr("sessionName");    sft:"Session"; onResult: {configSeriesScene.sessionName=res}}
             SeaWolfInput{ type:"int";   lbl: qsTr("numberOfCycles"); ift:"6";       onResult: {numberOfCycles=res}}
-            SeaWolfInput{ type:"switch";lbl: qsTr("repeatLast")}
+            SeaWolfInput{ id: rLast; type:"switch";lbl: qsTr("repeatLast");         onResult: {repeatLast=swYesNo}}
             SeaWolfInput{ type:"int";   lbl: qsTr("minBreathTime");  ift:"15";      onResult: {minBtratheTime=res}}
-            SeaWolfInput{ id:breathDecrementEdi; type:"int";   lbl: qsTr("breathDecrement");ift:"15";      onResult: {breathDecrement=res}}
+            SeaWolfInput{ id:breathDecrementEdit; type:"int";   lbl: qsTr("breathDecrement");ift:"15";      onResult: {breathDecrement=res}}
             SeaWolfInput{ type:"int";   lbl: qsTr("maxHoldTime");    ift:"120";     onResult: {maxHoldTime=res}}
             SeaWolfInput{ id:holdIncrementEdit; type:"int";   lbl: qsTr("holdIncrement");  ift:"15";      onResult: {holdIncrement=res}}
             SeaWolfInput{ id:walkTimeEdit; type:"int";   lbl: qsTr("walkTime");       ift:"120";     onResult: {walkTime=res}}
@@ -170,25 +168,24 @@ SceneBase {
 
     }
 
-}
-    /*
-    EditableComponent {
-        id:o2
-        editableType: "O2"
-        editableComponentMetaData: {
-          "displayname" : "O2 Session"
-        }
-        defaultGroup: "Click to choose Session"
-        target:session
-        properties: {
-            "name": {label:"Session name"},
-            "numberOfCycles": {"min": 1, "max": 8, "stepsize": 1, "label": "Number of cycles" },
-            "repeatLast":{label:"Repeat Last Cycle"},
-            "breathTime":{"min":0, "max":600, "stepsize": 5, "label": "Breath time"},
-            "holdTime":{"min":0, "max":600, "stepsize": 5, "label": "Maximum hold time"},
-            "holdIncrement":{"min":0, "max":120, "stepsize": 5, "label": "Hold time increment"}
-        }
-    }
+
+//    EditableComponent {
+//        id:o2
+//        editableType: "O2"
+//        editableComponentMetaData: {
+//          "displayname" : "O2 Session"
+//        }
+//        defaultGroup: "Click to choose Session"
+//        target:session
+//        properties: {
+//            "name": {label:"Session name"},
+//            "numberOfCycles": {"min": 1, "max": 8, "stepsize": 1, "label": "Number of cycles" },
+//            "repeatLast":{label:"Repeat Last Cycle"},
+//            "breathTime":{"min":0, "max":600, "stepsize": 5, "label": "Breath time"},
+//            "holdTime":{"min":0, "max":600, "stepsize": 5, "label": "Maximum hold time"},
+//            "holdIncrement":{"min":0, "max":120, "stepsize": 5, "label": "Hold time increment"}
+//        }
+//    }
     // Create a JSON array representing the current session
     // Do we need to make it robust, check for ranges, etc. ?
     function generateCO2Session (){
@@ -219,25 +216,25 @@ SceneBase {
 
     }
 
-    EditableComponent {
-        id:co2
-        editableType: "CO2"
-        editableComponentMetaData: {
-          "displayname" : "CO2 Session"
-        }
-        defaultGroup: "Click to choose Session"
+//    EditableComponent {
+//        id:co2
+//        editableType: "CO2"
+//        editableComponentMetaData: {
+//          "displayname" : "CO2 Session"
+//        }
+//        defaultGroup: "Click to choose Session"
 
-        target:session
-        properties: {
-            "name": {label:"Session name"},
-            "numberOfCycles": {"min": 1, "max": 8, "stepsize": 1, "label": "Number of cycles" },
-            "repeatLast":{label:"Repeat Last Cycle"},
-            "breathTime":{"min":0, "max":600, "stepsize": 5, "label": "Minimum breath time"},
-            "breathDecrement":{"min":0, "max":120, "stepsize": 5, "label": "Breath time decrement"},
-            "holdTime":{"min":0, "max":600, "stepsize": 5, "label": "Hold time"},
-        }
+//        target:session
+//        properties: {
+//            "name": {label:"Session name"},
+//            "numberOfCycles": {"min": 1, "max": 8, "stepsize": 1, "label": "Number of cycles" },
+//            "repeatLast":{label:"Repeat Last Cycle"},
+//            "breathTime":{"min":0, "max":600, "stepsize": 5, "label": "Minimum breath time"},
+//            "breathDecrement":{"min":0, "max":120, "stepsize": 5, "label": "Breath time decrement"},
+//            "holdTime":{"min":0, "max":600, "stepsize": 5, "label": "Hold time"},
+//        }
 
-    }
+//    }
     // Create a JSON array representing the current session
     // Do we need to make it robust, check for ranges, etc. ?
     function generateWalkSession (gaugeName){
@@ -253,31 +250,30 @@ SceneBase {
         }
         return mySession
     }
-    EditableComponent {
-        id:walk
-        editableType: "WALK"
-        editableComponentMetaData: {
-          "displayname" : "Walk Session"
-        }
-        defaultGroup: "Click to choose Session"
-        target:session
-        properties: {
-            "name": {label:"Session name"},
-            "numberOfCycles": {"min": 1, "max": 8, "stepsize": 1, "label": "Number of cycles" },
-            "breathTime":{"min":0, "max":180, "stepsize": 5, "label": "Breath time"},
-            "holdTime":{"min":0, "max":300, "stepsize": 5, "label": "Hold time"},
-            "walkTime":{"min":0, "max":300, "stepsize": 5, "label": "Walk time"},
+//    EditableComponent {
+//        id:walk
+//        editableType: "WALK"
+//        editableComponentMetaData: {
+//          "displayname" : "Walk Session"
+//        }
+//        defaultGroup: "Click to choose Session"
+//        target:session
+//        properties: {
+//            "name": {label:"Session name"},
+//            "numberOfCycles": {"min": 1, "max": 8, "stepsize": 1, "label": "Number of cycles" },
+//            "breathTime":{"min":0, "max":180, "stepsize": 5, "label": "Breath time"},
+//            "holdTime":{"min":0, "max":300, "stepsize": 5, "label": "Hold time"},
+//            "walkTime":{"min":0, "max":300, "stepsize": 5, "label": "Walk time"},
 
-        }
-    }
-    ItemEditor {
-      id: itemEditor // important to set the id to ItemEditor!
-      anchors.fill: parent
-      //anchors.bottomMargin: buttonsRow.height
-
-    }
-*/
-
+//        }
+//    }
+//    ItemEditor {
+//      id: itemEditor // important to set the id to ItemEditor!
+//      anchors.fill: parent
+//      //anchors.bottomMargin: buttonsRow.height
 
 //    }
+
+
+    }
 }// end of Scene

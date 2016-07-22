@@ -11,6 +11,7 @@ Item {
     property string res
     property alias  ift: intField.text
     property alias  sft: strField.text
+    property alias  swYesNo: swtch.checked
     signal result()
     Label {
         id:lbl
@@ -75,7 +76,7 @@ Item {
         anchors.leftMargin: dp(10)
         enabled: type=="switch"
         visible: type=="switch"
-        text: qsTr("No")
+        text: qsTr("Yes")
     }
     Switch {
         id:swtch
@@ -83,6 +84,7 @@ Item {
         anchors.leftMargin: dp(10)
         enabled: type=="switch"
         visible: type=="switch"
+        onCheckedChanged: {swYesNo=checked; result()}
     }
     Text {
         id:swYes
