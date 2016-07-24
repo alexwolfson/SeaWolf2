@@ -26,7 +26,7 @@ Rectangle {
     Text {
         id: buttonText
         anchors.centerIn: parent
-        font.pixelSize: dp (24)
+        font.pixelSize: dp (36)
         color: "black"
     }
 

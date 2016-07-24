@@ -15,7 +15,7 @@ Item {
     signal result()
     Label {
         id:lbl
-        width: dp(120)
+        width: dp(240)
         text: "Label"
     }
     TextField {
@@ -33,13 +33,14 @@ Item {
             background: Rectangle {
                 radius: dp(20)
                 color: "#F0EBEB"
-                implicitWidth: dp(40)
-                implicitHeight: dp(20)
+                implicitWidth: dp(120)
+                implicitHeight: dp(40)
                 border.color: "#000000"
                 border.width: dp(1)
             }
         }
-        onEditingFinished: {res=text; result()}
+        //onEditingFinished: {res=text; result()}
+        onTextChanged: {res=text; result()}
 //        Binding{
 //            target:textFieldInt
 //            property:"text"
@@ -62,37 +63,21 @@ Item {
             background: Rectangle {
                 radius: dp(20)
                 color: "#F0EBEB"
-                implicitWidth: dp(150)
-                implicitHeight: dp(20)
+                implicitWidth: dp(180)
+                implicitHeight: dp(40)
                 border.color: "#000000"
                 border.width: dp(1)
             }
         }
         onEditingFinished: {res=text; result()}
     }
-    Text {
-        id:swNo
+    Switch {
+        id:swtch
         anchors.left:lbl.right
         anchors.leftMargin: dp(10)
         enabled: type=="switch"
         visible: type=="switch"
-        text: qsTr("Yes")
-    }
-    Switch {
-        id:swtch
-        anchors.left:swNo.right
-        anchors.leftMargin: dp(10)
-        enabled: type=="switch"
-        visible: type=="switch"
         onCheckedChanged: {swYesNo=checked; result()}
-    }
-    Text {
-        id:swYes
-        anchors.left:swtch.right
-        anchors.leftMargin: dp(10)
-        enabled: type=="switch"
-        visible: type=="switch"
-        text: qsTr("Yes")
     }
 
 }

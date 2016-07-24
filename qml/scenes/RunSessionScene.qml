@@ -13,9 +13,11 @@ import QtCharts 2.1
 import "../common"
 import com.seawolf.qmlfileaccess 1.0
 //import "../common/draw.
-
 SceneBase {
     id: runSessionScene
+    signal setupSessionSignal(var sessionName, var selectedSession)
+
+    onSetupSessionSignal: {setupSession(sessionName,selectedSession)}
     active: true
     function invert (obj) {
 
@@ -37,16 +39,16 @@ SceneBase {
     function setupSession(sessionName, selectedSession){
         console.log("**** In setupSession width ", sessionName, ":", selectedSession)
         var step;
-        apneaModel.clear();
+        currentModel.clear();
         sessionDuration = 0.0
         for (step in selectedSession){
-            apneaModel.append({"time": selectedSession[step].time, "typeName":selectedSession[step].typeName, "isCurrent": false});
+            currentModel.append({"time": selectedSession[step].time, "typeName":selectedSession[step].typeName, "isCurrent": false});
             sessionDuration += selectedSession[step].time;
         }
-        gaugeBrth.maximumValue = apneaModel.get(brthIndx).time
-        gaugeHold.maximumValue = apneaModel.get(holdIndx).time
-        gaugeWalk.maximumValue = apneaModel.get(walkIndx).time
-        gaugeBack.maximumValue = apneaModel.get(backIndx).time
+        currentGaugeBrth.maximumValue = currentModel.get(brthIndx).time
+        currentGaugeHold.maximumValue = currentModel.get(holdIndx).time
+        currentGaugeWalk.maximumValue = currentModel.get(walkIndx).time
+        currentGaugeBack.maximumValue = currentModel.get(backIndx).time
         currentSession.sessionName = sessionName
     }
     function getSesssionHRMin(session){
@@ -135,12 +137,15 @@ SceneBase {
     property ValueAxis  currentAxisX
     property ValueAxis  currentAxisY
     property MenuButton currentWalkControl
+    property ListModel  currentModel
+    property SeaWolfControls currentGaugeBrth
+    property SeaWolfControls currentGaugeHold
+    property SeaWolfControls currentGaugeWalk
+    property SeaWolfControls currentGaugeBack
+
     property real minHr:10
     property real maxHr:150
     //property alias currentGauge:timerHold.currentGauge
-    //===================================================
-    // signal indicating that current session is selected
-    signal sessionSelected(var sessionName, var selectedSession)
     //called by onSessionSelected
     property int   timeFooterBrth
     property color borderColorFooterBrth
@@ -151,7 +156,7 @@ SceneBase {
     property bool  noWalk: true
 
     Item {
-        id: apneaModelContainer
+        id: currentModelContainer
         width: parent.width
         //hight:50
         anchors.top:parent.top
@@ -187,6 +192,9 @@ SceneBase {
             ListElement { time:10; typeName: "hold";    isCurrent: false }
             ListElement { time:11; typeName: "walk";    isCurrent: false }
             ListElement { time:11; typeName: "back";    isCurrent: false }
+            Component.onCompleted: {
+                currentModel = apneaModel
+            }
         }
         GridView {
             id: sessionView
@@ -195,11 +203,10 @@ SceneBase {
             anchors.margins: dp(2)
             //anchors.top: parent.top
             anchors.fill: parent
-
             cellWidth: (parent.width - 2 * anchors.margins) /12 - 3
             cellHeight: cellWidth
             clip: true
-            model: apneaModel
+            model: currentModel
             delegate: Component {
                 Loader{
                     Rectangle {
@@ -210,8 +217,8 @@ SceneBase {
                         width:  isCurrent ? 2* sessionView.cellWidth : sessionView.cellWidth
                         height: isCurrent ? 2* sessionView.cellWidth : sessionView.cellWidth
                         radius: isCurrent ? 2 * myRadius: myRadius
-                        color: { if (index == -1) return "grey"; runColors[apneaModel.get(index).typeName]}
-                        border.color: { if (index == -1) return "grey"; apneaModel.get(index).isCurrent? "white": "black"}
+                        color: { if (index == -1) return "grey"; runColors[currentModel.get(index).typeName]}
+                        border.color: { if (index == -1) return "grey"; currentModel.get(index).isCurrent? "white": "black"}
                         border.width: 2
                         function whatToShow() {
 
@@ -222,7 +229,7 @@ SceneBase {
                             id:timeText
                             anchors.centerIn: parent
                             //font.pointSize: Math.round(parent.height/4)
-                            font.pixelSize: Math.round(dp(1/3*parent.height))
+                            font.pixelSize: Math.round(dp(0.5*parent.height))
                             text: "<b>" + parent.whatToShow() + "</b>"; color: "white"; style: Text.Raised; styleColor: "black"
                             //text: index + ". " + typeName + " " + time + "sec."
 
@@ -348,7 +355,7 @@ SceneBase {
                 // different angles, depenging if "walk" part is presented
                 maxAngle:     gaugeWalk.maximumValue === 0 ? 355 : 295
                 anchors.centerIn: parent
-                gaugeModel: apneaModel
+                gaugeModel: currentModel
                 nextGauge:gaugeHold
                 width:height
                 height:parent.height
@@ -369,7 +376,7 @@ SceneBase {
                 minAngle:     gaugeWalk.maximumValue === 0 ? 5 :-55
                 maxAngle:     gaugeWalk.maximumValue === 0 ? 175 : 55
                 anchors.centerIn: parent
-                gaugeModel: apneaModel
+                gaugeModel: currentModel
                 nextGauge: gaugeWalk.maximumValue === 0 ? gaugeBrth : gaugeWalk
                 width:height
                 height:parent.height
@@ -390,7 +397,7 @@ SceneBase {
                 minAngle:     65
                 maxAngle:     175
                 anchors.centerIn: parent
-                gaugeModel: apneaModel
+                gaugeModel: currentModel
                 nextGauge: gaugeBack
                 //gaugeWalkControl: container.walkControl
                 width:height
@@ -411,7 +418,7 @@ SceneBase {
                 minAngle:     65
                 maxAngle:     175
                 anchors.centerIn: parent
-                gaugeModel: apneaModel
+                gaugeModel: currentModel
                 nextGauge: gaugeBrth
                 //gaugeWalkControl: container.walkControl
                 width:height
@@ -433,7 +440,11 @@ SceneBase {
                 }
             }
             Component.onCompleted: {
-                runGauge = [gaugeBrth, gaugeHold, gaugeWalk, gaugeBack];
+                currentGaugeBrth=gaugeBrth
+                currentGaugeHold=gaugeHold
+                currentGaugeWalk=gaugeWalk
+                currentGaugeBack=gaugeBack
+                runGauge = [currentGaugeBrth, currentGaugeHold, currentGaugeWalk, currentGaugeBack];
                 root.typesDim = runGauge.length
             }
 
@@ -456,13 +467,13 @@ SceneBase {
                 enabled: true
                 clip: true
                 onClicked: {
-                    gaugeBrth.modelIndex = 0
-                    currentGauge = gaugeBrth
-                    apneaModel.get(0).isCurrent = true
+                    currentGaugeBrth.modelIndex = 0
+                    currentGauge = currentGaugeBrth
+                    currentModel.get(0).isCurrent = true
 
-                    gaugeBrth.state = "stateRun";
-                    gaugeBrth.isCurrent = true
-                    //apneaModel.get(0).isCurrent = true
+                    currentGaugeBrth.state = "stateRun";
+                    currentGaugeBrth.isCurrent = true
+                    //currentModel.get(0).isCurrent = true
                     walkControl.enabled = false
                     button2.enabled = true;
                     currentSession.event=[]
@@ -487,16 +498,16 @@ SceneBase {
                 onClicked: {
                     if (walkControl.text === qsTr("Finish Walk")){
                         //enabled = false;
-                        gaugeWalk.state = "initial";
-                        //gaugeWalk.maximumValue = gaugeWalk.value;
+                        currentGauge.state = "initial";
+                        //currentgaugeWalk.maximumValue = currentgaugeWalk.value;
                         walkControl.text = qsTr("Finish Back")
                         walkControl.enabled = true
-                        gaugeWalk.stopVoiceTimers();
+                        currentGauge.stopVoiceTimers();
                     } else if(walkControl.text === qsTr("Finish Back")){
-                        gaugeBack.state = "initial"
+                        currentGauge.state = "initial"
                         walkControl.text = qsTr("Finish Walk");
                         walkControl.enabled = false
-                        gaugeBack.stopVoiceTimers();
+                        currentGauge.stopVoiceTimers();
                     }
                 }
             }
@@ -512,10 +523,10 @@ SceneBase {
                 onClicked: {
                     //timerBrth.sessionIsOver(timerBrth)
                     //fileDialog.open()
-                    gaugeBrth.maximumValue = apneaModel.get(brthIndx).time
-                    gaugeHold.maximumValue = apneaModel.get(holdIndx).time
-                    gaugeWalk.maximumValue = apneaModel.get(walkIndx).time
-                    gaugeBack.maximumValue = apneaModel.get(backIndx).time
+                    gaugeBrth.maximumValue = currentModel.get(brthIndx).time
+                    gaugeHold.maximumValue = currentModel.get(holdIndx).time
+                    gaugeWalk.maximumValue = currentModel.get(walkIndx).time
+                    gaugeBack.maximumValue = currentModel.get(backIndx).time
                     gaugeBrth.state = "initial"
                     gaugeBrth.value = 0
                     gaugeHold.state = "initial"
@@ -524,8 +535,8 @@ SceneBase {
                     gaugeWalk.value = 0
                     gaugeBack.state = "initial"
                     gaugeBack.value = 0
-                    //apneaModel.get(apneaModel.index).isCurrent = false
-                    //apneaModel.index = 0
+                    //currentModel.get(currentModel.index).isCurrent = false
+                    //currentModel.index = 0
 
                     walkControl.enabled = true
                     //button2.enabled = false

@@ -3,6 +3,8 @@ import QtQuick 2.7
 import QtQuick.Window 2.2
 import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
+import QtQuick.Dialogs 1.1
+
 import "./scenes"
 import "./common"
 
@@ -12,9 +14,9 @@ ApplicationWindow {
     property real default_pix_density: 4  //pixel density of my current screen
     property real scale_factor: {
         var sfDen   = Screen.pixelDensity/default_pix_density
-        var sfWidth = Screen.width / 500
-        var sfHeight  = Screen.height / 900
-        return Math.min(sfDen, sfWidth, sfHeight)
+        var sfWidth = Screen.width / 720
+        var sfHeight  = Screen.height / 1280
+        return Math.min(/*sfDen, */sfWidth, sfHeight)
     }
     property int firstTime:1
     function dp(pix){
@@ -27,28 +29,38 @@ ApplicationWindow {
     //Is set, whhen RunSessionScene is loaded
     property int typesDim
     visible:true
-    width: dp(500)
+    width: Screen.width
     //for some reason dp(1920) created binding loop and dependence of NONNotifiable factor
-    height: dp(900)
+    height: Screen.height
     TabView {
         id: tabView
         anchors.fill: parent
         anchors.margins: 4
-        ConfigSeriesScene{ title: "Conf"}
-        RunSessionScene{ title: "Run"}
-        HrmSetupScene{ title: "HRM"}
-        Tab { title: "Finish"
-            onActiveChanged: Qt.quit()
+//        property Tab about
+//        property Tab config
+//        property Tab hrm
+//        property Tab run
+//        property Tab finish
+        Component.onCompleted:  {
+            conf.sessionSelected.connect(run.setupSession)
+//            config = addTab("Config Ser", Qt.createComponent("qrc:/qml/scenes/ConfigSeriesScene.qml"))
+//            config.visible = true
+//            run = addTab("Run", Qt.createComponent("qrc:/qml/scenes/RunSessionScene.qml"))
+//            run.visible = true
+//            hrm = addTab("HRM", Qt.createComponent("qrc:/qml/scenes/HrmSetupScene.qml"))
+//            hrm.visible = true
+//            // About the app scene
+//            about = addTab("About", Qt.createComponent("qrc:/qml/scenes/AboutScene.qml"))
+//            about.visible = true
         }
-        AboutScene{   title: "About"}
-        visible:true
         style: TabViewStyle {
-            frameOverlap: 1
+            frameOverlap: dp(0)
             tab: Rectangle {
                 color: styleData.selected ? "steelblue" :"lightsteelblue"
                 border.color:  "steelblue"
-                implicitWidth: Math.max(text.width + dp(4), dp(80))
-                implicitHeight: dp(40)
+                border.width: dp(4)
+                implicitWidth: Math.max(text.width + dp(20), dp(100))
+                implicitHeight: dp(80)
                 radius: dp(2)
                 Text {
                     id: text
@@ -67,7 +79,23 @@ ApplicationWindow {
             }
 
         }
+
+        ConfigSeriesScene{ id:conf; title: qsTr("Conf")}
+        RunSessionScene{ id:run;    title: qsTr("Run")}
+        HrmSetupScene{  id:hrm;     title: qsTr("HRM")}
+        AboutScene{  id:about;      title: qsTr("About")}
+        Tab {
+            id:finish;
+            title: qsTr("Finish");
+            MenuButton{
+                id:quitButton
+                text: qsTr("Quit")
+                anchors.centerIn: parent
+                onClicked: {Qt.quit()}
+            }
+        }
     }
+
 
 //    TabView {
 //          id: frame
@@ -82,7 +110,7 @@ ApplicationWindow {
 //        //height: dp(1920)
 //        property variant jsonTest
 //        property var currentSession
-//       // property ListModel currentModel: apneaModel
+//       // property ListModel currentModel: currentModel
 
 //        // You get free licenseKeys from http://v-play.net/licenseKey
 //        // With a licenseKey you can:
@@ -95,7 +123,7 @@ ApplicationWindow {
 //    //     EntityManager {
 //    //        id: entityManager
 //    //    }
-//        // menu sceneapneaModel.get(view.currentIndex - view.currentIndex % typesDim + pr.type).ti
+//        // menu scenecurrentModel.get(view.currentIndex - view.currentIndex % typesDim + pr.type).ti
 //        Component.onCompleted:  {
 //            // About the app scene
 //            about = addTab("About", Qt.createComponent("qrc:/qml/scenes/AboutScene.qml"))
