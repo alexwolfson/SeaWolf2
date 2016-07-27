@@ -16,8 +16,9 @@ import com.seawolf.qmlfileaccess 1.0
 SceneBase {
     id: runSessionScene
     signal setupSessionSignal(var sessionName, var selectedSession)
-
     onSetupSessionSignal: {setupSession(sessionName,selectedSession)}
+    signal timeLeft(var tm)
+    onTimeLeft: {currentStepLeft.text = tm}
     active: true
     function invert (obj) {
 
@@ -31,6 +32,7 @@ SceneBase {
 
       return new_obj;
     }
+    //creates new series graph
     function setupCurrentHrSeries(){
         currentHrSeries = currentChartView.createSeries(ChartView.SeriesTypeLine, "", currentAxisX, currentAxisY);
         currentHrSeries.color = runColors[currentGauge.gaugeName]
@@ -109,7 +111,7 @@ SceneBase {
     //anchors.fill: parent
     //anchors.top: runSessionScene.gameWindowAnchorItem.top
     //property alias walkControl: walkControl
-    property var runColors: {"brth" : "tomato", "hold" : "green", "walk" : "lightblue", "back" : "orange"}
+    property var runColors: {"brth" : "green", "hold" : "tomato", "walk" : "navyblue", "back" : "orange"}
     property int brthIndx: 0
     property int holdIndx: 1
     property int walkIndx: 2
@@ -196,14 +198,34 @@ SceneBase {
                 currentModel = apneaModel
             }
         }
-        GridView {
-            id: sessionView
-            //width: parent.width
-            //height: parent.height
+        Rectangle{
+            id: currentStepLeft
+            property alias text:txt.text
+            z:1
+            //12 cells + 1 double sized cell for that Rectangle in a row
+            width: (parent.width - 3 * anchors.margins) / 7
+            height: width
             anchors.margins: dp(2)
+            anchors.top:parent.top
+            anchors.left:parent.left
+            radius: dp(8)
+            border.width: dp(4)
+            border.color: black
+            Text{ id:txt
+                anchors.centerIn: parent
+                font.pixelSize: Math.round(dp(0.6*parent.height))
+                text: Math.round(currentGauge.maximumValue - currentGauge.value)
+            }
+        }
+
+        GridView {
+            //z:50
+            id: sessionView
+            //height: parent.height
+            anchors.leftMargin: currentStepLeft.width
             //anchors.top: parent.top
             anchors.fill: parent
-            cellWidth: (parent.width - 2 * anchors.margins) /12 - 3
+            cellWidth: (parent.width - 2 * anchors.margins) /14 - 3
             cellHeight: cellWidth
             clip: true
             model: currentModel
@@ -214,28 +236,29 @@ SceneBase {
                         property real myRadius: dp(5)
                         id: wrapper
                         z:      {var zdeep=isCurrent ? 100:95; /*console.log("isCurrent, index, zdeep", isCurrent, index, zdeep);*/return zdeep}
-                        width:  isCurrent ? 2* sessionView.cellWidth : sessionView.cellWidth
-                        height: isCurrent ? 2* sessionView.cellWidth : sessionView.cellWidth
-                        radius: isCurrent ? 2 * myRadius: myRadius
+                        width:  /*isCurrent ? 2* sessionView.cellWidth :*/ sessionView.cellWidth
+                        height: /*isCurrent ? 2* sessionView.cellWidth : */sessionView.cellWidth
+                        radius: /*isCurrent ? 2 * myRadius:*/ myRadius
                         color: { if (index == -1) return "grey"; runColors[currentModel.get(index).typeName]}
-                        border.color: { if (index == -1) return "grey"; currentModel.get(index).isCurrent? "white": "black"}
-                        border.width: 2
+                        border.color: { if (index == -1) return "grey"; isCurrent? "white": "black"}
+                        border.width: dp(4)
                         function whatToShow() {
 
-                           var wts = isCurrent ? Math.round(time - runGauge[index % runGauge.length].value) : time
+                           var wts = /*isCurrent ? Math.round(time - runGauge[index % runGauge.length].value) :*/ time
+                           //timeLeft(wts)
                            return wts
                         }
                         Text {
                             id:timeText
                             anchors.centerIn: parent
                             //font.pointSize: Math.round(parent.height/4)
-                            font.pixelSize: Math.round(dp(0.5*parent.height))
+                            font.pixelSize: Math.round(dp(0.6*parent.height))
                             text: "<b>" + parent.whatToShow() + "</b>"; color: "white"; style: Text.Raised; styleColor: "black"
                             //text: index + ". " + typeName + " " + time + "sec."
 
                         }
-                        Behavior on width {NumberAnimation{duration:500}}
-                        Behavior on height {NumberAnimation{duration:500}}
+                        Behavior on border.color {ColorAnimation{duration:500}}
+                        //Behavior on height {NumberAnimation{duration:500}}
                     }
                 }
             }
@@ -292,7 +315,8 @@ SceneBase {
 
                 title: currentSession.sessionName + " " + currentSession.when
                 anchors.fill: parent
-                //anchors.margins: -dp(30)
+                //to make visible part of the graph taking bigger part
+                anchors.topMargin: dp(-30)
                 antialiasing: true
                 theme: ChartView.ChartThemeBlueIcy
                 //legend:{visible: false}

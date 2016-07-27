@@ -52,9 +52,10 @@ SceneBase{
                  QML/Qt development
                 <p><b> Apnea influences </b></p>
                    <span class="auto-style3">
+                <br>
                 <i>Nick Fazah</i> <br>One of the owners of the
                 <br><a href=\"http://www.ecdivers.com\">East Cost divers</a><br>
-                and SSI international training director
+                and SSI international training director.<br>
                 Nick was able to create a freediving comunity in New England (USA)<br>
                    which is located very far from the tropical waters <br>
                 <br><i>Aharon Solomons</i>

@@ -29,9 +29,9 @@ ApplicationWindow {
     //Is set, whhen RunSessionScene is loaded
     property int typesDim
     visible:true
-    width: Screen.width
     //for some reason dp(1920) created binding loop and dependence of NONNotifiable factor
     height: Screen.height
+    width: Math.min(Screen.width, Screen.height*9/16)
     TabView {
         id: tabView
         anchors.fill: parent
@@ -61,7 +61,7 @@ ApplicationWindow {
                 border.width: dp(4)
                 implicitWidth: Math.max(text.width + dp(20), dp(100))
                 implicitHeight: dp(80)
-                radius: dp(2)
+                radius: dp(4)
                 Text {
                     id: text
                     anchors.centerIn: parent
@@ -87,16 +87,21 @@ ApplicationWindow {
         Tab {
             id:finish;
             title: qsTr("Finish");
-            MenuButton{
-                id:quitButton
-                text: qsTr("Quit")
-                anchors.centerIn: parent
-                onClicked: {Qt.quit()}
+            Item {
+                id: quit
+                MenuButton{
+                    id:quitButton
+                    width:parent.width/3
+                    height: parent.height/3
+                    border.width: dp(4)
+                    border.color: "black"
+                    text: qsTr("Quit")
+                    anchors.centerIn: parent
+                    onClicked: {Qt.quit()}
+                }
             }
         }
     }
-
-
 //    TabView {
 //          id: frame
 //          anchors.fill: parent
