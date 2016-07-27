@@ -213,7 +213,7 @@ SceneBase {
             border.color: black
             Text{ id:txt
                 anchors.centerIn: parent
-                font.pixelSize: Math.round(dp(0.6*parent.height))
+                font.pixelSize: Math.round(dp(0.4 * parent.height))
                 text: Math.round(currentGauge.maximumValue - currentGauge.value)
             }
         }
@@ -236,12 +236,12 @@ SceneBase {
                         property real myRadius: dp(5)
                         id: wrapper
                         z:      {var zdeep=isCurrent ? 100:95; /*console.log("isCurrent, index, zdeep", isCurrent, index, zdeep);*/return zdeep}
-                        width:  /*isCurrent ? 2* sessionView.cellWidth :*/ sessionView.cellWidth
-                        height: /*isCurrent ? 2* sessionView.cellWidth : */sessionView.cellWidth
+                        width:  /*isCurrent ? 2* sessionView.cellWidth :*/ sessionView.cellWidth - dp(2)
+                        height: width
                         radius: /*isCurrent ? 2 * myRadius:*/ myRadius
                         color: { if (index == -1) return "grey"; runColors[currentModel.get(index).typeName]}
                         border.color: { if (index == -1) return "grey"; isCurrent? "white": "black"}
-                        border.width: dp(4)
+                        border.width: isCurrent? dp(4): dp(2)
                         function whatToShow() {
 
                            var wts = /*isCurrent ? Math.round(time - runGauge[index % runGauge.length].value) :*/ time
@@ -252,13 +252,13 @@ SceneBase {
                             id:timeText
                             anchors.centerIn: parent
                             //font.pointSize: Math.round(parent.height/4)
-                            font.pixelSize: Math.round(dp(0.6*parent.height))
+                            font.pixelSize: Math.round(dp(0.4 * parent.height))
                             text: "<b>" + parent.whatToShow() + "</b>"; color: "white"; style: Text.Raised; styleColor: "black"
                             //text: index + ". " + typeName + " " + time + "sec."
 
                         }
                         Behavior on border.color {ColorAnimation{duration:500}}
-                        //Behavior on height {NumberAnimation{duration:500}}
+                        Behavior on border.width {NumberAnimation{duration:500}}
                     }
                 }
             }
