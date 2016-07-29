@@ -210,7 +210,7 @@ SceneBase {
             anchors.left:parent.left
             radius: dp(8)
             border.width: dp(4)
-            border.color: black
+            border.color: "black"
             Text{ id:txt
                 anchors.centerIn: parent
                 font.pixelSize: Math.round(dp(0.4 * parent.height))
@@ -475,9 +475,9 @@ SceneBase {
         } // End of gauges
 
 
-        QMLFileAccess {
-            id:qfa
-        }
+//        QMLFileAccess {
+//            id:qfa
+//        }
 
 
         Row{
@@ -535,10 +535,10 @@ SceneBase {
                     }
                 }
             }
-            FileDialog{
-                id: fileDialog
-                folder:qfa.getAccessiblePath("sessions")
-            }
+//            FileDialog{
+//                id: fileDialog
+//                folder:qfa.getAccessiblePath("sessions")
+//            }
 
             MenuButton {
                 id: button2
@@ -576,7 +576,7 @@ SceneBase {
                 z:100
                 text: qsTr("-Medit")
                 onClicked: {
-                    console.log("value=", Math.round(currentGauge.value))
+                    //console.log("value=", Math.round(currentGauge.value))
                     currentSession.event.push([myEventsNm2Nb["EndOfMeditativeZone"], Math.round(currentGauge.value)])
                 }
                 enabled:true
@@ -586,10 +586,10 @@ SceneBase {
                 z:100
                 text: qsTr("-Cmfrt")
                 onClicked: {
-                    console.log("value=", Math.round(currentGauge.value))
+                    //console.log("value=", Math.round(currentGauge.value))
                     currentSession.event.push([myEventsNm2Nb["EndOfComfortZone"], Math.round(currentGauge.value)])
                     //AWDEDUG
-                    showSessionGraph(currentSession, chartView)
+                    //showSessionGraph(currentSession, chartView)
 
                 }
                 enabled:true
@@ -599,7 +599,7 @@ SceneBase {
                 z:100
                 text: qsTr("Cntrct")
                 onClicked: {
-                    console.log("value=", Math.round(currentGauge.value))
+                    //console.log("value=", Math.round(currentGauge.value))
                     currentSession.event.push([myEventsNm2Nb["Contraction"], Math.round(currentGauge.value)])
                 }
                 enabled:true
@@ -607,6 +607,7 @@ SceneBase {
         }
         Component.onCompleted:{
             currentWalkControl = walkControl
+            currentGauge       = gaugeBrth
         }
 
       }

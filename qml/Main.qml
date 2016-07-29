@@ -83,6 +83,7 @@ ApplicationWindow {
         ConfigSeriesScene{ id:conf; title: qsTr("Conf")}
         RunSessionScene{ id:run;    title: qsTr("Run")}
         HrmSetupScene{  id:hrm;     title: qsTr("HRM")}
+        BrowseResultsScene{  id:browseRes; title: qsTr("Browse")}
         AboutScene{  id:about;      title: qsTr("About")}
         Tab {
             id:finish;
