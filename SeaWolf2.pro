@@ -123,7 +123,8 @@ DISTFILES += \
     qml/scenes/RunSessionScene.qml \
     qml/Main.qml \
     qml/common/SeaWolfInput.qml \
-    qml/scenes/BrowseResultsScene.qml
+    qml/scenes/BrowseResultsScene.qml \
+    qml/common/SeaWolfPlot.qml
 
 HEADERS += \
     qmlfileaccess.h \

@@ -22,10 +22,11 @@ public:
     };
 
     Q_ENUMS(QMLFileStatus)
-    Q_INVOKABLE QMLFileStatus qmlOpenFile(const QString FileName);
+    Q_INVOKABLE bool qmlOpenFile(const QString FileName);
     Q_INVOKABLE QString qmlCloseFile();
     Q_INVOKABLE QString qmlRead();
-    Q_INVOKABLE QMLFileStatus qmlWrite(QString s);
+    Q_INVOKABLE QString qmlWrite(QString s);
+    Q_INVOKABLE QString qmlToLocalFile(QString url);
     //! \param myDir subdirectory of the Accessible path. It will be created
     Q_INVOKABLE virtual QString getAccessiblePath(const QString myDir);
 signals:

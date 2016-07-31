@@ -8,7 +8,7 @@ import QtQuick.Dialogs 1.2
 //import VPlay 2.0
 import QtQuick.Particles 2.0
 import QtCharts 2.1
-import com.seawolf.qmlfileaccess 1.0
+//import com.seawolf.qmlfileaccess 1.0
 CircularGauge {
     id: gauge
     property real valueChange: 0
@@ -44,21 +44,20 @@ CircularGauge {
             tenTimer.stop()
     }
 
-    function saveSession() {
-        var path=qfa.getAccessiblePath("sessions");
-        console.log("Path = ", path);
-        var fileName = runSessionScene.currentSession.sessionName + runSessionScene.currentSession.when;
-        //qmlOpenFile will add path before fileName
-        console.log("fileName=", fileName, "Open=" , qfa.qmlOpenFile(path + fileName));
-        console.log("Wrote = ", qfa.qmlWrite(JSON.stringify(runSessionScene.currentSession)));
-        var qstr = qfa.qmlRead();
-        console.log("Read = ", qstr);
-        console.log("Close=", qfa.qmlCloseFile());
-        //var data = runSessionScene.currentSession
-        //io.text = JSON.stringify(data, null, 4)
-        //io.write()
-    }
-
+//    function saveSession() {
+//        var path=qfa.getAccessiblePath("sessions");
+//        console.log("Path = ", path);
+//        var fileName = runSessionScene.currentSession.sessionName + "-" + runSessionScene.currentSession.when;
+//        //qmlOpenFile will add path before fileName
+//        console.log("fileName=", fileName, "Open=" , qfa.qmlOpenFile(path + fileName));
+//        console.log("Wrote = ", qfa.qmlWrite(JSON.stringify(runSessionScene.currentSession)));
+//        var qstr = qfa.qmlRead();
+//        console.log("Read = ", qstr);
+//        console.log("Close=", qfa.qmlCloseFile());
+//        //var data = runSessionScene.currentSession
+//        //io.text = JSON.stringify(data, null, 4)
+//        //io.write()
+//    }
 
     onModelIndexChanged:{
         if (gaugeModel != null ){
@@ -294,11 +293,11 @@ CircularGauge {
                 if (running){
                     // Add start event with it's duration
                     //if (!gaugeName in ["walk", "back"] ){
-                        var eventNb = runSessionScene.myEventsNm2Nb[gaugeName];
+                        var eventNb = hrPlot.myEventsNm2Nb[gaugeName];
                         console.log("gaugeName=", gaugeName, "eventNb=", eventNb)
-                        runSessionScene.currentSession.event.push([eventNb, maximumValue])
+                        hrPlot.currentSession.event.push([eventNb, maximumValue])
                     //}
-                    runSessionScene.setupCurrentHrSeries()
+                    hrPlot.setupCurrentHrSeries()
                     startVoiceTimers()
                     enterStateSndEffect.play()
                 }
@@ -356,7 +355,7 @@ CircularGauge {
 
                         //save the session results
                         //openDialog.open()
-                        saveSession()
+                        hrPlot.saveSession()
                         heartRate.disconnectService();
                         oneTimer.stop()
                         sessionTime = 0.0;

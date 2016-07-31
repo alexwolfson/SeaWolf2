@@ -24,9 +24,20 @@ int main(int argc, char *argv[])
     QQmlApplicationEngine engine;
     //vplay.initialize(&engine);
     HeartRate heartRate;
+    QMLFileAccess qfa;
     QQmlContext * myContext = engine.rootContext();
     myContext->setContextProperty("heartRate", &heartRate);
-    qmlRegisterType<QMLFileAccess>("com.seawolf.qmlfileaccess", 1, 0, "QMLFileAccess");
+    myContext->setContextProperty("qfa", &qfa);
+    //qmlRegisterType<QMLFileAccess>("com.seawolf.qmlfileaccess", 1, 0, "QMLFileAccess");
+    //Unit test of QMLFileAccess
+    qDebug() << "Path = " << qfa.getAccessiblePath("test_qfa");
+    qDebug() << "Open=" << qfa.qmlOpenFile("TestQMLRWFile");
+    qDebug() << "Wrote = " << qfa.qmlWrite("TEST");
+    qDebug() << "Close = " << qfa.qmlCloseFile();
+    qDebug() << "Open=" << qfa.qmlOpenFile("TestQMLRWFile");
+    qDebug() << "Read = " << qfa.qmlRead();
+    qDebug() << "Close = " << qfa.qmlCloseFile();
+//    //qDebug() << qstr;
 
     // use this during development
     // for PUBLISHING, use the entry point below
@@ -40,14 +51,6 @@ int main(int argc, char *argv[])
 
     engine.load(QUrl("qrc:/qml/Main.qml"));
 
-    //Unit test of QMLFileAccess
-//    QMLFileAccess qfa;
-//    qDebug() << "Path = " << qfa.getAccessiblePath();
-//    qDebug() << "Open=" << qfa.qmlOpenFile("TestQMLRWFile");
-//    qDebug() << "Wrote = " << qfa.qmlWrite("TEST");
-//    QString qstr;
-//    qDebug() << "Read = " << qfa.qmlRead(qstr);
-//    qDebug() << qstr;
 
 
     return app.exec();

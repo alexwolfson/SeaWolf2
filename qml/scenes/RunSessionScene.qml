@@ -11,7 +11,7 @@ import QtCharts 2.1
 //import VPlay 2.0
 //import VPlayApps 1.0
 import "../common"
-import com.seawolf.qmlfileaccess 1.0
+//import com.seawolf.qmlfileaccess 1.0
 //import "../common/draw.
 SceneBase {
     id: runSessionScene
@@ -32,11 +32,11 @@ SceneBase {
 
       return new_obj;
     }
-    //creates new series graph
-    function setupCurrentHrSeries(){
-        currentHrSeries = currentChartView.createSeries(ChartView.SeriesTypeLine, "", currentAxisX, currentAxisY);
-        currentHrSeries.color = runColors[currentGauge.gaugeName]
-    }
+//    //creates new series graph
+//    function setupCurrentHrSeries(){
+//        currentHrSeries = currentChartView.createSeries(ChartView.SeriesTypeLine, "", currentAxisX, currentAxisY);
+//        currentHrSeries.color = runColors[currentGauge.gaugeName]
+//    }
 
     function setupSession(sessionName, selectedSession){
         console.log("**** In setupSession width ", sessionName, ":", selectedSession)
@@ -53,60 +53,60 @@ SceneBase {
         currentGaugeBack.maximumValue = currentModel.get(backIndx).time
         currentSession.sessionName = sessionName
     }
-    function getSesssionHRMin(session){
-        var hrMin=999
-        var i
-        for (i = 0; i < session.pulse.length; i++ ){
-            if (session.pulse[i] < hrMin){
-                hrMin = session.pulse[i]
-            }
-        }
-        return hrMin
-    }
-    function getSesssionHRMax(session){
-        var hrMax=0
-        var i
-        for (i = 0; i < session.pulse.length; i++ ){
-            if (session.pulse[i] > hrMax){
-                hrMax = session.pulse[i]
-            }
-        }
-        return hrMax
-    }
-
-    function showSessionGraph(p_session, p_chartView){
-        var hrMin = getSesssionHRMin(p_session);
-        var hrMax = getSesssionHRMax(p_session);
-        var currentHrSeries
-        p_chartView.axes[1].min = (hrMin - 5);
-        p_chartView.axes[1].max = (hrMax + 5);
-        p_chartView.axes[0].min = 0;
-        p_chartView.axes[0].max = p_session.pulse.length
-//        var currentIndex = 0;
-//        var evt;
-//        p_chartView.removeAllSeries();
-//        var evtStartTime = 0;
-//        for (var i = 0; i < p_session.event.length; i++){
-//            evt = p_session.event[i]
-//            var evtName = myEventsNb2Nm[evt[0]]
-//            //only use events like brth, hold, walk, back
-//            if (!(runColors[evtName] === undefined)){
-//                //console.log("step = ", evtName, "step duration = ", evt[1])
-//                currentHrSeries = p_chartView.createSeries(ChartView.SeriesTypeLine, "", p_chartView.axisX, p_chartView.axisY);
-//                //p_chartView.chart().setAxisX(axisX, currentHrSeries);
-//                currentHrSeries.color = runColors[evtName]
-//                for (var j = 0; j < evt[1]; j++){
-//                    currentHrSeries.append( currentHrSeries.pulse[j])
-//                    //AWDEBUG
-//                    //currentHrSeries.append(Math.round(50 + j))
-//                    p_chartView.update()
-
-//                }
-//                evtStartTime += evt[1]
+//    function getSesssionHRMin(session){
+//        var hrMin=999
+//        var i
+//        for (i = 0; i < session.pulse.length; i++ ){
+//            if (session.pulse[i] < hrMin){
+//                hrMin = session.pulse[i]
 //            }
 //        }
-        p_chartView.update()
-    }
+//        return hrMin
+//    }
+//    function getSesssionHRMax(session){
+//        var hrMax=0
+//        var i
+//        for (i = 0; i < session.pulse.length; i++ ){
+//            if (session.pulse[i] > hrMax){
+//                hrMax = session.pulse[i]
+//            }
+//        }
+//        return hrMax
+//    }
+
+//    function showSessionGraph(p_session, p_chartView){
+//        var hrMin = getSesssionHRMin(p_session);
+//        var hrMax = getSesssionHRMax(p_session);
+//        var currentHrSeries
+//        p_chartView.axes[1].min = (hrMin - 5);
+//        p_chartView.axes[1].max = (hrMax + 5);
+//        p_chartView.axes[0].min = 0;
+//        p_chartView.axes[0].max = p_session.pulse.length
+////        var currentIndex = 0;
+////        var evt;
+////        p_chartView.removeAllSeries();
+////        var evtStartTime = 0;
+////        for (var i = 0; i < p_session.event.length; i++){
+////            evt = p_session.event[i]
+////            var evtName = myEventsNb2Nm[evt[0]]
+////            //only use events like brth, hold, walk, back
+////            if (!(runColors[evtName] === undefined)){
+////                //console.log("step = ", evtName, "step duration = ", evt[1])
+////                currentHrSeries = p_chartView.createSeries(ChartView.SeriesTypeLine, "", p_chartView.axisX, p_chartView.axisY);
+////                //p_chartView.chart().setAxisX(axisX, currentHrSeries);
+////                currentHrSeries.color = runColors[evtName]
+////                for (var j = 0; j < evt[1]; j++){
+////                    currentHrSeries.append( currentHrSeries.pulse[j])
+////                    //AWDEBUG
+////                    //currentHrSeries.append(Math.round(50 + j))
+////                    p_chartView.update()
+
+////                }
+////                evtStartTime += evt[1]
+////            }
+////        }
+//        p_chartView.update()
+//    }
     function enableWalkControl(){currentWalkControl.enabled=true}
     //anchors.fill: parent
     //anchors.top: runSessionScene.gameWindowAnchorItem.top
@@ -116,28 +116,28 @@ SceneBase {
     property int holdIndx: 1
     property int walkIndx: 2
     property int backIndx: 3
-    property var myEventsNm2Nb:{"EndOfMeditativeZone":0, "EndOfComfortZone":1, "Contraction":2, "EndOfWalk":3, "brth":4 , "hold":5, "walk":6, "back":7}
-    property var myEventsNb2Nm:invert(myEventsNm2Nb)
-    property var sessionSteps: [myEventsNm2Nb["brth"], myEventsNm2Nb["brth"], myEventsNm2Nb["hold"], myEventsNm2Nb["walk"], myEventsNm2Nb["back"] ]
+//    property var myEventsNm2Nb:{"EndOfMeditativeZone":0, "EndOfComfortZone":1, "Contraction":2, "EndOfWalk":3, "brth":4 , "hold":5, "walk":6, "back":7}
+//    property var myEventsNb2Nm:invert(myEventsNm2Nb)
+//    property var sessionSteps: [myEventsNm2Nb["brth"], myEventsNm2Nb["brth"], myEventsNm2Nb["hold"], myEventsNm2Nb["walk"], myEventsNm2Nb["back"] ]
     property SeaWolfControls currentGauge
-    property var currentSession: {
-        "sessionName":"TestSession",
-                "when":"ChangeMe", //Qt.formatDateTime(new Date(), "yyyy-MM-dd-hh-mm-ss"),
-                "eventNames":myEventsNm2Nb,
-                "event":[],
-                "pulse":[]
-    }
-    property real sessionDuration:0.0
+//    property var currentSession: {
+//        "sessionName":"TestSession",
+//                "when":"ChangeMe", //Qt.formatDateTime(new Date(), "yyyy-MM-dd-hh-mm-ss"),
+//                "eventNames":myEventsNm2Nb,
+//                "event":[],
+//                "pulse":[]
+//    }
+//    property real sessionDuration:0.0
     property var runGauge
     //property alias hrPoints: hrSeries
     property real sessionTime: 0.0
     //The set of properties that are created to get around the
     // loading of the Tab. Not all of the Tab's elements are simultaniously available
     // so we create top level properties that are set by Component.onComplete() when lower level elements are created
-    property LineSeries currentHrSeries
-    property ChartView  currentChartView
-    property ValueAxis  currentAxisX
-    property ValueAxis  currentAxisY
+//    property LineSeries currentHrSeries
+//    property ChartView  currentChartView
+//    property ValueAxis  currentAxisX
+//    property ValueAxis  currentAxisY
     property MenuButton currentWalkControl
     property ListModel  currentModel
     property SeaWolfControls currentGaugeBrth
@@ -145,8 +145,8 @@ SceneBase {
     property SeaWolfControls currentGaugeWalk
     property SeaWolfControls currentGaugeBack
 
-    property real minHr:10
-    property real maxHr:150
+//    property real minHr:10
+//    property real maxHr:150
     //property alias currentGauge:timerHold.currentGauge
     //called by onSessionSelected
     property int   timeFooterBrth
@@ -288,73 +288,77 @@ SceneBase {
             onTriggered:{
                 sessionTime++
                 // update heart rate information
-                currentSession.pulse.push( Math.round(heartRate.hr))
+                hrPlot.currentSession.pulse.push( Math.round(heartRate.hr))
                 //hrPoints.append(100, 100)
                 //console.log("**HR:",currentGauge.value, heartRate.hr)
-                currentHrSeries.append(sessionTime, heartRate.hr)
-                showSessionGraph(currentSession,chartView)
+                hrPlot.currentHrSeries.append(sessionTime, heartRate.hr)
+                hrPlot.showSessionGraph(hrPlot.currentSession,hrPlot.currentChartView)
                 //chartView.update()
             }
         }
 
-        Rectangle{
+//        Rectangle{
+//            id:hrPlot
+//            width:parent.width // + dp(50)
+//            height: runSessionScene.height/3
+//            anchors.horizontalCenter: parent.horizontalCenter
+//            //anchors.top: runSessionScene.top
+//            //anchors.topMargin: sessionView.cellWidth * 3
+//            opacity:1.0
+//            z:50
+//            ChartView {
+//                id:chartView
+////                margins.bottom:dp(0)
+////                margins.left:  dp(0)
+////                margins.right: dp(0)
+////                margins.top:   dp(0)
+
+//                title: currentSession.sessionName + " " + currentSession.when
+//                anchors.fill: parent
+//                //to make visible part of the graph taking bigger part
+//                anchors.topMargin: dp(-30)
+//                antialiasing: true
+//                theme: ChartView.ChartThemeBlueIcy
+//                //legend:{visible: false}
+//                ValueAxis {
+//                    id: axisX
+//                    labelFormat:"%.0f"
+//                    //labelsFont: Qt.font({pixelSize : sp(10)})
+//                    min: 0
+//                    max: sessionDuration
+//                    tickCount: 7
+//                }
+//                ValueAxis {
+//                    id: axisY
+//                    labelFormat:"%.0f"
+//                    //labelsFont: Qt.font({pixelSize : sp(10)})
+//                    min: minHr
+//                    max: maxHr
+//                    tickCount:6
+
+//                }
+
+//                LineSeries {
+//                  id: hrSeries
+//                  name: "Heart Rate"
+//                  opacity: 1
+//                  axisX:axisX
+//                  axisY:axisY
+//                  XYPoint { x: 0;  y: 0 }
+//                  XYPoint { x: 50; y: 50 }
+//                }
+//                Component.onCompleted:{
+//                    currentChartView = chartView
+//                    currentAxisX     = axisX
+//                    currentAxisY     = axisY
+//                }
+//            }
+
+//        } //End Of Plot
+        SeaWolfPlot{
             id:hrPlot
-            width:parent.width // + dp(50)
-            height: runSessionScene.height/3
-            anchors.horizontalCenter: parent.horizontalCenter
-            //anchors.top: runSessionScene.top
-            //anchors.topMargin: sessionView.cellWidth * 3
-            opacity:1.0
-            z:50
-            ChartView {
-                id:chartView
-//                margins.bottom:dp(0)
-//                margins.left:  dp(0)
-//                margins.right: dp(0)
-//                margins.top:   dp(0)
+        }
 
-                title: currentSession.sessionName + " " + currentSession.when
-                anchors.fill: parent
-                //to make visible part of the graph taking bigger part
-                anchors.topMargin: dp(-30)
-                antialiasing: true
-                theme: ChartView.ChartThemeBlueIcy
-                //legend:{visible: false}
-                ValueAxis {
-                    id: axisX
-                    labelFormat:"%.0f"
-                    //labelsFont: Qt.font({pixelSize : sp(10)})
-                    min: 0
-                    max: sessionDuration
-                    tickCount: 7
-                }
-                ValueAxis {
-                    id: axisY
-                    labelFormat:"%.0f"
-                    //labelsFont: Qt.font({pixelSize : sp(10)})
-                    min: minHr
-                    max: maxHr
-                    tickCount:6
-
-                }
-
-                LineSeries {
-                  id: hrSeries
-                  name: "Heart Rate"
-                  opacity: 1
-                  axisX:axisX
-                  axisY:axisY
-                  XYPoint { x: 0;  y: 0 }
-                  XYPoint { x: 50; y: 50 }
-                }
-                Component.onCompleted:{
-                    currentChartView = chartView
-                    currentAxisX     = axisX
-                    currentAxisY     = axisY
-                }
-            }
-
-        } //End Of Plot
         Item {
             id: gauges
             width: runSessionScene.width * 0.6
@@ -500,16 +504,16 @@ SceneBase {
                     //currentModel.get(0).isCurrent = true
                     walkControl.enabled = false
                     button2.enabled = true;
-                    currentSession.event=[]
-                    currentSession.pulse=[]
+                    hrPlot.currentSession.event=[]
+                    hrPlot.currentSession.pulse=[]
                     walkControl.text= qsTr("Finish Walk")
-                    runSessionScene.currentSession.when = Qt.formatDateTime(new Date(), "yyyy-MM-dd-hh-mm-ss");
-                    chartView.removeAllSeries()
-                    currentHrSeries = chartView.createSeries(ChartView.SeriesTypeLine, "", axisX, axisY);
-                    currentHrSeries.color = runColors[currentGauge.gaugeName]
+                    hrPlot.currentSession.when = Qt.formatDateTime(new Date(), "yyyy-MM-dd-hh-mm-ss");
+                    hrPlot.currentChartView.removeAllSeries()
+                    hrPlot.currentHrSeries = hrPlot.currentChartView.createSeries(ChartView.SeriesTypeLine, "", hrPlot.currentAxisX, hrPlot.currentAxisY);
+                    hrPlot.currentHrSeries.color = runColors[currentGauge.gaugeName]
                     oneTimer.start()
                     //console.log("Time=", Qt.formatDateTime(new Date(), "yyyy-MM-dd-hh-mm-ss"))
-                    console.log("Session:",runSessionScene.currentSession.sessionName, "started:",runSessionScene.currentSession.when)
+                    console.log("Session:",hrPlot.currentSession.sessionName, "started:",hrPlot.currentSession.when)
 
                 }
             }

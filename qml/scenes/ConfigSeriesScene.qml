@@ -279,4 +279,14 @@ SceneBase {
 
 
     }
+//    Image {
+//        source: "../../assets/img/SeaWolf.png"
+//        width: dp(160)
+//        height: dp(160)
+////        anchors.right: parent.right
+////        anchors.rightMargin: dp(10)
+//        anchors.bottom: parent.bottom
+//        anchors.bottomMargin: dp(10)
+//    }
+
 }// end of Scene

@@ -88,5 +88,6 @@
         <file>TODO</file>
         <file>qml/common/SeaWolfInput.qml</file>
         <file>qml/scenes/BrowseResultsScene.qml</file>
+        <file>qml/common/SeaWolfPlot.qml</file>
     </qresource>
 </RCC>
