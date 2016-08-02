@@ -104,35 +104,19 @@ SceneBase {
                       //  levelEditor.saveCurrentLevel( {levelMetaData: {levelName: session.name}, customData:currentSessionProperties} )
                     }
                 }
-
-//                MenuButton {
-//                    text: "Browse"
-//                    onClicked: {
-//                        levelEditor.loadAllLevelsFromStorageLocation(levelEditor.authorGeneratedLevelsLocation)
-//                        levelSelectionList.visible = true
-//                    }
-//                }
             }
 
             //Label { text: qsTr("sessionName") }
-            SeaWolfInput{ type:"str";   lbl: qsTr("sessionName");    sft:"Session"; onResult: {sessionName=res}}
-            SeaWolfInput{ type:"int";   lbl: qsTr("numberOfCycles"); ift:"6";       onResult: {numberOfCycles=res}}
+            SeaWolfInput{ type:"str";   lbl: qsTr("sessionName");    sft:"";        onResult: {sessionName=res}}
+            SeaWolfInput{ type:"int";   lbl: qsTr("numberOfCycles"); ift:"6";       onResult: {numberOfCycles=parseInt(res)}}
             SeaWolfInput{ id: rLast; type:"switch";lbl: qsTr("repeatLast");         onResult: {repeatLast=swYesNo}}
-            SeaWolfInput{ type:"int";   lbl: qsTr("minBreathTime");  ift:"15";      onResult: {minBreathTime=res}}
-            SeaWolfInput{ id:breathDecrementEdit; type:"int";   lbl: qsTr("breathDecrement");ift:"15";      onResult: {breathDecrement=res}}
+            SeaWolfInput{ type:"int";   lbl: qsTr("minBreathTime");  ift:"15";      onResult: {minBreathTime=parseInt(res)}}
+            SeaWolfInput{ id:breathDecrementEdit; type:"int";   lbl: qsTr("breathDecrement");ift:"15";      onResult: {breathDecrement=parseInt(res)}}
             SeaWolfInput{ type:"int";   lbl: qsTr("maxHoldTime");    ift:"120";     onResult: {maxHoldTime=res}}
-            SeaWolfInput{ id:holdIncrementEdit; type:"int";   lbl: qsTr("holdIncrement");  ift:"15";      onResult: {holdIncrement=res}}
-            SeaWolfInput{ id:walkTimeEdit; type:"int";   lbl: qsTr("walkTime");       ift:"120";     onResult: {walkTime=res}}
-            SeaWolfInput{ id:backTimeEdit; type:"int";   lbl: qsTr("walkBackTime");   ift:"120";     onResult: {walkBackTime=res}}
+            SeaWolfInput{ id:holdIncrementEdit; type:"int";   lbl: qsTr("holdIncrement");  ift:"15";      onResult: {holdIncrement=parseInt(res)}}
+            SeaWolfInput{ id:walkTimeEdit; type:"int";   lbl: qsTr("walkTime");       ift:"120";     onResult: {walkTime=parseInt(res)}}
+            SeaWolfInput{ id:backTimeEdit; type:"int";   lbl: qsTr("walkBackTime");   ift:"120";     onResult: {walkBackTime=parseInt(res)}}
         }
-//    LevelEditor {
-//      id: levelEditor
-//      anchors.fill: parent
-//      applicationJSONLevelsDirectory: "jsonSessions/"
-//      Component.onCompleted: {
-//          loadAllLevelsFromStorageLocation(applicationJSONLevelsLocation)
-//      }
-//    }
 
     // had trouble with multidimension arrays in javascript function, so stated to use 1 dimension
     function get2DimIndex(dim0, dim1){

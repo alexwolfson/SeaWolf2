@@ -13,7 +13,11 @@ Apnea:
 
 I became interested in apnea since the adge of 10 when went to vacation on the Black See with my parents.
 Somebody gave me a mask to try.
-In modern days many years later I was influenced by.
+In modern days many years later, leaving near Boston in USA,
+I was influenced by Nick Fazah one of the owners of http://ecdivers.com
+I would never guess that it is possible to create a vibrant free diving comunity in the cold waters of New England
+Short training in Eilat with Aharon Solomons his concepts of empty long training and apnea walk
+and his videos posted on the internet inspired me to start writing this app
 
 
 Software Architecture overvew:
@@ -98,5 +102,8 @@ State {
     PropertyChanges {target: window; activeScene: runSessionScene}
 },
 Installation on Ubuntu 16.04
+To have development properly setup:
 sudo apt-get install mesa-common-dev
 sudo apt-get install libglu1-mesa-dev freeglut3-dev mesa-common-dev
+
+TODO: clean returns for qmlfileaccess

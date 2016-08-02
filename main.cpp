@@ -31,12 +31,13 @@ int main(int argc, char *argv[])
     //qmlRegisterType<QMLFileAccess>("com.seawolf.qmlfileaccess", 1, 0, "QMLFileAccess");
     //Unit test of QMLFileAccess
     qDebug() << "Path = " << qfa.getAccessiblePath("test_qfa");
-    qDebug() << "Open=" << qfa.qmlOpenFile("TestQMLRWFile");
-    qDebug() << "Wrote = " << qfa.qmlWrite("TEST");
-    qDebug() << "Close = " << qfa.qmlCloseFile();
-    qDebug() << "Open=" << qfa.qmlOpenFile("TestQMLRWFile");
-    qDebug() << "Read = " << qfa.qmlRead();
-    qDebug() << "Close = " << qfa.qmlCloseFile();
+    qDebug() << "Open=" << qfa.open("TestQMLRWFile");
+    qDebug() << "Wrote = " << qfa.write("TEST");
+    qDebug() << "Close = " << qfa.close();
+    qDebug() << "Open=" << qfa.open("TestQMLRWFile");
+    qDebug() << "Read = " << qfa.read();
+    qDebug() << "Close = " << qfa.close();
+    qDebug() << "Delete = " << qfa.removeFile("TestQMLRWFile");
 //    //qDebug() << qstr;
 
     // use this during development
@@ -50,9 +51,6 @@ int main(int argc, char *argv[])
     //  vplay.setMainQmlFileName(QStringLiteral("qrc:/qml/Main.qml"));
 
     engine.load(QUrl("qrc:/qml/Main.qml"));
-
-
-
     return app.exec();
 }
 

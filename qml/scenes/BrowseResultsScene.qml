@@ -5,20 +5,6 @@ SceneBase{
     id:browseScene
     property int chosenFileIndex:0
     property string chosenFile:""
-//    function restoreSession(filePath) {
-//        console.log("filePath = ", filePath, "Open=" , qfa.qmlOpenFile(filePath));
-//        //console.log("Wrote = ", qfa.qmlWrite(JSON.stringify(runSessionScene.currentSession)));
-//        var qstr = qfa.qmlRead();
-//        console.log("Read = ", qstr);
-//        tabView.runSessionScene.currentSession =
-//                JSON.parse(qstr);
-//         console.log("Close=", qfa.qmlCloseFile());
-//        showSessionGraph(tabView.runSessionScene.currentSession,tabView.runSessionScene.chartView)
-
-//        //var data = runSessionScene.currentSession
-//        //io.text = JSON.stringify(data, null, 4)
-//        //io.write()
-//    }
     Item {
         Column {
             id:browseColumn
@@ -33,7 +19,7 @@ SceneBase{
                     id: folderModel
                     showHidden :true
                     folder:qfa.getAccessiblePath("sessions")
-                    //                    folder: if (Qt.platform.os === "android"){
+//                    folder: if (Qt.platform.os === "android"){
 //                                return "file:///mnt/sdcard"
 //                            } else {
 //                                return "file://~"
@@ -66,7 +52,7 @@ SceneBase{
                                        } else {
                                            chosenFileIndex = index
                                            chosenFile = fileName
-                                           hrPlot.restoreSession(qfa.qmlToLocalFile(folderModel.folder + "/" + fileName))
+                                           hrPlot.restoreSession(qfa.urlToLocalFile(folderModel.folder + "/" + fileName))
 
                                        }
                             onPressed: { fileRect.border.color = "red"; fileRect.color = "lightblue"}
@@ -88,13 +74,19 @@ SceneBase{
                 padding: dp(20)
                 //anchors.topMargin: folderListView.height
                 MenuButton{
-                    id: note1
-                    //width:parent.width/3
-                    //height: parent.height/3
+                    id: show
                     text: qsTr("Show Session")
                     onClicked: {
-                        console.log("file=", chosenFile)
-                        //currentSession.event.push([myEventsNm2Nb["EndOfMeditativeZone"], Math.round(currentGauge.value)])
+                        console.log("chosen=", chosenFile)
+                    }
+                    enabled:true
+                }
+                MenuButton{
+                    id: rm
+                    text: qsTr("Remove File")
+                    onClicked: {
+                        console.log("delete=", chosenFile)
+                        console.log(qfa.removeFile(qfa.urlToLocalFile(folderModel.folder + "/" + chosenFile)))
                     }
                     enabled:true
                 }

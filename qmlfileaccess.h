@@ -22,13 +22,14 @@ public:
     };
 
     Q_ENUMS(QMLFileStatus)
-    Q_INVOKABLE bool qmlOpenFile(const QString FileName);
-    Q_INVOKABLE QString qmlCloseFile();
-    Q_INVOKABLE QString qmlRead();
-    Q_INVOKABLE QString qmlWrite(QString s);
-    Q_INVOKABLE QString qmlToLocalFile(QString url);
+    Q_INVOKABLE bool open(const QString FileName);
+    Q_INVOKABLE QString close();
+    Q_INVOKABLE QString read();
+    Q_INVOKABLE QString write(QString s);
+    Q_INVOKABLE QString urlToLocalFile(QString url);
     //! \param myDir subdirectory of the Accessible path. It will be created
     Q_INVOKABLE virtual QString getAccessiblePath(const QString myDir);
+    Q_INVOKABLE bool removeFile(const QString fileName);
 signals:
 
 public slots:

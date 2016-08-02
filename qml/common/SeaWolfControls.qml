@@ -23,7 +23,7 @@ CircularGauge {
     property bool isCurrent: false
     property real minAngle: -45
     property real maxAngle:  45
-    property color needleColor: runColors[gaugeName]
+    property color needleColor: hrPlot.runColors[gaugeName]
     property int modelIndex:0
     //:runSessionScene.runGauge.length
     minimumValue: 0
@@ -48,12 +48,12 @@ CircularGauge {
 //        var path=qfa.getAccessiblePath("sessions");
 //        console.log("Path = ", path);
 //        var fileName = runSessionScene.currentSession.sessionName + "-" + runSessionScene.currentSession.when;
-//        //qmlOpenFile will add path before fileName
-//        console.log("fileName=", fileName, "Open=" , qfa.qmlOpenFile(path + fileName));
-//        console.log("Wrote = ", qfa.qmlWrite(JSON.stringify(runSessionScene.currentSession)));
-//        var qstr = qfa.qmlRead();
+//        //open will add path before fileName
+//        console.log("fileName=", fileName, "Open=" , qfa.open(path + fileName));
+//        console.log("Wrote = ", qfa.write(JSON.stringify(runSessionScene.currentSession)));
+//        var qstr = qfa.read();
 //        console.log("Read = ", qstr);
-//        console.log("Close=", qfa.qmlCloseFile());
+//        console.log("Close=", qfa.close());
 //        //var data = runSessionScene.currentSession
 //        //io.text = JSON.stringify(data, null, 4)
 //        //io.write()
@@ -293,9 +293,9 @@ CircularGauge {
                 if (running){
                     // Add start event with it's duration
                     //if (!gaugeName in ["walk", "back"] ){
-                        var eventNb = hrPlot.myEventsNm2Nb[gaugeName];
-                        console.log("gaugeName=", gaugeName, "eventNb=", eventNb)
-                        hrPlot.currentSession.event.push([eventNb, maximumValue])
+//                        var eventNb = hrPlot.myEventsNm2Nb[gaugeName];
+//                        console.log("gaugeName=", gaugeName, "eventNb=", eventNb)
+//                        hrPlot.currentSession.event.push([eventNb, maximumValue])
                     //}
                     hrPlot.setupCurrentHrSeries()
                     startVoiceTimers()
@@ -304,6 +304,7 @@ CircularGauge {
                 //onStopped:{
                 if ((!running) /*&& (gaugeModelElement.typeName === gaugeName)*/) {
                     //console.log("running=", running, "modelIndex=", modelIndex, "index=", gridView.delegate.index)
+                    hrPlot.markEvent(gaugeName)
                     state = "initial";
                     gaugeModel.get(modelIndex).isCurrent = false
                     // update all gauges if we are about to run the "breath"gauge

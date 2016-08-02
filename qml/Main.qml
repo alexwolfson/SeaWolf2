@@ -36,22 +36,10 @@ ApplicationWindow {
         id: tabView
         anchors.fill: parent
         anchors.margins: 4
-//        property Tab about
-//        property Tab config
-//        property Tab hrm
-//        property Tab run
-//        property Tab finish
         Component.onCompleted:  {
-            conf.sessionSelected.connect(run.setupSession)
-//            config = addTab("Config Ser", Qt.createComponent("qrc:/qml/scenes/ConfigSeriesScene.qml"))
-//            config.visible = true
-//            run = addTab("Run", Qt.createComponent("qrc:/qml/scenes/RunSessionScene.qml"))
-//            run.visible = true
-//            hrm = addTab("HRM", Qt.createComponent("qrc:/qml/scenes/HrmSetupScene.qml"))
-//            hrm.visible = true
-//            // About the app scene
-//            about = addTab("About", Qt.createComponent("qrc:/qml/scenes/AboutScene.qml"))
-//            about.visible = true
+            //those 2 functions provide different functionslity
+            conf.sessionSelected.connect( run.setupSession);
+            conf.sessionSelected.connect(run.currentHrPlot.setupSession)
         }
         style: TabViewStyle {
             frameOverlap: dp(0)
@@ -103,90 +91,6 @@ ApplicationWindow {
             }
         }
     }
-//    TabView {
-//          id: frame
-//          anchors.fill: parent
-//          anchors.margins: 4
-//          property Tab about
-//          property Tab config
-//          property Tab hrm
-//          property Tab run
-
-//        //width: dp(1080)
-//        //height: dp(1920)
-//        property variant jsonTest
-//        property var currentSession
-//       // property ListModel currentModel: currentModel
-
-//        // You get free licenseKeys from http://v-play.net/licenseKey
-//        // With a licenseKey you can:
-//        //  * Publish your games & apps for the app stores
-//        //  * Remove the V-Play Splash Screen or set a custom one (available with the Pro Licenses)
-//        //  * Add plugins to monetize, analyze & improve your apps (available with the Pro Licenses)
-//        //licenseKey: "<generate one from http://v-play.net/licenseKey>"
-
-//        // create and remove entities at runtime
-//    //     EntityManager {
-//    //        id: entityManager
-//    //    }
-//        // menu scenecurrentModel.get(view.currentIndex - view.currentIndex % typesDim + pr.type).ti
-//        Component.onCompleted:  {
-//            // About the app scene
-//            about = addTab("About", Qt.createComponent("qrc:/qml/scenes/AboutScene.qml"))
-//            about.visible = true
-//            //config = addTab("Config Ser", Qt.createComponent("qrc:/qml/scenes/ConfigSeriesScene.qml"))
-//            //config.visible = true
-//            hrm = addTab("HRM", Qt.createComponent("qrc:/qml/scenes/HrmSetupScene.qml"))
-//            hrm.visible = true
-////        // Configure Series scene
-////        ConfigSeriesScene {
-////            id: configSeriesScene
-////            title:"Config Ser"
-////            //onBackButtonPressed: window.state = "menu"
-////        }
-////        // Running Session Scene
-////    //    RunSessionScene {
-////    //        id: runSessionScene
-////    //        onSessionSelected: setupSession(sessionName, selectedSession)
-////    //        onNotifyFooter: updateFooter(currentIndex)
-////    //        onBackButtonPressed: window.state = "menu"
-////    //    }
-////        // scene for selecting levels
-//        }
-
-
-//    // menuScene is our first scene, so set the state to menu initially
-//    state: "about"
-//    //activeFocusItem: menuScene
-
-//    // state machine, takes care reversing the PropertyChanges when changing the state, like changing the opacity back to 0
-//    states: [
-//        State {
-//            name: "menu"
-//            PropertyChanges {target: menuScene; opacity: 1; focus:true}
-//            //PropertyChanges {target: window; activeFocusItem: menuScene}
-//        },
-//        State {
-//            name: "about"
-//            PropertyChanges {target: aboutScene; focus: true}
-//            //PropertyChanges {target: window; activeFocusItem: aboutScene; focus:true}
-//        },
-//        State {
-//            name: "runSession"
-//            PropertyChanges {target: runSessionScene; opacity: 1; focus:true}
-//            //PropertyChanges {target: window; activeFocusItem: runSessionScene}
-//        },
-//        State {
-//            name: "configSeries"
-//            PropertyChanges {target: configSeriesScene; opacity: 1; focus:true}
-//            //PropertyChanges {target: window; activeFocusItem: configSeriesScene}
-//        },
-//        State {
-//            name: "hrmSetup"
-//            PropertyChanges {target: hrmSetupScene; opacity: 1; focus:true}
-//            //PropertyChanges {target: window; activeFocusItem: hrmSetupScene}
-//        }
-//    ]
     Loader {
         id: pageLoader
         anchors.fill: parent

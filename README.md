@@ -1,4 +1,4 @@
-# taciturn-octo-funicular
+# SeaWolf2
 ## An apnea training application
 This project started for 2 reasons.<br>
 1. I love freediving <br>
