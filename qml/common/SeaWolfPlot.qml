@@ -9,6 +9,13 @@ import QtMultimedia 5.6
 import QtCharts 2.1
 Rectangle{
     id:hrPlot
+    width:parent.width // + dp(50)
+    height: parent.height/3 +dp(30)
+    anchors.horizontalCenter: parent.horizontalCenter
+    //anchors.top: runSessionScene.top
+    //anchors.topMargin: sessionView.cellWidth * 3
+    opacity:1.0
+    z:50
     property var currentSession: {
         "sessionName":"TestSession",
                 "when":"ChangeMe", //Qt.formatDateTime(new Date(), "yyyy-MM-dd-hh-mm-ss"),
@@ -124,7 +131,7 @@ Rectangle{
         for (var i=0; i < currentSession.event.length; i++){
             var evt     = currentSession.event[i]
             var evtName = myEventsNb2Nm[evt[0]]
-            console.log("step = ", evtName, "step duration = ", evt[1])
+            //console.log("step = ", evtName, "step duration = ", evt[1])
             //only use events like brth, hold, walk, back
             if (!(runColors[evtName] === undefined)){
                 currentHrSeries = currentChartView.createSeries(ChartView.SeriesTypeLine, "", currentChartView.axisX, currentChartView.axisY);
@@ -157,14 +164,6 @@ Rectangle{
         p_chartView.axes[0].max = p_session.pulse.length
         p_chartView.update()
     }
-
-    width:parent.width // + dp(50)
-    height: parent.height/3
-    anchors.horizontalCenter: parent.horizontalCenter
-    //anchors.top: runSessionScene.top
-    //anchors.topMargin: sessionView.cellWidth * 3
-    opacity:1.0
-    z:50
     ChartView {
         id:chartView
         //                margins.bottom:dp(0)
