@@ -121,7 +121,7 @@ SceneBase {
             anchors.left:parent.left
             radius: dp(8)
             border.width: dp(4)
-            border.color: "black"
+            border.color: currentGauge.needleColor
             Text{ id:txt
                 anchors.centerIn: parent
                 font.pixelSize: Math.round(dp(0.4 * parent.height))
@@ -147,11 +147,13 @@ SceneBase {
                         property real myRadius: dp(5)
                         id: wrapper
                         z:      {var zdeep=isCurrent ? 100:95; /*console.log("isCurrent, index, zdeep", isCurrent, index, zdeep);*/return zdeep}
-                        width:  /*isCurrent ? 2* sessionView.cellWidth :*/ sessionView.cellWidth - dp(2)
+                        width:  /*isCurrent ? 2* sessionView.cellWidth :*/ sessionView.cellWidth - dp(4)
                         height: width
                         radius: /*isCurrent ? 2 * myRadius:*/ myRadius
-                        color: { if (index == -1) return "grey"; hrPlot.runColors[currentModel.get(index).typeName]}
-                        border.color: { if (index == -1) return "grey"; isCurrent? "white": "black"}
+                        border.color: { if (index == -1) return "grey";
+                            return hrPlot.runColors[currentModel.get(index).typeName];
+                        }
+                        color: index == -1 ? "grey" : "white" //{ if (index == -1) return "grey"; isCurrent? "white": "black"}
                         border.width: isCurrent? dp(4): dp(2)
                         function whatToShow() {
 
@@ -164,7 +166,7 @@ SceneBase {
                             anchors.centerIn: parent
                             //font.pointSize: Math.round(parent.height/4)
                             font.pixelSize: Math.round(dp(0.4 * parent.height))
-                            text: "<b>" + parent.whatToShow() + "</b>"; color: "white"; style: Text.Raised; styleColor: "black"
+                            text: "<b>" + parent.whatToShow() + "</b>"; color: "black"; /*style: Text.Raised; styleColor: "black"*/
                             //text: index + ". " + typeName + " " + time + "sec."
 
                         }
@@ -195,7 +197,7 @@ SceneBase {
                     sessionTime++
                     // update heart rate information
                     hrPlot.currentSession.pulse.push( Math.round(heartRate.hr))
-                    hrPlot.currentHrSeries.append(sessionTime, heartRate.hr)
+                    hrPlot.currentHrSeries.append(sessionTime, Math.round(heartRate.hr))
                     hrPlot.showSessionGraph(hrPlot.currentSession,hrPlot.currentChartView)
                 }
             }

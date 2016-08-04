@@ -44,21 +44,6 @@ CircularGauge {
             tenTimer.stop()
     }
 
-//    function saveSession() {
-//        var path=qfa.getAccessiblePath("sessions");
-//        console.log("Path = ", path);
-//        var fileName = runSessionScene.currentSession.sessionName + "-" + runSessionScene.currentSession.when;
-//        //open will add path before fileName
-//        console.log("fileName=", fileName, "Open=" , qfa.open(path + fileName));
-//        console.log("Wrote = ", qfa.write(JSON.stringify(runSessionScene.currentSession)));
-//        var qstr = qfa.read();
-//        console.log("Read = ", qstr);
-//        console.log("Close=", qfa.close());
-//        //var data = runSessionScene.currentSession
-//        //io.text = JSON.stringify(data, null, 4)
-//        //io.write()
-//    }
-
     onModelIndexChanged:{
         if (gaugeModel != null ){
             maximumValue = gaugeModel.get(modelIndex).time
@@ -297,7 +282,7 @@ CircularGauge {
 //                        console.log("gaugeName=", gaugeName, "eventNb=", eventNb)
 //                        hrPlot.currentSession.event.push([eventNb, maximumValue])
                     //}
-                    hrPlot.setupCurrentHrSeries()
+                    hrPlot.setupCurrenSeries()
                     startVoiceTimers()
                     enterStateSndEffect.play()
                 }

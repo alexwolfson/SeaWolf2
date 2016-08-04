@@ -26,7 +26,9 @@ Rectangle{
     property var myEventsNm2Nb:{"brth":0 , "hold":1, "walk":2, "back":3, "EndOfMeditativeZone":4, "EndOfComfortZone":5, "Contraction":6, "EndOfWalk":7 }
     property var myEventsNb2Nm: invert(myEventsNm2Nb)
     property var runColors: {"brth" : "green", "hold" : "tomato", "walk" : "navyblue", "back" : "orange"}
+    //property var eventsGraphProperty:{"Contraction":["red", "black", 6]}
     property LineSeries currentHrSeries
+    property ScatterSeries currentContractionSeries
     property ChartView  currentChartView
     property ValueAxis  currentAxisX
     property ValueAxis  currentAxisY
@@ -57,17 +59,23 @@ Rectangle{
         currentChartView.removeAllSeries()
         currentHrSeries = currentChartView.createSeries(ChartView.SeriesTypeLine, "", currentAxisX, currentAxisY);
         currentHrSeries.color = runColors[currentGauge.gaugeName]
+        currentContractionSeries = currentChartView.createSeries(ChartView.SeriesTypeScatter, "", currentAxisX, currentAxisY);
 
     }
     function markEvent(eventName){
         var eventNb = myEventsNm2Nb[eventName];
-        currentSession.event.push([eventNb, Math.round(currentGauge.value)])
+        var tm      = Math.round(currentGauge.value)
+        currentSession.event.push([eventNb, tm])
+        if (eventName === "Contraction"){
+            currentContractionSeries.append(sessionTime, Math.round(heartRate.hr))
+        }
     }
 
     //creates new series graph
-    function setupCurrentHrSeries(){
+    function setupCurrenSeries(){
         currentHrSeries = currentChartView.createSeries(ChartView.SeriesTypeLine, "", currentAxisX, currentAxisY);
         currentHrSeries.color = runColors[currentGauge.gaugeName]
+        currentContractionSeries = currentChartView.createSeries(ChartView.SeriesTypeScatter, "", currentAxisX, currentAxisY);
     }
 
     function getSesssionHRMin(session){
@@ -132,7 +140,14 @@ Rectangle{
             var evt     = currentSession.event[i]
             var evtName = myEventsNb2Nm[evt[0]]
             //console.log("step = ", evtName, "step duration = ", evt[1])
-            //only use events like brth, hold, walk, back
+
+            if (evtName === "Contraction"){
+                currentContractionSeries = currentChartView.createSeries(ChartView.SeriesTypeScatter, "", currentChartView.axisX, currentChartView.axisY);
+                //currentView.chart().setAxisX(axisX, currentHrSeries);
+                currentContractionSeries.append( evtStartTime + evt[1], currentSession.pulse[evtStartTime + evt[1]])
+            }
+
+            //only use events like brth, hold, walk, back to fill the pulse data
             if (!(runColors[evtName] === undefined)){
                 currentHrSeries = currentChartView.createSeries(ChartView.SeriesTypeLine, "", currentChartView.axisX, currentChartView.axisY);
                 //currentView.chart().setAxisX(axisX, currentHrSeries);
@@ -200,6 +215,20 @@ Rectangle{
             id: hrSeries
             name: "Heart Rate"
             opacity: 1
+            width: dp(4)
+            axisX:axisX
+            axisY:axisY
+            XYPoint { x: 0;  y: 0 }
+            XYPoint { x: 50; y: 50 }
+        }
+        ScatterSeries {
+            id: contractionSeries
+            name: "Contraction"
+            opacity: 1
+            color: "red"
+            borderColor: "black"
+            markerShape: ScatterSeries.MarkerShapeCircle
+            markerSize: dp(6)
             axisX:axisX
             axisY:axisY
             XYPoint { x: 0;  y: 0 }
