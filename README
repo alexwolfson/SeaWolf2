@@ -13,17 +13,16 @@ Apnea:
 
 I became interested in apnea since the adge of 10 when went to vacation on the Black See with my parents.
 Somebody gave me a mask to try.
-In modern days many years later, leaving near Boston in USA,
-I was influenced by Nick Fazah one of the owners of http://ecdivers.com
-I would never guess that it is possible to create a vibrant free diving comunity in the cold waters of New England
-Short training in Eilat with Aharon Solomons his concepts of empty long training and apnea walk
-and his videos posted on the internet inspired me to start writing this app
+In modern days many years later I was influenced by several people, but the biggest credit goes to 
+Nick Fazah (http://www.ecdivers.com) and 
+Aharon Solomons (http://freedivers.net)
 
 
 Software Architecture overvew:
 ------------------------------
 
-V-Play (http://v-play.net/) 2D games dvelopment toolkit is used. It sits on top of Qt/QML 5.5+ .
+I started with using V-Play (http://v-play.net/) 2D games dvelopment toolkit, but then switched to pure QML Qt 5.7, 
+  when ChartView was introduced in 5.7 . It sits on top of Qt/QML 5.5+ .
 Among other things, I used this app development as a way to become proficient with QML/Qt development.
 
 To preserve configurations/results JSON is used so far (I might switch to YAML or Database later), but for start choice seems natural,
@@ -64,7 +63,6 @@ For the result saving in JSON
 
 Gauges have 2 states: "initial" and "stateRun"
 
-V-Play multilevel multi scenes pattern is used
 
 Code organisation:
 ------------------
@@ -101,9 +99,4 @@ State {
     PropertyChanges {target: runSessionScene; opacity: 1}
     PropertyChanges {target: window; activeScene: runSessionScene}
 },
-Installation on Ubuntu 16.04
-To have development properly setup:
-sudo apt-get install mesa-common-dev
-sudo apt-get install libglu1-mesa-dev freeglut3-dev mesa-common-dev
 
-TODO: clean returns for qmlfileaccess
