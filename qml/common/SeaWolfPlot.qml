@@ -10,7 +10,7 @@ import QtCharts 2.1
 Rectangle{
     id:hrPlot
     width:parent.width // + dp(50)
-    height: parent.height/3 +dp(30)
+    height: parent.height/3 +dp(40)
     anchors.horizontalCenter: parent.horizontalCenter
     //anchors.top: runSessionScene.top
     //anchors.topMargin: sessionView.cellWidth * 3
@@ -177,6 +177,7 @@ Rectangle{
         p_chartView.axes[1].max = (hrMax + 5);
         p_chartView.axes[0].min = 0;
         p_chartView.axes[0].max = p_session.pulse.length
+        currentChartView.title = p_session.sessionName + " " + p_session.when
         p_chartView.update()
     }
     ChartView {

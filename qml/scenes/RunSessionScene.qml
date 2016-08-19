@@ -111,21 +111,40 @@ SceneBase {
         }
         Rectangle{
             id: currentStepLeft
-            property alias text:txt.text
+            property alias text:txtLeft.text
             z:1
-            //12 cells + 1 double sized cell for that Rectangle in a row
-            width: (parent.width - 3 * anchors.margins) / 7
+            //8 cells + 2 double sized cell for that Rectangle in a row
+            width: (parent.width - 13 * anchors.margins) / 5
             height: width
-            anchors.margins: dp(2)
+            anchors.margins: dp(4)
             anchors.top:parent.top
             anchors.left:parent.left
             radius: dp(8)
             border.width: dp(4)
             border.color: currentGauge.needleColor
-            Text{ id:txt
+            Text{ id:txtLeft
                 anchors.centerIn: parent
                 font.pixelSize: Math.round(dp(0.4 * parent.height))
                 text: Math.round(currentGauge.maximumValue - currentGauge.value)
+            }
+        }
+        Rectangle{
+            id: currentStepSpent
+            property alias text:txtSpent.text
+            z:1
+            //8 cells + 2 double sized cell for that Rectangle in a row
+            width: (parent.width - 13 * anchors.margins) / 5
+            height: width
+            anchors.margins: dp(4)
+            anchors.top:parent.top
+            anchors.right:parent.right
+            radius: dp(8)
+            border.width: dp(4)
+            border.color: currentGauge.needleColor
+            Text{ id:txtSpent
+                anchors.centerIn: parent
+                font.pixelSize: Math.round(dp(0.4 * parent.height))
+                text: Math.round(currentGauge.value)
             }
         }
 
@@ -133,11 +152,12 @@ SceneBase {
             //z:50
             id: sessionView
             //height: parent.height
-            anchors.leftMargin: currentStepLeft.width
+            anchors.leftMargin: currentStepLeft.width + currentStepLeft.anchors.margins
+            anchors.rightMargin: currentStepSpent.width
             //anchors.top: parent.top
             anchors.fill: parent
-            cellWidth: (parent.width - 2 * anchors.margins) /14 - 3
-            cellHeight: cellWidth
+            cellWidth: (parent.width - anchors.leftMargin - anchors.rightMargin) /8
+            cellHeight: cellWidth *0.75
             clip: true
             model: currentModel
             delegate: Component {
@@ -154,7 +174,7 @@ SceneBase {
                             return hrPlot.runColors[currentModel.get(index).typeName];
                         }
                         color: index == -1 ? "grey" : "white" //{ if (index == -1) return "grey"; isCurrent? "white": "black"}
-                        border.width: isCurrent? dp(4): dp(2)
+                        border.width: isCurrent? dp(6): dp(2)
                         function whatToShow() {
 
                             var wts = /*isCurrent ? Math.round(time - runGauge[index % runGauge.length].value) :*/ time

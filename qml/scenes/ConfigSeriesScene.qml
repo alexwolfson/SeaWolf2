@@ -99,7 +99,7 @@ SceneBase {
                             currentSessionProperties = generateWalkSession()
                             console.log(" **** generated WALK session=", currentSessionProperties)
                         }
-                        sessionName = session.name
+                        //sessionName = session.name
                         sessionSelected(sessionName, currentSessionProperties)
                       //  levelEditor.saveCurrentLevel( {levelMetaData: {levelName: session.name}, customData:currentSessionProperties} )
                     }
