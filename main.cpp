@@ -10,12 +10,32 @@
 #include <QQmlContext>
 #include <QGuiApplication>
 #include <QQuickView>
+#include <QSplashScreen>
+#include <QScreen>
 #include "heartrate.h"
 
 int main(int argc, char *argv[])
 {
 
     QApplication app(argc, argv);
+//    QScreen *qs = QGuiApplication::primaryScreen();
+//    QRect rec = qs->geometry();
+//    int height = rec.height();
+//    int width = rec.width();
+//    int sz = height < width? height:width;
+//    qDebug() << "width=" << width << ",height=" << height << ",sz=" << sz;
+//    QPixmap pixmap(":/assets/img/SeaWolf.png");
+//    if (pixmap.isNull())
+//    {
+//        pixmap = QPixmap(sz, sz);
+//        pixmap.fill(Qt::magenta);
+//    }
+//    pixmap.scaledToWidth(sz);
+//    QSplashScreen *splash = new QSplashScreen(pixmap, Qt::WindowStaysOnBottomHint);
+//    splash->show();
+//    splash->showMessage("Loading SeaWolf...");
+//    qApp->processEvents(QEventLoop::AllEvents);
+
 
     //VPApplication vplay;
 

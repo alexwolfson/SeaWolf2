@@ -14,8 +14,8 @@ ApplicationWindow {
     property real default_pix_density: 4  //pixel density of my current screen
     property real scale_factor: {
         var sfDen   = Screen.pixelDensity/default_pix_density
-        var sfWidth = Screen.width / 720
-        var sfHeight  = Screen.height / 1280
+        var sfWidth = Screen.width / 1080
+        var sfHeight  = Screen.height / 1776
         return Math.min(/*sfDen, */sfWidth, sfHeight)
     }
     property int firstTime:1
@@ -48,7 +48,7 @@ ApplicationWindow {
                 border.color:  "steelblue"
                 border.width: dp(4)
                 implicitWidth: Math.max(text.width + dp(20), dp(100))
-                implicitHeight: dp(80)
+                implicitHeight: dp(100)
                 radius: dp(4)
                 Text {
                     id: text

@@ -10,7 +10,7 @@ import QtCharts 2.1
 Rectangle{
     id:hrPlot
     width:parent.width // + dp(50)
-    height: parent.height/3 +dp(40)
+    height: parent.height/2.5
     anchors.horizontalCenter: parent.horizontalCenter
     //anchors.top: runSessionScene.top
     //anchors.topMargin: sessionView.cellWidth * 3
@@ -72,7 +72,7 @@ Rectangle{
     }
 
     //creates new series graph
-    function setupCurrenSeries(){
+    function setupCurrentSeries(){
         currentHrSeries = currentChartView.createSeries(ChartView.SeriesTypeLine, "", currentAxisX, currentAxisY);
         currentHrSeries.color = runColors[currentGauge.gaugeName]
         currentContractionSeries = currentChartView.createSeries(ChartView.SeriesTypeScatter, "", currentAxisX, currentAxisY);
@@ -130,11 +130,11 @@ Rectangle{
         var qstr = qfa.read();
         console.log("read = ", qstr);
         currentSession = JSON.parse(qstr);
-        console.log("Close=", qfa.close());
+        qfa.close();
         var currentIndex = 0;
         currentChartView.removeAllSeries();
         var evtStartTime = 0;
-        console.log("events.lengtch=", currentSession.event.length)
+        console.log("events.length=", currentSession.event.length)
         //for (var evt in currentSession.event){  ////Does that for loop type works?
         for (var i=0; i < currentSession.event.length; i++){
             var evt     = currentSession.event[i]
@@ -190,7 +190,7 @@ Rectangle{
         title: currentSession.sessionName + " " + currentSession.when
         anchors.fill: parent
         //to make visible part of the graph taking bigger part
-        anchors.topMargin: dp(-30)
+        //anchors.topMargin: dp(-20)
         antialiasing: true
         theme: ChartView.ChartThemeBlueIcy
         //legend:{visible: false}
@@ -200,6 +200,7 @@ Rectangle{
             //labelsFont: Qt.font({pixelSize : sp(10)})
             min: 0
             max: sessionDuration
+            gridLineColor:"black"
             tickCount: 7
         }
         ValueAxis {
@@ -208,6 +209,7 @@ Rectangle{
             //labelsFont: Qt.font({pixelSize : sp(10)})
             min: minHr
             max: maxHr
+            gridLineColor:"black"
             tickCount:6
 
         }
@@ -229,7 +231,7 @@ Rectangle{
             color: "red"
             borderColor: "black"
             markerShape: ScatterSeries.MarkerShapeCircle
-            markerSize: dp(6)
+            markerSize: dp(8)
             axisX:axisX
             axisY:axisY
             XYPoint { x: 0;  y: 0 }

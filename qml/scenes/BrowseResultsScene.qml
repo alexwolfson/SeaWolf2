@@ -14,7 +14,7 @@ SceneBase{
                 //anchors.rightMargin: dp(20)
                 id: folderListView
                 width: browseScene.width;
-                height: dp(400);
+                height: dp(500);
                 FolderListModel {
                     id: folderModel
                     showHidden :true
@@ -65,6 +65,7 @@ SceneBase{
             }
             SeaWolfPlot{
                 id:hrPlot
+                height: browseScene.height/2
             }
 
             Row{

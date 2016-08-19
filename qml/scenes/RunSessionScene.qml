@@ -169,6 +169,7 @@ SceneBase {
                         z:      {var zdeep=isCurrent ? 100:95; /*console.log("isCurrent, index, zdeep", isCurrent, index, zdeep);*/return zdeep}
                         width:  /*isCurrent ? 2* sessionView.cellWidth :*/ sessionView.cellWidth - dp(4)
                         height: width
+                        //height: sessionView.cellHeihght - dp(4)
                         radius: /*isCurrent ? 2 * myRadius:*/ myRadius
                         border.color: { if (index == -1) return "grey";
                             return hrPlot.runColors[currentModel.get(index).typeName];
@@ -323,7 +324,7 @@ SceneBase {
                 Text {
                     id: hrValue
                     z:100
-                    font.pixelSize: dp(36); font.bold: true
+                    font.pixelSize: dp(45); font.bold: true
                     anchors.centerIn: parent
                     style: Text.Raised;
                     color: "white" //"#3870BA"

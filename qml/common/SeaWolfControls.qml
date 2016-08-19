@@ -119,11 +119,11 @@ CircularGauge {
                         //easing.type: Easing.OutExpo;
                         from:0.9; to: 1.1;
                     }
-                    NumberAnimation {
-                        duration: heartRate.hr/60*1500;
-                        easing.type: Easing.OutExpo;
-                        from:1.1; to: 0.9;
-                    }
+//                    NumberAnimation {
+//                        duration: heartRate.hr/60*1500;
+//                        easing.type: Easing.OutExpo;
+//                        from:1.1; to: 0.9;
+//                    }
                 }
                 ParticleSystem {
                     id: systwo
@@ -282,7 +282,7 @@ CircularGauge {
 //                        console.log("gaugeName=", gaugeName, "eventNb=", eventNb)
 //                        hrPlot.currentSession.event.push([eventNb, maximumValue])
                     //}
-                    hrPlot.setupCurrenSeries()
+                    hrPlot.setupCurrentSeries()
                     startVoiceTimers()
                     enterStateSndEffect.play()
                 }
