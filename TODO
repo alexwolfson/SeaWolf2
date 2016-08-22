@@ -7,3 +7,4 @@
 - Add particles using particle editor as air bubble
 - Heart rate biofeedback
 - Refactor the architecture - SeaWolfControls are using RunSessionScene and RunSeessionScene uses SeaWolfControls
+- Remove pulse spikes caused by sensor's problems
