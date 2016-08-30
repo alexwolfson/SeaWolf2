@@ -218,8 +218,8 @@ SceneBase {
                     sessionTime++
                     // update heart rate information
                     hrPlot.currentSession.pulse.push( Math.round(heartRate.hr))
-                    hrPlot.currentHrSeries.append(sessionTime, Math.round(heartRate.hr))
-                    hrPlot.showSessionGraph(hrPlot.currentSession,hrPlot.currentChartView)
+                    //hrPlot.currentHrSeries.append(sessionTime, Math.round(heartRate.hr))
+                    hrPlot.showSessionGraph(hrPlot.currentSession)
                 }
             }
 

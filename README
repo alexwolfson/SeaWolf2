@@ -22,7 +22,7 @@ Software Architecture overvew:
 ------------------------------
 
 I started with using V-Play (http://v-play.net/) 2D games dvelopment toolkit, but then switched to pure QML Qt 5.7, 
-  when ChartView was introduced in 5.7 . It sits on top of Qt/QML 5.5+ .
+  when ChartView was introduced in 5.7 . It sits on top of Qt/QML 5.7+ .
 Among other things, I used this app development as a way to become proficient with QML/Qt development.
 
 To preserve configurations/results JSON is used so far (I might switch to YAML or Database later), but for start choice seems natural,

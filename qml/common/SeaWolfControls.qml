@@ -282,7 +282,7 @@ CircularGauge {
 //                        console.log("gaugeName=", gaugeName, "eventNb=", eventNb)
 //                        hrPlot.currentSession.event.push([eventNb, maximumValue])
                     //}
-                    hrPlot.setupCurrentSeries()
+                    // hrPlot.setupCurrentSeries()
                     startVoiceTimers()
                     enterStateSndEffect.play()
                 }
@@ -329,7 +329,7 @@ CircularGauge {
                             runSessionScene.runGauge[walkIndx].visible = true
                         }
 
-                        //emit signala
+                        //emit signal
                         runSessionScene.currentGauge = nextGauge
                         //seting up next gauge as current if it's time is not 0
                         nextGauge.state = "stateRun"

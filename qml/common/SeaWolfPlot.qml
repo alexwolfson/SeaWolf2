@@ -16,6 +16,10 @@ Rectangle{
     //anchors.topMargin: sessionView.cellWidth * 3
     opacity:1.0
     z:50
+    property var myEventsNm2Nb:{"brth":0 , "hold":1, "walk":2, "back":3, "EndOfMeditativeZone":4, "EndOfComfortZone":5, "Contraction":6, "EndOfWalk":7 }
+    property var myEventsNb2Nm: invert(myEventsNm2Nb)
+    property var runColors: {"brth" : "green", "hold" : "tomato", "walk" : "navyblue", "back" : "orange"}
+    //property var eventsGraphProperty:{"Contraction":["red", "black", 6]}
     property var currentSession: {
         "sessionName":"TestSession",
                 "when":"ChangeMe", //Qt.formatDateTime(new Date(), "yyyy-MM-dd-hh-mm-ss"),
@@ -23,15 +27,11 @@ Rectangle{
                 "event":[],
                 "pulse":[]
     }
-    property var myEventsNm2Nb:{"brth":0 , "hold":1, "walk":2, "back":3, "EndOfMeditativeZone":4, "EndOfComfortZone":5, "Contraction":6, "EndOfWalk":7 }
-    property var myEventsNb2Nm: invert(myEventsNm2Nb)
-    property var runColors: {"brth" : "green", "hold" : "tomato", "walk" : "navyblue", "back" : "orange"}
-    //property var eventsGraphProperty:{"Contraction":["red", "black", 6]}
-    property LineSeries currentHrSeries
+    property LineSeries    currentHrSeries
     property ScatterSeries currentContractionSeries
-    property ChartView  currentChartView
-    property ValueAxis  currentAxisX
-    property ValueAxis  currentAxisY
+    property ChartView     currentChartView
+    property CategoryAxis  currentAxisX
+    property ValueAxis     currentAxisY
     property real minHr:10
     property real maxHr:150
     property real sessionDuration:0.0
@@ -75,6 +75,7 @@ Rectangle{
     function setupCurrentSeries(){
         currentHrSeries = currentChartView.createSeries(ChartView.SeriesTypeLine, "", currentAxisX, currentAxisY);
         currentHrSeries.color = runColors[currentGauge.gaugeName]
+        console.log("")
         currentContractionSeries = currentChartView.createSeries(ChartView.SeriesTypeScatter, "", currentAxisX, currentAxisY);
     }
 
@@ -163,22 +164,50 @@ Rectangle{
             }
         }
 
-        showSessionGraph(currentSession,currentChartView)
+        showSessionGraph(currentSession)
 
         //var data = runSessionScene.currentSession
         //io.text = JSON.stringify(data, null, 4)
         //io.write()
     }
-    function showSessionGraph(p_session, p_chartView){
+    function showSessionGraph(p_session){
+        var evtStartTime=0
         var hrMin = getSesssionHRMin(p_session);
         var hrMax = getSesssionHRMax(p_session);
         var currentHrSeries
-        p_chartView.axes[1].min = (hrMin - 5);
-        p_chartView.axes[1].max = (hrMax + 5);
-        p_chartView.axes[0].min = 0;
-        p_chartView.axes[0].max = p_session.pulse.length
+        hrPlot.currentAxisY.min = (hrMin - 1);
+        hrPlot.currentAxisY.max = (hrMax + 1);
+        hrPlot.currentAxisX.min = 0;
+        hrPlot.currentAxisX.max = p_session.pulse.length
+        currentContractionSeries = currentChartView.createSeries(ChartView.SeriesTypeScatter, "", currentAxisX, currentAxisX);
+        for (var i=0; i < currentSession.event.length; i++){
+            var evt     = currentSession.event[i]
+            var evtName = myEventsNb2Nm[evt[0]]
+            console.log("event = ", evtName, "step duration = ", evt[1], "color=", runColors[evtName])
+
+            if (evtName === "Contraction"){
+                //currentView.chart().setAxisX(axisX, currentHrSeries);
+                currentContractionSeries.append( evtStartTime + evt[1], currentSession.pulse[evtStartTime + evt[1]])
+                hrPlot.currentAxisX.append(evtStartTime.toString(), evtStartTime)
+            }
+
+            //only use events like brth, hold, walk, back to fill the pulse data
+            if (!(runColors[evtName] === undefined)){
+                currentHrSeries = currentChartView.createSeries(ChartView.SeriesTypeLine, "", currentAxisX, currentAxisY);
+                //currentView.chart().setAxisX(axisX, currentHrSeries);
+                currentHrSeries.color = runColors[evtName]
+                for (var j = 0; j < evt[1]; j++){
+                    currentHrSeries.append( evtStartTime + j, currentSession.pulse[evtStartTime + j])
+
+                }
+                evtStartTime += Math.round(evt[1])
+                hrPlot.currentAxisX.append((evtStartTime).toString(), evtStartTime)
+                //p_chartView.axes[0].append("22", evtStartTime)
+            }
+        }
+
         currentChartView.title = p_session.sessionName + " " + p_session.when
-        p_chartView.update()
+        currentChartView.update()
     }
     ChartView {
         id:chartView
@@ -193,36 +222,34 @@ Rectangle{
         //anchors.topMargin: dp(-20)
         antialiasing: true
         theme: ChartView.ChartThemeBlueIcy
-        //legend:{visible: false}
-        ValueAxis {
-            id: axisX
-            labelFormat:"%.0f"
-            //labelsFont: Qt.font({pixelSize : sp(10)})
+        legend.visible: false
+        CategoryAxis {
+            id: plotAxisX
+            startValue:0
             min: 0
             max: sessionDuration
-            gridLineColor:"black"
-            tickCount: 7
+
+            //count: 0
+            gridLineColor:"red"
         }
         ValueAxis {
-            id: axisY
+            id: plotAxisY
             labelFormat:"%.0f"
             //labelsFont: Qt.font({pixelSize : sp(10)})
             min: minHr
             max: maxHr
-            gridLineColor:"black"
+            gridLineColor:"blue"
             tickCount:6
-
         }
 
         LineSeries {
             id: hrSeries
             name: "Heart Rate"
             opacity: 1
-            width: dp(4)
-            axisX:axisX
-            axisY:axisY
+            width: dp(5)
+            axisX:plotAxisX
+            axisY:plotAxisY
             XYPoint { x: 0;  y: 0 }
-            XYPoint { x: 50; y: 50 }
         }
         ScatterSeries {
             id: contractionSeries
@@ -232,15 +259,15 @@ Rectangle{
             borderColor: "black"
             markerShape: ScatterSeries.MarkerShapeCircle
             markerSize: dp(8)
-            axisX:axisX
-            axisY:axisY
-            XYPoint { x: 0;  y: 0 }
+            axisX:plotAxisX
+            axisY:plotAxisY
+            XYPoint { x: 25;  y: 25 }
             XYPoint { x: 50; y: 50 }
         }
         Component.onCompleted:{
             currentChartView = chartView
-            currentAxisX     = axisX
-            currentAxisY     = axisY
+            currentAxisX     = plotAxisX
+            currentAxisY     = plotAxisY
         }
     }
 

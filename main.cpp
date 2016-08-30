@@ -8,7 +8,7 @@
 #include <QDebug>
 #include <QtCore/QLoggingCategory>
 #include <QQmlContext>
-#include <QGuiApplication>
+//#include <QGuiApplication>
 #include <QQuickView>
 #include <QSplashScreen>
 #include <QScreen>

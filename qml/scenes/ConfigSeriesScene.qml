@@ -112,7 +112,7 @@ SceneBase {
             SeaWolfInput{ id: rLast; type:"switch";lbl: qsTr("repeatLast");         onResult: {repeatLast=swYesNo}}
             SeaWolfInput{ type:"int";   lbl: qsTr("minBreathTime");  ift:"15";      onResult: {minBreathTime=parseInt(res)}}
             SeaWolfInput{ id:breathDecrementEdit; type:"int";   lbl: qsTr("breathDecrement");ift:"15";      onResult: {breathDecrement=parseInt(res)}}
-            SeaWolfInput{ type:"int";   lbl: qsTr("maxHoldTime");    ift:"120";     onResult: {maxHoldTime=res}}
+            SeaWolfInput{ type:"int";   lbl: qsTr("maxHoldTime");    ift:"120";     onResult: {maxHoldTime=parseInt(res)}}
             SeaWolfInput{ id:holdIncrementEdit; type:"int";   lbl: qsTr("holdIncrement");  ift:"15";      onResult: {holdIncrement=parseInt(res)}}
             SeaWolfInput{ id:walkTimeEdit; type:"int";   lbl: qsTr("walkTime");       ift:"120";     onResult: {walkTime=parseInt(res)}}
             SeaWolfInput{ id:backTimeEdit; type:"int";   lbl: qsTr("walkBackTime");   ift:"120";     onResult: {walkBackTime=parseInt(res)}}
