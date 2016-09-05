@@ -297,29 +297,29 @@ CircularGauge {
                     if (isLastInCycle()){
                         loadNextCycleVal([gauge])
                         var prevNextModelIndex = nextGauge.modelIndex
-                        console.log("prevNextModelIndex=", prevNextModelIndex)
+                        //console.log("prevNextModelIndex=", prevNextModelIndex)
                         loadNextCycleVal([nextGauge])
-                        console.log("******nextGauge.modelIndex=", nextGauge.modelIndex)
+                        //console.log("******nextGauge.modelIndex=", nextGauge.modelIndex)
                         if (prevNextModelIndex === nextGauge.modelIndex)
                             bContinue = false
                         //if we have 2 gauges only (no "walk" we need to prevent updating "hold" twice
                         var n1 = String(nextGauge.nextGauge.gaugeName)
                         var n2 = String(gauge.gaugeName)
-                        console.log("localCompare=", n1.localeCompare(n2))
+                        //console.log("localCompare=", n1.localeCompare(n2))
                         if (0 !== n1.localeCompare(n2)){
                             loadNextCycleVal([nextGauge.nextGauge])
                             loadNextCycleVal([nextGauge.nextGauge.nextGauge])
                          }
                     }
-                    console.log("bContinue=", bContinue)
+                    //console.log("bContinue=", bContinue)
                     //var nextActiveGauge = nextGauge.maximumValue != 0 ? nextGauge : nextGauge.nextGauge
                     if ((nextGauge.modelIndex < gaugeModel.count) && bContinue){
                         //nextGauge.modelIndex = modelIndex + 1
                         //skip the next gauge if it has 0 maximum value
                         gaugeModel.get(nextGauge.modelIndex).isCurrent = true
-                        if (("hold" == runSessionScene.currentGauge.gaugeName) && ("walk" == nextGauge.gaugeName) ){
+                        //if (("hold" == runSessionScene.currentGauge.gaugeName) && ("walk" == nextGauge.gaugeName) ){
                             runSessionScene.enableWalkControl()
-                        }
+                        //}
                         if ("walk" == runSessionScene.currentGauge.gaugeName){
                             runSessionScene.currentGauge.visible = false
                             runSessionScene.runGauge[backIndx].visible = true
@@ -342,7 +342,6 @@ CircularGauge {
                         //save the session results
                         //openDialog.open()
                         hrPlot.saveSession()
-                        heartRate.disconnectService();
                         oneTimer.stop()
                         sessionTime = 0.0;
                         //pageLoader.source = "results.qml";

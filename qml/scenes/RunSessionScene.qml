@@ -219,7 +219,7 @@ SceneBase {
                     // update heart rate information
                     hrPlot.currentSession.pulse.push( Math.round(heartRate.hr))
                     //hrPlot.currentHrSeries.append(sessionTime, Math.round(heartRate.hr))
-                    hrPlot.showSessionGraph(hrPlot.currentSession)
+                    hrPlot.showSessionGraph(hrPlot.currentSession, currentGauge.gaugeName)
                 }
             }
 
@@ -363,15 +363,30 @@ SceneBase {
                     enabled: true
                     clip: true
                     onClicked: {
-                        currentGaugeBrth.modelIndex = 0
                         currentGauge = currentGaugeBrth
                         currentModel.get(0).isCurrent = true
 
-                        currentGaugeBrth.state = "stateRun";
-                        currentGaugeBrth.isCurrent = true
-                        //currentModel.get(0).isCurrent = true
-                        walkControl.enabled = false
-                        walkControl.text= qsTr("Finish Walk")
+                        gaugeBrth.state = "stateRun";
+                        gaugeBrth.isCurrent = true
+                        gaugeBrth.modelIndex = 0
+                        gaugeHold.modelIndex = 1
+                        gaugeWalk.modelIndex = 2
+                        gaugeBack.modelIndex = 3                        //currentModel.get(0).isCurrent = true
+
+                        gaugeBrth.maximumValue = currentModel.get(brthIndx).time
+                        gaugeHold.maximumValue = currentModel.get(holdIndx).time
+                        gaugeWalk.maximumValue = currentModel.get(walkIndx).time
+                        gaugeBack.maximumValue = currentModel.get(backIndx).time
+                        gaugeBrth.state = "initial"
+                        gaugeBrth.value = 0
+                        gaugeHold.state = "initial"
+                        gaugeHold.value = 0
+                        gaugeWalk.state = "initial"
+                        gaugeWalk.value = 0
+                        gaugeBack.state = "initial"
+                        gaugeBack.value = 0
+                        walkControl.enabled = true
+                        walkControl.text= qsTr("Finish Step")
                         button2.enabled = true;
                         hrPlot.init()
                         oneTimer.start()
@@ -384,28 +399,13 @@ SceneBase {
                 MenuButton {
                     id: walkControl
                     z:100
-                    text: qsTr("Finish Walk")
+                    text: qsTr("Finish Step")
                     enabled: true
                     onClicked: {
-                        if (walkControl.text === qsTr("Finish Walk")){
-                            //enabled = false;
-                            currentGauge.state = "initial";
-                            //currentgaugeWalk.maximumValue = currentgaugeWalk.value;
-                            walkControl.text = qsTr("Finish Back")
-                            walkControl.enabled = true
-                            currentGauge.stopVoiceTimers();
-                        } else if(walkControl.text === qsTr("Finish Back")){
-                            currentGauge.state = "initial"
-                            walkControl.text = qsTr("Finish Walk");
-                            walkControl.enabled = false
-                            currentGauge.stopVoiceTimers();
-                        }
+                        currentGauge.stopVoiceTimers();
+                        currentGauge.state = "initial";
                     }
                 }
-                //            FileDialog{
-                //                id: fileDialog
-                //                folder:qfa.getAccessiblePath("sessions")
-                //            }
 
                 MenuButton {
                     id: button2

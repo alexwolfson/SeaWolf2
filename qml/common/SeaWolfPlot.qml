@@ -28,7 +28,8 @@ Rectangle{
                 "pulse":[]
     }
     property LineSeries    currentHrSeries
-    property ScatterSeries currentContractionSeries
+    property LineSeries    postEventHrSeries
+    property ScatterSeries currentContractionSeries: contractionSeries
     property ChartView     currentChartView
     property CategoryAxis  currentAxisX
     property ValueAxis     currentAxisY
@@ -60,6 +61,7 @@ Rectangle{
         currentHrSeries = currentChartView.createSeries(ChartView.SeriesTypeLine, "", currentAxisX, currentAxisY);
         currentHrSeries.color = runColors[currentGauge.gaugeName]
         currentContractionSeries = currentChartView.createSeries(ChartView.SeriesTypeScatter, "", currentAxisX, currentAxisY);
+        postEventHrSeries = currentChartView.createSeries(ChartView.SeriesTypeLine, "", currentAxisX, currentAxisY)
 
     }
     function markEvent(eventName){
@@ -67,7 +69,8 @@ Rectangle{
         var tm      = Math.round(currentGauge.value)
         currentSession.event.push([eventNb, tm])
         if (eventName === "Contraction"){
-            currentContractionSeries.append(sessionTime, Math.round(heartRate.hr))
+            console.log("Mark Contraction, tm=", tm, "Y =", Math.round(heartRate.hr))
+            currentContractionSeries.append(tm, Math.round(heartRate.hr))
         }
     }
 
@@ -75,7 +78,6 @@ Rectangle{
     function setupCurrentSeries(){
         currentHrSeries = currentChartView.createSeries(ChartView.SeriesTypeLine, "", currentAxisX, currentAxisY);
         currentHrSeries.color = runColors[currentGauge.gaugeName]
-        console.log("")
         currentContractionSeries = currentChartView.createSeries(ChartView.SeriesTypeScatter, "", currentAxisX, currentAxisY);
     }
 
@@ -170,24 +172,26 @@ Rectangle{
         //io.text = JSON.stringify(data, null, 4)
         //io.write()
     }
-    function showSessionGraph(p_session){
+    function showSessionGraph(p_session, currentGaugeName){
         var evtStartTime=0
         var hrMin = getSesssionHRMin(p_session);
         var hrMax = getSesssionHRMax(p_session);
         var currentHrSeries
-        hrPlot.currentAxisY.min = (hrMin - 1);
-        hrPlot.currentAxisY.max = (hrMax + 1);
-        hrPlot.currentAxisX.min = 0;
-        hrPlot.currentAxisX.max = p_session.pulse.length
-        currentContractionSeries = currentChartView.createSeries(ChartView.SeriesTypeScatter, "", currentAxisX, currentAxisX);
+        currentAxisY.min = (hrMin - 1);
+        currentAxisY.max = (hrMax + 1);
+        currentAxisX.min = 0;
+        currentAxisX.max = p_session.pulse.length
+        currentContractionSeries = currentChartView.createSeries(ChartView.SeriesTypeScatter, "", currentAxisX, currentAxisY);
         for (var i=0; i < currentSession.event.length; i++){
             var evt     = currentSession.event[i]
             var evtName = myEventsNb2Nm[evt[0]]
-            console.log("event = ", evtName, "step duration = ", evt[1], "color=", runColors[evtName])
+            //console.log("event = ", evtName, "step duration = ", evt[1], "color=", runColors[evtName])
 
             if (evtName === "Contraction"){
                 //currentView.chart().setAxisX(axisX, currentHrSeries);
                 currentContractionSeries.append( evtStartTime + evt[1], currentSession.pulse[evtStartTime + evt[1]])
+                //console.log("event = ", evtName, "X = ", evtStartTime + evt[1], "Y = ", currentSession.pulse[evtStartTime + evt[1]])
+
                 hrPlot.currentAxisX.append(evtStartTime.toString(), evtStartTime)
             }
 
@@ -198,14 +202,31 @@ Rectangle{
                 currentHrSeries.color = runColors[evtName]
                 for (var j = 0; j < evt[1]; j++){
                     currentHrSeries.append( evtStartTime + j, currentSession.pulse[evtStartTime + j])
-
                 }
                 evtStartTime += Math.round(evt[1])
                 hrPlot.currentAxisX.append((evtStartTime).toString(), evtStartTime)
                 //p_chartView.axes[0].append("22", evtStartTime)
             }
         }
+        //the last unfinished lap if it exists
 
+        if (evtStartTime <= currentSession.pulse.length){
+            //console.log("currenGaugeName=", currentGaugeName)
+            if (! (currentGaugeName === undefined)){
+                postEventHrSeries.color = runColors[currentGaugeName]
+            }
+            //hrPlot.currentAxisX.remove((evtStartTime + 1).toString())
+            //remove all points and add new ones later
+            postEventHrSeries.removePoints(0, postEventHrSeries.count)
+            for (var i = evtStartTime + 1; i < currentSession.pulse.length; i++){
+                //remove previous post event labels
+                postEventHrSeries.append( i , currentSession.pulse[i])
+                hrPlot.currentAxisX.remove(i.toString())
+
+                //console.log("evtStartTime=", evtStartTime, "currentSession.pulse.length=", currentSession.pulse.length, "i=", i)
+            }
+            hrPlot.currentAxisX.append(currentSession.pulse.length.toString(), currentSession.pulse.length)
+        }
         currentChartView.title = p_session.sessionName + " " + p_session.when
         currentChartView.update()
     }
@@ -228,7 +249,7 @@ Rectangle{
             startValue:0
             min: 0
             max: sessionDuration
-
+            labelsAngle: -90
             //count: 0
             gridLineColor:"red"
         }
@@ -265,9 +286,9 @@ Rectangle{
             XYPoint { x: 50; y: 50 }
         }
         Component.onCompleted:{
-            currentChartView = chartView
-            currentAxisX     = plotAxisX
-            currentAxisY     = plotAxisY
+            currentChartView  = chartView
+            currentAxisX      = plotAxisX
+            currentAxisY      = plotAxisY
         }
     }
 

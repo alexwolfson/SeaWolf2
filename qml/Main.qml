@@ -26,7 +26,7 @@ ApplicationWindow {
         }
         return pix * scale_factor
     }
-    //Is set, whhen RunSessionScene is loaded
+    //Is set, when RunSessionScene is loaded
     property int typesDim
     visible:true
     //for some reason dp(1920) created binding loop and dependence of NONNotifiable factor
@@ -86,7 +86,10 @@ ApplicationWindow {
                     border.color: "black"
                     text: qsTr("Quit")
                     anchors.centerIn: parent
-                    onClicked: {Qt.quit()}
+                    onClicked: {
+                        heartRate.disconnectService();
+                        Qt.quit()
+                    }
                 }
             }
         }
