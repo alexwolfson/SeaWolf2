@@ -20,6 +20,9 @@ SceneBase {
     onSetupSessionSignal: {setupSession(sessionName,selectedSession)}
     signal timeLeft(var tm)
     onTimeLeft: {currentStepLeft.text = tm}
+    function getSessionTime(){
+        return sessionTime
+    }
     function setupSession(sessionName, selectedSession){
         console.log("**** In setupSession width ", sessionName, ":", selectedSession)
         var step;
@@ -366,7 +369,6 @@ SceneBase {
                         currentGauge = currentGaugeBrth
                         currentModel.get(0).isCurrent = true
 
-                        gaugeBrth.state = "stateRun";
                         gaugeBrth.isCurrent = true
                         gaugeBrth.modelIndex = 0
                         gaugeHold.modelIndex = 1
@@ -377,7 +379,7 @@ SceneBase {
                         gaugeHold.maximumValue = currentModel.get(holdIndx).time
                         gaugeWalk.maximumValue = currentModel.get(walkIndx).time
                         gaugeBack.maximumValue = currentModel.get(backIndx).time
-                        gaugeBrth.state = "initial"
+                        gaugeBrth.state = "stateRun"
                         gaugeBrth.value = 0
                         gaugeHold.state = "initial"
                         gaugeHold.value = 0

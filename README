@@ -49,6 +49,7 @@ events:["EndOfMeditativeZone", "EndOfComfortZone, "Contraction", "EndOfWalk"]
 "events":[Number1:time, Number2:time]
 "pulse":[number,number, ...]
 }
+in events time is the time from the start
 
 For the result saving in JSON
 

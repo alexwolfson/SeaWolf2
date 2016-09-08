@@ -18,7 +18,7 @@ Rectangle{
     z:50
     property var myEventsNm2Nb:{"brth":0 , "hold":1, "walk":2, "back":3, "EndOfMeditativeZone":4, "EndOfComfortZone":5, "Contraction":6, "EndOfWalk":7 }
     property var myEventsNb2Nm: invert(myEventsNm2Nb)
-    property var runColors: {"brth" : "green", "hold" : "tomato", "walk" : "navyblue", "back" : "orange"}
+    property var runColors: {"brth" : "green", "hold" : "tomato", "walk" : "blue", "back" : "orange"}
     //property var eventsGraphProperty:{"Contraction":["red", "black", 6]}
     property var currentSession: {
         "sessionName":"TestSession",
@@ -35,7 +35,10 @@ Rectangle{
     property ValueAxis     currentAxisY
     property real minHr:10
     property real maxHr:150
-    property real sessionDuration:0.0
+    property int sessionDuration:0
+    property int lastShownAnyEventNb
+    property int lastShownStepEventNb
+    property int lastShownPulseTm
     function invert (obj) {
         var new_obj = {};
         for (var prop in obj) {
@@ -54,31 +57,32 @@ Rectangle{
        }
     }
     function init(){
+        sessionDuration = 0
         currentSession.event=[]
         currentSession.pulse=[]
         currentSession.when = Qt.formatDateTime(new Date(), "yyyy-MM-dd-hh-mm-ss");
         currentChartView.removeAllSeries()
+        setupCurrentSeries()
+        lastShownAnyEventNb = -1;
+        lastShownStepEventNb = -1;
+        lastShownPulseTm = -1;
+        currentAxisX = chartView.plotAxisX
+    }
+    //creates new series graph
+    function setupCurrentSeries(){
         currentHrSeries = currentChartView.createSeries(ChartView.SeriesTypeLine, "", currentAxisX, currentAxisY);
-        currentHrSeries.color = runColors[currentGauge.gaugeName]
+        //currentHrSeries.color = runColors[currentGauge.gaugeName]
         currentContractionSeries = currentChartView.createSeries(ChartView.SeriesTypeScatter, "", currentAxisX, currentAxisY);
         postEventHrSeries = currentChartView.createSeries(ChartView.SeriesTypeLine, "", currentAxisX, currentAxisY)
-
     }
     function markEvent(eventName){
         var eventNb = myEventsNm2Nb[eventName];
-        var tm      = Math.round(currentGauge.value)
+        var tm      = runSessionScene.getSessionTime()//Math.round(currentGauge.value)
         currentSession.event.push([eventNb, tm])
         if (eventName === "Contraction"){
             console.log("Mark Contraction, tm=", tm, "Y =", Math.round(heartRate.hr))
             currentContractionSeries.append(tm, Math.round(heartRate.hr))
         }
-    }
-
-    //creates new series graph
-    function setupCurrentSeries(){
-        currentHrSeries = currentChartView.createSeries(ChartView.SeriesTypeLine, "", currentAxisX, currentAxisY);
-        currentHrSeries.color = runColors[currentGauge.gaugeName]
-        currentContractionSeries = currentChartView.createSeries(ChartView.SeriesTypeScatter, "", currentAxisX, currentAxisY);
     }
 
     function getSesssionHRMin(session){
@@ -104,7 +108,8 @@ Rectangle{
     function setupSession(sessionName, selectedSession){
         console.log("**** In setupSession width ", sessionName, ":", selectedSession)
         var step;
-        sessionDuration = 0.0
+        init()
+        sessionDuration = 0
         for (step in selectedSession){
             sessionDuration += selectedSession[step].time;
         }
@@ -128,52 +133,49 @@ Rectangle{
     }
 
     function restoreSession(filePath) {
-        console.log("filePath = ", filePath, "Open=" , qfa.open(filePath));
-        //console.log("Wrote = ", qfa.write(JSON.stringify(runSessionScene.currentSession)));
+        qfa.open(filePath)
+        console.log("restored = ", filePath);
+        init()
         var qstr = qfa.read();
         console.log("read = ", qstr);
         currentSession = JSON.parse(qstr);
         qfa.close();
-        var currentIndex = 0;
-        currentChartView.removeAllSeries();
-        var evtStartTime = 0;
-        console.log("events.length=", currentSession.event.length)
-        //for (var evt in currentSession.event){  ////Does that for loop type works?
-        for (var i=0; i < currentSession.event.length; i++){
-            var evt     = currentSession.event[i]
-            var evtName = myEventsNb2Nm[evt[0]]
-            //console.log("step = ", evtName, "step duration = ", evt[1])
+//        var currentIndex = 0;
+//        currentChartView.removeAllSeries();
+//        currentContractionSeries = currentChartView.createSeries(ChartView.SeriesTypeScatter, "", currentChartView.axisX, currentChartView.axisY);
+//        //there is no post event here just creating to avoid runtime error in showSessionPlot
+//        postEventHrSeries = currentChartView.createSeries(ChartView.SeriesTypeLine, "", currentAxisX, currentAxisY)
+//        lastShownAnyEventNb = -1;
+//        for (var i = 0; i < currentSession.event.length; i++){
+//            var evt     = currentSession.event[i]
+//            var evtName = myEventsNb2Nm[evt[0]]
+//            //console.log("step = ", evtName, "step duration = ", evt[1])
 
-            if (evtName === "Contraction"){
-                currentContractionSeries = currentChartView.createSeries(ChartView.SeriesTypeScatter, "", currentChartView.axisX, currentChartView.axisY);
-                //currentView.chart().setAxisX(axisX, currentHrSeries);
-                currentContractionSeries.append( evtStartTime + evt[1], currentSession.pulse[evtStartTime + evt[1]])
-            }
+//            if (evtName === "Contraction"){
+//                //currentView.chart().setAxisX(axisX, currentHrSeries);
+//                currentContractionSeries.append( evt[1], currentSession.pulse[evt[1]])
+//            }
 
-            //only use events like brth, hold, walk, back to fill the pulse data
-            if (!(runColors[evtName] === undefined)){
-                currentHrSeries = currentChartView.createSeries(ChartView.SeriesTypeLine, "", currentChartView.axisX, currentChartView.axisY);
-                //currentView.chart().setAxisX(axisX, currentHrSeries);
-                currentHrSeries.color = runColors[evtName]
-                for (var j = 0; j < evt[1]; j++){
-                    currentHrSeries.append( evtStartTime + j, currentSession.pulse[evtStartTime + j])
-                    //AWDEBUG
-                    //currentHrSeries.append(Math.round(50 + j))
-                    //currentView.update()
+//            //only use events like brth, hold, walk, back to fill the pulse data
+//            if (!(runColors[evtName] === undefined)){
+//                currentHrSeries = currentChartView.createSeries(ChartView.SeriesTypeLine, "", currentChartView.axisX, currentChartView.axisY);
+//                //currentView.chart().setAxisX(axisX, currentHrSeries);
+//                currentHrSeries.color = runColors[evtName]
+//                for (var j = 0; j < evt[1]; j++){
+//                    currentHrSeries.append( j, currentSession.pulse[j])
 
-                }
-                evtStartTime += evt[1]
-            }
-        }
+//                }
+//            }
+//        }
 
         showSessionGraph(currentSession)
 
-        //var data = runSessionScene.currentSession
-        //io.text = JSON.stringify(data, null, 4)
-        //io.write()
     }
+    // currentGaugeName is passed in the case of the browsing previous sessions
+    // if routine is called from the 1 sec timer currentGaugeName is undefined
     function showSessionGraph(p_session, currentGaugeName){
-        var evtStartTime=0
+        var lastShownAnyEventTm = lastShownAnyEventNb >= 0 ? p_session.event[lastShownAnyEventNb][1]:0
+        var lastShownStepEventTm = lastShownStepEventNb >= 0 ? p_session.event[lastShownStepEventNb][1]:0
         var hrMin = getSesssionHRMin(p_session);
         var hrMax = getSesssionHRMax(p_session);
         var currentHrSeries
@@ -181,51 +183,59 @@ Rectangle{
         currentAxisY.max = (hrMax + 1);
         currentAxisX.min = 0;
         currentAxisX.max = p_session.pulse.length
-        currentContractionSeries = currentChartView.createSeries(ChartView.SeriesTypeScatter, "", currentAxisX, currentAxisY);
-        for (var i=0; i < currentSession.event.length; i++){
-            var evt     = currentSession.event[i]
+        //remove all points. We will add new ones later
+        //currentContractionSeries.removePoints(0, currentContractionSeries.count)
+        //currentContractionSeries = currentChartView.createSeries(ChartView.SeriesTypeScatter, "", currentAxisX, currentAxisY);
+        for (var i = lastShownAnyEventNb + 1; i < p_session.event.length; i++){
+            var evt     = p_session.event[i]
             var evtName = myEventsNb2Nm[evt[0]]
+            //var prevEventStop = i == 0? 0: p_session.event[i-1][1]
             //console.log("event = ", evtName, "step duration = ", evt[1], "color=", runColors[evtName])
-
+            //evtStartTime = evt[1]
+            currentAxisX.append(evt[1].toString(), evt[1])
+            lastShownAnyEventTm = lastShownAnyEventNb >= 0 ? p_session.event[lastShownAnyEventNb][1]:0
             if (evtName === "Contraction"){
                 //currentView.chart().setAxisX(axisX, currentHrSeries);
-                currentContractionSeries.append( evtStartTime + evt[1], currentSession.pulse[evtStartTime + evt[1]])
-                //console.log("event = ", evtName, "X = ", evtStartTime + evt[1], "Y = ", currentSession.pulse[evtStartTime + evt[1]])
+                currentContractionSeries.append( evt[1], p_session.pulse[evt[1]])
+                //console.log("event = ", evtName, "X = ", evt[1], "Y = ", p_session.pulse[evtStartTime + evt[1]])
 
-                hrPlot.currentAxisX.append(evtStartTime.toString(), evtStartTime)
             }
 
             //only use events like brth, hold, walk, back to fill the pulse data
             if (!(runColors[evtName] === undefined)){
+                postEventHrSeries.removePoints(0, postEventHrSeries.count)
                 currentHrSeries = currentChartView.createSeries(ChartView.SeriesTypeLine, "", currentAxisX, currentAxisY);
                 //currentView.chart().setAxisX(axisX, currentHrSeries);
                 currentHrSeries.color = runColors[evtName]
-                for (var j = 0; j < evt[1]; j++){
-                    currentHrSeries.append( evtStartTime + j, currentSession.pulse[evtStartTime + j])
+                for (var j = lastShownStepEventTm; j < evt[1]; j++){
+                    currentHrSeries.append( j, currentSession.pulse[j])
+                    lastShownPulseTm = j
                 }
-                evtStartTime += Math.round(evt[1])
-                hrPlot.currentAxisX.append((evtStartTime).toString(), evtStartTime)
+                lastShownStepEventNb = i
+                lastShownStepEventTm = lastShownStepEventNb >= 0 ? p_session.event[lastShownStepEventNb][1]:0
+                //evtStartTime += Math.round(evt[1])
                 //p_chartView.axes[0].append("22", evtStartTime)
             }
+            lastShownAnyEventNb = i
         }
         //the last unfinished lap if it exists
-
-        if (evtStartTime <= currentSession.pulse.length){
+        if (lastShownPulseTm <= p_session.pulse.length){
             //console.log("currenGaugeName=", currentGaugeName)
             if (! (currentGaugeName === undefined)){
                 postEventHrSeries.color = runColors[currentGaugeName]
             }
-            //hrPlot.currentAxisX.remove((evtStartTime + 1).toString())
-            //remove all points and add new ones later
-            postEventHrSeries.removePoints(0, postEventHrSeries.count)
-            for (var i = evtStartTime + 1; i < currentSession.pulse.length; i++){
-                //remove previous post event labels
-                postEventHrSeries.append( i , currentSession.pulse[i])
-                hrPlot.currentAxisX.remove(i.toString())
-
-                //console.log("evtStartTime=", evtStartTime, "currentSession.pulse.length=", currentSession.pulse.length, "i=", i)
+            //hrPlot.currentAxisX.remove((lastShownAnyEventTm + 1).toString())
+            if (lastShownPulseTm > lastShownAnyEventTm){
+                currentAxisX.remove(lastShownPulseTm.toString())
             }
-            hrPlot.currentAxisX.append(currentSession.pulse.length.toString(), currentSession.pulse.length)
+
+            for (var i = lastShownPulseTm + 1; i < p_session.pulse.length; i++){
+                //remove previous post event labels
+                postEventHrSeries.append( i , p_session.pulse[i])
+                lastShownPulseTm = i
+                //console.log("lastShownAnyEventTm=", lastShownAnyEventTm, "p_session.pulse.length=", currentSession.pulse.length, "i=", i)
+            }
+            currentAxisX.append((p_session.pulse.length -1).toString(), p_session.pulse.length - 1)
         }
         currentChartView.title = p_session.sessionName + " " + p_session.when
         currentChartView.update()
@@ -244,6 +254,7 @@ Rectangle{
         antialiasing: true
         theme: ChartView.ChartThemeBlueIcy
         legend.visible: false
+        property CategoryAxis plotAxisX: plotAxisX
         CategoryAxis {
             id: plotAxisX
             startValue:0
@@ -251,7 +262,7 @@ Rectangle{
             max: sessionDuration
             labelsAngle: -90
             //count: 0
-            gridLineColor:"red"
+            gridLineColor:"grey"
         }
         ValueAxis {
             id: plotAxisY

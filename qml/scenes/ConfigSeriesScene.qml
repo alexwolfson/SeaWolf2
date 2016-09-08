@@ -85,7 +85,7 @@ SceneBase {
                     }
                 }
                 MenuButton {
-                    text: "Save"
+                    text: "Select"
                     onClicked: {
                         if (sessionType == "CO2"){
                             currentSessionProperties = generateCO2Session()
