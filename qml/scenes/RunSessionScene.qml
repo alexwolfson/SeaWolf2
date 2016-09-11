@@ -50,7 +50,7 @@ SceneBase {
     property SeaWolfControls currentGauge
     property var runGauge
     //property alias hrPoints: hrSeries
-    property real sessionTime: 0.0
+    property int sessionTime: 0
     //The set of properties that are created to get around the
     // loading of the Tab. Not all of the Tab's elements are simultaniously available
     // so we create top level properties that are set by Component.onComplete() when lower level elements are created

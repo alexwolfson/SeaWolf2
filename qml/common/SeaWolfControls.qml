@@ -343,7 +343,7 @@ CircularGauge {
                         //openDialog.open()
                         hrPlot.saveSession()
                         oneTimer.stop()
-                        sessionTime = 0.0;
+                        sessionTime = 0;
                         //pageLoader.source = "results.qml";
 
 

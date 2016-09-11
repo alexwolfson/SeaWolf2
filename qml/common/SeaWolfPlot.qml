@@ -67,6 +67,12 @@ Rectangle{
         lastShownStepEventNb = -1;
         lastShownPulseTm = -1;
         currentAxisX = chartView.plotAxisX
+        currentAxisX.max = 0
+        var cnt = currentAxisX.count
+        for (var i = 0; i < cnt; i++){
+            currentAxisX.remove(currentAxisX.categoriesLabels[0])
+        }
+
     }
     //creates new series graph
     function setupCurrentSeries(){
@@ -203,11 +209,14 @@ Rectangle{
 
             //only use events like brth, hold, walk, back to fill the pulse data
             if (!(runColors[evtName] === undefined)){
-                postEventHrSeries.removePoints(0, postEventHrSeries.count)
+                if (postEventHrSeries.count > 0){
+                    currentAxisX.remove(lastShownPulseTm.toString())
+                    postEventHrSeries.removePoints(0, postEventHrSeries.count)
+                }
                 currentHrSeries = currentChartView.createSeries(ChartView.SeriesTypeLine, "", currentAxisX, currentAxisY);
                 //currentView.chart().setAxisX(axisX, currentHrSeries);
                 currentHrSeries.color = runColors[evtName]
-                for (var j = lastShownStepEventTm; j < evt[1]; j++){
+                for (var j = lastShownStepEventTm; j <= evt[1]; j++){
                     currentHrSeries.append( j, currentSession.pulse[j])
                     lastShownPulseTm = j
                 }
@@ -217,6 +226,7 @@ Rectangle{
                 //p_chartView.axes[0].append("22", evtStartTime)
             }
             lastShownAnyEventNb = i
+            currentAxisX.append((p_session.pulse[evt[1]]).toString(), p_session.pulse[evt[1]])
         }
         //the last unfinished lap if it exists
         if (lastShownPulseTm <= p_session.pulse.length){
@@ -235,7 +245,7 @@ Rectangle{
                 lastShownPulseTm = i
                 //console.log("lastShownAnyEventTm=", lastShownAnyEventTm, "p_session.pulse.length=", currentSession.pulse.length, "i=", i)
             }
-            currentAxisX.append((p_session.pulse.length -1).toString(), p_session.pulse.length - 1)
+            currentAxisX.append(lastShownPulseTm.toString(), lastShownPulseTm)
         }
         currentChartView.title = p_session.sessionName + " " + p_session.when
         currentChartView.update()
