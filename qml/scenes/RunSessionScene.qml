@@ -189,7 +189,7 @@ SceneBase {
                             id:timeText
                             anchors.centerIn: parent
                             //font.pointSize: Math.round(parent.height/4)
-                            font.pixelSize: Math.round(dp(0.4 * parent.height))
+                            font.pixelSize: Math.round(dp(0.5 * parent.height))
                             text: "<b>" + parent.whatToShow() + "</b>"; color: "black"; /*style: Text.Raised; styleColor: "black"*/
                             //text: index + ". " + typeName + " " + time + "sec."
 
