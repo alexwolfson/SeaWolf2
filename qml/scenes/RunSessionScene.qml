@@ -228,6 +228,7 @@ SceneBase {
 
             SeaWolfPlot{
                 id:hrPlot
+                height: runSessionScene.height/3
             }
 
             Item {

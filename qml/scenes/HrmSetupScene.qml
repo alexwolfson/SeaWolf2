@@ -91,9 +91,6 @@ SceneBase {
                 heartRate.disconnectService()
                 console.log("Started new BT device search")
                 heartRate.deviceSearch();
-                //AWDEBUG
-                heartRate.startDemo()
-
                 spinner.visible=true;
             }
 
@@ -149,17 +146,31 @@ SceneBase {
 
             Button {
                 id:scanAgain
-                buttonWidth: parent.width
+                buttonWidth: parent.width /2 -10
                 buttonHeight: 0.1*parent.height
-                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.left: parent.left
                 anchors.bottom: parent.bottom
                 text: "Scan Again"
+                visible:true
                 //onButtonClick: backButtonPressed()
                 onButtonClick: {
                     heartRate.disconnectService()
                     console.log("Started new BT device search")
                     heartRate.deviceSearch();
                     spinner.visible=true;
+                }
+            }
+            Button {
+                id:startDemo
+                buttonWidth: parent.width /2 - 10
+                buttonHeight: 0.1*parent.height
+                anchors.right: parent.right
+                anchors.bottom: parent.bottom
+                text: "Demo Mode"
+                visible:true
+                //onButtonClick: backButtonPressed()
+                onButtonClick: {
+                    heartRate.startDemo()
                 }
             }
         }

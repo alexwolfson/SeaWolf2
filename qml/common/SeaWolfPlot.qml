@@ -252,7 +252,7 @@ Rectangle{
             }
             currentStepAxisX.append(lastShownPulseTm.toString(), lastShownPulseTm)
         }
-        //currentChartView.title = p_session.sessionName + " " + p_session.when
+        currentChartView.title = p_session.sessionName + " " + p_session.when
         currentChartView.update()
     }
     ChartView {
