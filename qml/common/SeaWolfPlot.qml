@@ -92,10 +92,10 @@ Rectangle{
         var eventNb = myEventsNm2Nb[eventName];
         var tm      = runSessionScene.getSessionTime()//Math.round(currentGauge.value)
         currentSession.event.push([eventNb, tm])
-        if (eventName === "Contraction"){
-            console.log("Mark Contraction, tm=", tm, "Y =", Math.round(heartRate.hr))
-            currentContractionSeries.append(tm, Math.round(heartRate.hr))
-        }
+//        if (eventName === "Contraction"){
+//            console.log("Mark Contraction, tm=", tm, "Y =", currentSession.pulse[tm])
+//            currentContractionSeries.append(tm, currentSession.pulse[tm])
+//        }
     }
 
     function getSesssionHRMin(session){
@@ -226,7 +226,7 @@ Rectangle{
                     //currentView.chart().setAxisX(axisX, currentHrSeries);
                     currentEventAxisX.append(evt[1].toString(), evt[1])
                     currentContractionSeries.append( evt[1], p_session.pulse[evt[1]])
-                    //console.log("event = ", evtName, "X = ", evt[1], "Y = ", p_session.pulse[evtStartTime + evt[1]])
+                    console.log("event = ", evtName, "X = ", evt[1], "Y = ", p_session.pulse[evt[1]])
 
                 }
             }
@@ -242,11 +242,10 @@ Rectangle{
             }
             //hrPlot.currentStepAxisX.remove((lastShownPressEventTm + 1).toString())
             if (lastShownPulseTm > lastShownStepEventTm){
-               currentStepAxisX.remove(lastShownPulseTm.toString())
+                currentStepAxisX.remove(lastShownPulseTm.toString())
             }
 
-            for (var k = lastShownPulseTm + 1; k < p_session.pulse.length; k++){
-                //remove previous post event labels
+            for (var k = lastShownPulseTm ; k < p_session.pulse.length; k++){
                 postEventHrSeries.append( k , p_session.pulse[k])
                 lastShownPulseTm = k
                 //console.log("lastShownPressEventTm=", lastShownPressEventTm, "p_session.pulse.length=", currentSession.pulse.length, "k=", k)

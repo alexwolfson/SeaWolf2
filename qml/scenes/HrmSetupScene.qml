@@ -91,6 +91,9 @@ SceneBase {
                 heartRate.disconnectService()
                 console.log("Started new BT device search")
                 heartRate.deviceSearch();
+                //AWDEBUG
+                heartRate.startDemo()
+
                 spinner.visible=true;
             }
 

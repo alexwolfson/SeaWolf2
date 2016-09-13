@@ -138,12 +138,11 @@ CircularGauge {
                     }
 
                     Emitter {
-                        //burst on click
                         id: burstytwo
                         system: systwo
                         enabled: true
                         anchors.centerIn: parent
-                        emitRate: heartRate.hr*100
+                        emitRate: heartRate.hr*25
                         maximumEmitted: 4000
                         acceleration: AngleDirection {angleVariation: 360; magnitude: 360; }
                         size: 4
