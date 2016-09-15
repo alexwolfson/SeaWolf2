@@ -36,10 +36,16 @@ Rectangle{
     property ValueAxis     currentAxisY
     property real minHr:10
     property real maxHr:150
-    property int sessionDuration:0
-    property int lastShownPressEventNb
-    property int lastShownStepEventNb
-    property int lastShownPulseTm
+    property int  sessionDuration:0
+    property int  lastShownPressEventNb
+    property int  lastShownStepEventNb
+    property int  lastShownPulseTm
+//    property font lblsFnt:Qt.font({
+//        //family: 'Encode Sans',
+//        //weight: Font.Black,
+//        //italic: false,
+//        pixelSize: dp(6)
+//    })
     function invert (obj) {
         var new_obj = {};
         for (var prop in obj) {
@@ -275,19 +281,24 @@ Rectangle{
             startValue:0
             min: 0
             max: sessionDuration
-            labelsAngle: -90
+            labelsAngle: -45
             labelsPosition: CategoryAxis.AxisLabelsPositionCenter
+            labelsColor: "black"
+            //labelsFont:lblsFnt
             //count: 0
-            gridLineColor:"grey"
+            gridLineColor:labelsColor
+
         }
         CategoryAxis {
             id: eventAxisX
             startValue:0
             min: 0
             max: sessionDuration
-            labelsAngle: -90
+            labelsAngle: -45
+            labelsColor: "#FF7F50"
+            //labelsFont:lblsFnt
             //count: 0
-            gridLineColor:"#FF7F50"
+            gridLineColor: labelsColor
             labelsPosition: CategoryAxis.AxisLabelsPositionOnValue
         }
         ValueAxis {

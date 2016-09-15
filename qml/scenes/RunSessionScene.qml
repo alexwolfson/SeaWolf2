@@ -50,7 +50,7 @@ SceneBase {
     property SeaWolfControls currentGauge
     property var runGauge
     //property alias hrPoints: hrSeries
-    property int sessionTime: 0
+    property real sessionTime: 0.0
     //The set of properties that are created to get around the
     // loading of the Tab. Not all of the Tab's elements are simultaniously available
     // so we create top level properties that are set by Component.onComplete() when lower level elements are created
@@ -189,7 +189,7 @@ SceneBase {
                             id:timeText
                             anchors.centerIn: parent
                             //font.pointSize: Math.round(parent.height/4)
-                            font.pixelSize: Math.round(dp(0.5 * parent.height))
+                            font.pixelSize: Math.round(dp(0.4 * parent.height))
                             text: "<b>" + parent.whatToShow() + "</b>"; color: "black"; /*style: Text.Raised; styleColor: "black"*/
                             //text: index + ". " + typeName + " " + time + "sec."
 
@@ -202,8 +202,7 @@ SceneBase {
 
         }
         // End Of Apnea Model and times grid
-
-        Column{
+        ColumnLayout{
             id:runColumn
             anchors.top:parent.top
             anchors.topMargin: 3 * sessionView.cellWidth -spacing //dp(120)
@@ -228,259 +227,269 @@ SceneBase {
 
             SeaWolfPlot{
                 id:hrPlot
-                height: runSessionScene.height/3
+                Layout.preferredHeight: currentModelContainer.height / 2
+                Layout.preferredWidth: currentModelContainer.width
             }
+            RowLayout{
 
-            Item {
-                id: gauges
-                width: runSessionScene.width * 0.6
-                height: width
-                anchors.horizontalCenter: parent.horizontalCenter
-                //anchors.top:hrPlot.bottom
-                //anchors.topMargin: dp(20)
+                //        QMLFileAccess {
+                //            id:qfa
+                //        }
 
-                SoundEffect {
-                    id: brthSnd
-                    volume: 1.0
-                    source: "../../assets/sounds/breathe.wav"
-                }
-                SeaWolfControls {
-                    id:gaugeBrth
-                    z:95
-                    gaugeName: "brth"
-                    enterStateSndEffect: brthSnd
-                    //gridView: sessionView
-                    modelIndex: brthIndx
-                    minAngle:     185
-                    // different angles, depenging if "walk" part is presented
-                    maxAngle:     gaugeWalk.maximumValue === 0 ? 355 : 295
-                    anchors.centerIn: parent
-                    gaugeModel: currentModel
-                    nextGauge:gaugeHold
-                    width:height
-                    height:parent.height
-                }
-                SoundEffect {
-                    id: holdSnd
-                    volume: 1.0
-                    source: "../../assets/sounds/hold.wav"
-                }
-                SeaWolfControls {
-                    id:gaugeHold
-                    z:95
-                    gaugeName:  "hold"
-                    enterStateSndEffect: holdSnd
-                    //gridView: sessionView
-                    modelIndex: holdIndx
-                    // different angles, depenging if "walk" part is presented
-                    minAngle:     gaugeWalk.maximumValue === 0 ? 5 :-55
-                    maxAngle:     gaugeWalk.maximumValue === 0 ? 175 : 55
-                    anchors.centerIn: parent
-                    gaugeModel: currentModel
-                    nextGauge: gaugeWalk.maximumValue === 0 ? gaugeBrth : gaugeWalk
-                    width:height
-                    height:parent.height
-                }
 
-                SoundEffect {
-                    id: walkSnd
-                    volume: 1.0
-                    source: "../../assets/sounds/walk.wav"
-                }
-                SeaWolfControls {
-                    id:gaugeWalk
-                    z:95
-                    gaugeName: "walk"
-                    enterStateSndEffect: walkSnd
-                    //gridView: sessionView
-                    modelIndex: walkIndx
-                    minAngle:     65
-                    maxAngle:     175
-                    anchors.centerIn: parent
-                    gaugeModel: currentModel
-                    nextGauge: gaugeBack
-                    //gaugeWalkControl: container.walkControl
-                    width:height
-                    height:parent.height
-                }
-                SoundEffect {
-                    id: backSnd
-                    volume: 1.0
-                    source: "../../assets/sounds/back.wav"
-                }
-                SeaWolfControls {
-                    id:gaugeBack
-                    z:95
-                    gaugeName: "back"
-                    enterStateSndEffect: backSnd
-                    //gridView: sessionView
-                    modelIndex: backIndx
-                    minAngle:     65
-                    maxAngle:     175
-                    anchors.centerIn: parent
-                    gaugeModel: currentModel
-                    nextGauge: gaugeBrth
-                    //gaugeWalkControl: container.walkControl
-                    width:height
-                    height:parent.height
-                    visible: false
-                }
-                Text {
-                    id: hrValue
-                    z:100
-                    font.pixelSize: dp(45); font.bold: true
-                    anchors.centerIn: parent
-                    style: Text.Raised;
-                    color: "white" //"#3870BA"
-                    text: heartRate.hr
-                    onTextChanged: {
-                        //              if (heartRate.hr > 0 && updatei != null && heartRate.numDevices() > 0) {
-                        //                  updatei.destroy()
-                        //              }
+                ColumnLayout{
+                    id:col1
+                    Layout.preferredHeight: currentModelContainer.height / 3
+                    Layout.preferredWidth: currentModelContainer.width/4
+
+                    spacing:dp(8)
+                    //anchors.horizontalCenter: parent.horizontalCenter
+                    MenuButton {
+                        id: button1
+                        z: 100
+                        text: qsTr("Start")
+                        enabled: true
+                        clip: true
+                        onClicked: {
+                            currentGauge = currentGaugeBrth
+                            currentModel.get(0).isCurrent = true
+
+                            gaugeBrth.isCurrent = true
+                            gaugeBrth.modelIndex = 0
+                            gaugeHold.modelIndex = 1
+                            gaugeWalk.modelIndex = 2
+                            gaugeBack.modelIndex = 3                        //currentModel.get(0).isCurrent = true
+
+                            gaugeBrth.maximumValue = currentModel.get(brthIndx).time
+                            gaugeHold.maximumValue = currentModel.get(holdIndx).time
+                            gaugeWalk.maximumValue = currentModel.get(walkIndx).time
+                            gaugeBack.maximumValue = currentModel.get(backIndx).time
+                            gaugeBrth.state = "stateRun"
+                            gaugeBrth.value = 0
+                            gaugeHold.state = "initial"
+                            gaugeHold.value = 0
+                            gaugeWalk.state = "initial"
+                            gaugeWalk.value = 0
+                            gaugeBack.state = "initial"
+                            gaugeBack.value = 0
+                            walkControl.enabled = true
+                            walkControl.text= qsTr("Finish Step")
+                            button2.enabled = true;
+                            hrPlot.init()
+                            oneTimer.start()
+                            //console.log("Time=", Qt.formatDateTime(new Date(), "yyyy-MM-dd-hh-mm-ss"))
+                            console.log("Session:",hrPlot.currentSession.sessionName, "started:",hrPlot.currentSession.when)
+
+                        }
+                    }
+
+                    MenuButton {
+                        id: walkControl
+                        z:100
+                        text: qsTr("Finish Step")
+                        enabled: true
+                        onClicked: {
+                            currentGauge.stopVoiceTimers();
+                            currentGauge.state = "initial";
+                        }
+                    }
+
+                    MenuButton {
+                        id: button2
+                        z:100
+                        text: qsTr("Stop")
+                        onClicked: {
+                            //timerBrth.sessionIsOver(timerBrth)
+                            //fileDialog.open()
+                            gaugeBrth.maximumValue = currentModel.get(brthIndx).time
+                            gaugeHold.maximumValue = currentModel.get(holdIndx).time
+                            gaugeWalk.maximumValue = currentModel.get(walkIndx).time
+                            gaugeBack.maximumValue = currentModel.get(backIndx).time
+                            gaugeBrth.state = "initial"
+                            gaugeBrth.value = 0
+                            gaugeHold.state = "initial"
+                            gaugeHold.value = 0
+                            gaugeWalk.state = "initial"
+                            gaugeWalk.value = 0
+                            gaugeBack.state = "initial"
+                            gaugeBack.value = 0
+                            //currentModel.get(currentModel.index).isCurrent = false
+                            //currentModel.index = 0
+
+                            walkControl.enabled = true
+                            //button2.enabled = false
+                        }
                     }
                 }
-                Component.onCompleted: {
-                    currentGaugeBrth=gaugeBrth
-                    currentGaugeHold=gaugeHold
-                    currentGaugeWalk=gaugeWalk
-                    currentGaugeBack=gaugeBack
-                    runGauge = [currentGaugeBrth, currentGaugeHold, currentGaugeWalk, currentGaugeBack];
-                    root.typesDim = runGauge.length
-                }
+                Item {
+                    id: gauges
+                    Layout.preferredHeight: currentModelContainer.height / 3
+                    Layout.preferredWidth: currentModelContainer.width * 0.5
+                    //width: runSessionScene.width * 0.6
+                    //height: width
+                    //anchors.horizontalCenter: parent.horizontalCenter
+                    //anchors.top:hrPlot.bottom
+                    //anchors.topMargin: dp(20)
 
-            } // End of gauges
+                    SoundEffect {
+                        id: brthSnd
+                        volume: 1.0
+                        source: "../../assets/sounds/breathe.wav"
+                    }
+                    SeaWolfControls {
+                        id:gaugeBrth
+                        z:95
+                        gaugeName: "brth"
+                        enterStateSndEffect: brthSnd
+                        //gridView: sessionView
+                        modelIndex: brthIndx
+                        minAngle:     185
+                        // different angles, depenging if "walk" part is presented
+                        maxAngle:     gaugeWalk.maximumValue === 0 ? 355 : 295
+                        anchors.centerIn: parent
+                        gaugeModel: currentModel
+                        nextGauge:gaugeHold
+                        width:height
+                        height:parent.height
+                    }
+                    SoundEffect {
+                        id: holdSnd
+                        volume: 1.0
+                        source: "../../assets/sounds/hold.wav"
+                    }
+                    SeaWolfControls {
+                        id:gaugeHold
+                        z:95
+                        gaugeName:  "hold"
+                        enterStateSndEffect: holdSnd
+                        //gridView: sessionView
+                        modelIndex: holdIndx
+                        // different angles, depenging if "walk" part is presented
+                        minAngle:     gaugeWalk.maximumValue === 0 ? 5 :-55
+                        maxAngle:     gaugeWalk.maximumValue === 0 ? 175 : 55
+                        anchors.centerIn: parent
+                        gaugeModel: currentModel
+                        nextGauge: gaugeWalk.maximumValue === 0 ? gaugeBrth : gaugeWalk
+                        width:height
+                        height:parent.height
+                    }
 
+                    SoundEffect {
+                        id: walkSnd
+                        volume: 1.0
+                        source: "../../assets/sounds/walk.wav"
+                    }
+                    SeaWolfControls {
+                        id:gaugeWalk
+                        z:95
+                        gaugeName: "walk"
+                        enterStateSndEffect: walkSnd
+                        //gridView: sessionView
+                        modelIndex: walkIndx
+                        minAngle:     65
+                        maxAngle:     175
+                        anchors.centerIn: parent
+                        gaugeModel: currentModel
+                        nextGauge: gaugeBack
+                        //gaugeWalkControl: container.walkControl
+                        width:height
+                        height:parent.height
+                    }
+                    SoundEffect {
+                        id: backSnd
+                        volume: 1.0
+                        source: "../../assets/sounds/back.wav"
+                    }
+                    SeaWolfControls {
+                        id:gaugeBack
+                        z:95
+                        gaugeName: "back"
+                        enterStateSndEffect: backSnd
+                        //gridView: sessionView
+                        modelIndex: backIndx
+                        minAngle:     65
+                        maxAngle:     175
+                        anchors.centerIn: parent
+                        gaugeModel: currentModel
+                        nextGauge: gaugeBrth
+                        //gaugeWalkControl: container.walkControl
+                        width:height
+                        height:parent.height
+                        visible: false
+                    }
+                    Text {
+                        id: hrValue
+                        z:100
+                        font.pixelSize: dp(45); font.bold: true
+                        anchors.centerIn: parent
+                        style: Text.Raised;
+                        color: "white" //"#3870BA"
+                        text: heartRate.hr
+                        onTextChanged: {
+                            //              if (heartRate.hr > 0 && updatei != null && heartRate.numDevices() > 0) {
+                            //                  updatei.destroy()
+                            //              }
+                        }
+                    }
+                    Component.onCompleted: {
+                        currentGaugeBrth=gaugeBrth
+                        currentGaugeHold=gaugeHold
+                        currentGaugeWalk=gaugeWalk
+                        currentGaugeBack=gaugeBack
+                        runGauge = [currentGaugeBrth, currentGaugeHold, currentGaugeWalk, currentGaugeBack];
+                        root.typesDim = runGauge.length
+                    }
 
-            //        QMLFileAccess {
-            //            id:qfa
-            //        }
+                } // End of gauges
 
+                ColumnLayout{
+                    id:col2
+                    Layout.preferredHeight: currentModelContainer.height / 3
+                    Layout.preferredWidth: currentModelContainer.width/4
 
-            Row{
-                id:row1
-                spacing:dp(8)
-                anchors.horizontalCenter: parent.horizontalCenter
-                MenuButton {
-                    id: button1
-                    z: 100
-                    text: qsTr("Start")
-                    enabled: true
-                    clip: true
-                    onClicked: {
-                        currentGauge = currentGaugeBrth
-                        currentModel.get(0).isCurrent = true
+                    //anchors.horizontalCenter: parent.horizontalCenter
+                    spacing:dp(8)
+                    MenuButton{
+                        id: note1
+                        z:100
+                        text: qsTr("-Medit")
+                        onClicked: {
+                            //hrPlot.currentSession.event.push([myEventsNm2Nb["EndOfMeditativeZone"], Math.round(currentGauge.value)])
+                            hrPlot.markEvent("EndOfMeditativeZone")
+                        }
+                        enabled:true
+                    }
+                    MenuButton{
+                        id: note2
+                        z:100
+                        text: qsTr("-Cmfrt")
+                        onClicked: {
+                            //console.log("value=", Math.round(currentGauge.value))
+                            hrPlot.markEvent("EndOfComfortZone")
+                            //AWDEDUG
+                            //showSessionGraph(currentSession, chartView)
 
-                        gaugeBrth.isCurrent = true
-                        gaugeBrth.modelIndex = 0
-                        gaugeHold.modelIndex = 1
-                        gaugeWalk.modelIndex = 2
-                        gaugeBack.modelIndex = 3                        //currentModel.get(0).isCurrent = true
-
-                        gaugeBrth.maximumValue = currentModel.get(brthIndx).time
-                        gaugeHold.maximumValue = currentModel.get(holdIndx).time
-                        gaugeWalk.maximumValue = currentModel.get(walkIndx).time
-                        gaugeBack.maximumValue = currentModel.get(backIndx).time
-                        gaugeBrth.state = "stateRun"
-                        gaugeBrth.value = 0
-                        gaugeHold.state = "initial"
-                        gaugeHold.value = 0
-                        gaugeWalk.state = "initial"
-                        gaugeWalk.value = 0
-                        gaugeBack.state = "initial"
-                        gaugeBack.value = 0
-                        walkControl.enabled = true
-                        walkControl.text= qsTr("Finish Step")
-                        button2.enabled = true;
-                        hrPlot.init()
-                        oneTimer.start()
-                        //console.log("Time=", Qt.formatDateTime(new Date(), "yyyy-MM-dd-hh-mm-ss"))
-                        console.log("Session:",hrPlot.currentSession.sessionName, "started:",hrPlot.currentSession.when)
-
+                        }
+                        enabled:true
+                    }
+                    MenuButton{
+                        id: note3
+                        z:100
+                        text: qsTr("Cntrct")
+                        onClicked: {
+                            //console.log("value=", Math.round(currentGauge.value))
+                            hrPlot.markEvent("Contraction")
+                        }
+                        enabled:true
                     }
                 }
-
-                MenuButton {
-                    id: walkControl
-                    z:100
-                    text: qsTr("Finish Step")
-                    enabled: true
-                    onClicked: {
-                        currentGauge.stopVoiceTimers();
-                        currentGauge.state = "initial";
-                    }
+                Component.onCompleted:{
+                    currentWalkControl = walkControl
+                    currentGauge       = gaugeBrth
+                    currentHrPlot      = hrPlot
                 }
 
-                MenuButton {
-                    id: button2
-                    z:100
-                    text: qsTr("Stop")
-                    onClicked: {
-                        //timerBrth.sessionIsOver(timerBrth)
-                        //fileDialog.open()
-                        gaugeBrth.maximumValue = currentModel.get(brthIndx).time
-                        gaugeHold.maximumValue = currentModel.get(holdIndx).time
-                        gaugeWalk.maximumValue = currentModel.get(walkIndx).time
-                        gaugeBack.maximumValue = currentModel.get(backIndx).time
-                        gaugeBrth.state = "initial"
-                        gaugeBrth.value = 0
-                        gaugeHold.state = "initial"
-                        gaugeHold.value = 0
-                        gaugeWalk.state = "initial"
-                        gaugeWalk.value = 0
-                        gaugeBack.state = "initial"
-                        gaugeBack.value = 0
-                        //currentModel.get(currentModel.index).isCurrent = false
-                        //currentModel.index = 0
-
-                        walkControl.enabled = true
-                        //button2.enabled = false
-                    }
-                }
             }
-            Row{
-                id:row2
-                anchors.horizontalCenter: parent.horizontalCenter
-                spacing:dp(8)
-                MenuButton{
-                    id: note1
-                    z:100
-                    text: qsTr("-Medit")
-                    onClicked: {
-                        //hrPlot.currentSession.event.push([myEventsNm2Nb["EndOfMeditativeZone"], Math.round(currentGauge.value)])
-                        hrPlot.markEvent("EndOfMeditativeZone")
-                    }
-                    enabled:true
-                }
-                MenuButton{
-                    id: note2
-                    z:100
-                    text: qsTr("-Cmfrt")
-                    onClicked: {
-                        //console.log("value=", Math.round(currentGauge.value))
-                        hrPlot.markEvent("EndOfComfortZone")
-                        //AWDEDUG
-                        //showSessionGraph(currentSession, chartView)
-
-                    }
-                    enabled:true
-                }
-                MenuButton{
-                    id: note3
-                    z:100
-                    text: qsTr("Cntrct")
-                    onClicked: {
-                        //console.log("value=", Math.round(currentGauge.value))
-                        hrPlot.markEvent("Contraction")
-                    }
-                    enabled:true
-                }
-            }
-            Component.onCompleted:{
-                currentWalkControl = walkControl
-                currentGauge       = gaugeBrth
-                currentHrPlot      = hrPlot
-            }
-
         }
     }
 }
