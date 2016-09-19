@@ -37,15 +37,18 @@ Rectangle{
     property real minHr:10
     property real maxHr:150
     property int  sessionDuration:0
-    property int  lastShownPressEventNb
-    property int  lastShownStepEventNb
-    property int  lastShownPulseTm
-//    property font lblsFnt:Qt.font({
-//        //family: 'Encode Sans',
-//        //weight: Font.Black,
-//        //italic: false,
-//        pixelSize: dp(6)
-//    })
+    property int  lastPressEventNb:-1
+    property int  lastStepEventNb:-1
+    property int  lastPulseTm:-1
+    property bool showAbsoluteTm:true //TODO: for switching to showing
+                                      //  the relative to the step time
+    property font lblsFnt:Qt.font({
+      family: 'Encode Sans',
+      //weight: Font.Black,
+      italic: true,
+      //pixelSize: dp(10)
+      pointSize: dp(10)
+    })
     function invert (obj) {
         var new_obj = {};
         for (var prop in obj) {
@@ -70,16 +73,17 @@ Rectangle{
         currentSession.when = Qt.formatDateTime(new Date(), "yyyy-MM-dd-hh-mm-ss");
         currentChartView.removeAllSeries()
         setupCurrentSeries()
-        lastShownPressEventNb = -1;
-        lastShownStepEventNb = -1;
-        lastShownPulseTm = -1;
+        lastPressEventNb = -1;
+        lastStepEventNb = -1;
+        //prevStepEventNb = -1;
+        lastPulseTm = -1;
         currentStepAxisX = chartView.plotAxisX
         currentStepAxisX.max = 0
         var cnt = currentStepAxisX.count
         for (var i = 0; i < cnt; i++){
             currentStepAxisX.remove(currentStepAxisX.categoriesLabels[0])
         }
-        //currentEventAxisX = chartView.eventAxisX
+        currentEventAxisX = chartView.eventAxisX
         currentEventAxisX.max = 0
         cnt = currentEventAxisX.count
         for (var i = 0; i < cnt; i++){
@@ -164,7 +168,7 @@ Rectangle{
 //        currentContractionSeries = currentChartView.createSeries(ChartView.SeriesTypeScatter, "", currentChartView.axisX, currentChartView.axisY);
 //        //there is no post event here just creating to avoid runtime error in showSessionPlot
 //        postEventHrSeries = currentChartView.createSeries(ChartView.SeriesTypeLine, "", currentStepAxisX, currentAxisY)
-//        lastShownPressEventNb = -1;
+//        lastPressEventNb = -1;
 //        for (var i = 0; i < currentSession.event.length; i++){
 //            var evt     = currentSession.event[i]
 //            var evtName = myEventsNb2Nm[evt[0]]
@@ -193,70 +197,85 @@ Rectangle{
     // currentGaugeName is passed in the case of the browsing previous sessions
     // if routine is called from the 1 sec timer currentGaugeName is undefined
     function showSessionGraph(p_session, currentGaugeName){
-        var lastShownPressEventTm = lastShownPressEventNb >= 0 ? p_session.event[lastShownPressEventNb][1]:0
-        var lastShownStepEventTm = lastShownStepEventNb >= 0 ? p_session.event[lastShownStepEventNb][1]:0
+        var lastPressEventTm = lastPressEventNb >= 0 ? p_session.event[lastPressEventNb][1]:0
+        var lastStepEventTm = lastStepEventNb >= 0 ? p_session.event[lastStepEventNb][1]:0
+        //var prevStepEventTm = prevStepEventNb >= 0 ? p_session.event[prevStepEventNb][1]:0
         var hrMin = getSesssionHRMin(p_session);
         var hrMax = getSesssionHRMax(p_session);
         var currentHrSeries
+        var xToShow  //TODO: for switching to showing
+                     //  the relative to the step time
+
         currentAxisY.min = (hrMin - 1);
         currentAxisY.max = (hrMax + 1);
         currentStepAxisX.min = 0;
         currentStepAxisX.max = p_session.pulse.length
         currentEventAxisX.min = currentStepAxisX.min
         currentEventAxisX.max = currentStepAxisX.max
-        for (var i = lastShownStepEventNb + 1; i < p_session.event.length; i++){
+
+        // going over events that are still not part of the plot
+        // if no step type events happened yet, the for loop will be skipped
+        for (var i = lastStepEventNb + 1; i < p_session.event.length; i++){
+
             var evt     = p_session.event[i]
             var evtName = myEventsNb2Nm[evt[0]]
-            lastShownStepEventTm = lastShownStepEventNb >= 0 ? p_session.event[lastShownStepEventNb][1]:0
+            lastStepEventTm = lastStepEventNb >= 0 ? p_session.event[lastStepEventNb][1]:0
+            //prevStepEventTm = p_session.event[lastStepEventNb][1]
+            //console.log("prevStepEventTm = ", prevStepEventTm, "lastStepEventNb = ", lastStepEventNb, "evt[1] = ", evt[1])
 
             //only use events like brth, hold, walk, back to fill the pulse data
             if (!(runColors[evtName] === undefined)){
-                if (postEventHrSeries.count > 0){
-                    currentStepAxisX.remove(lastShownPulseTm.toString())
-                    postEventHrSeries.removePoints(0, postEventHrSeries.count)
-                }
-                currentStepAxisX.append(evt[1].toString(), evt[1])
+                //xToShow is an event time so we add new category (in reality just sting with time to stepAxisX
+                xToShow = showAbsoluteTm? evt[1]:evt[1] - lastStepEventTm
+                currentStepAxisX.append((xToShow + 1000).toString(), evt[1])
                 currentHrSeries = currentChartView.createSeries(ChartView.SeriesTypeLine, "", currentStepAxisX, currentAxisY);
-                //currentView.chart().setAxisX(axisX, currentHrSeries);
                 currentHrSeries.color = runColors[evtName]
-                for (var j = lastShownStepEventTm; j <= evt[1]; j++){
+                //console.log("prevStepEventTm = ", prevStepEventTm, "lastStepEventTm = ", lastStepEventTm, "evt[1] = ", evt[1])
+                for (var j = lastStepEventTm; j <= evt[1]; j++){
                     currentHrSeries.append( j, currentSession.pulse[j])
-                    lastShownPulseTm = j
                 }
-                lastShownStepEventNb = i
-                lastShownStepEventTm = lastShownStepEventNb >= 0 ? p_session.event[lastShownStepEventNb][1]:0
+
+                // remove the category label created by the Last shown pulse time if needed
+                if ((lastPulseTm !== lastStepEventTm) && (lastPulseTm !== lastStepEventTm)){
+                    xToShow = showAbsoluteTm? lastPulseTm-1:lastPulseTm-1 - lastStepEventTm
+                    currentStepAxisX.remove((xToShow + 1000).toString())
+                }
+                lastStepEventNb = i
+                lastStepEventTm = lastStepEventNb >= 0 ? p_session.event[lastStepEventNb][1]:0
                 //evtStartTime += Math.round(evt[1])
                 //p_chartView.axes[0].append("22", evtStartTime)
             }else{
+                // non step (key press) events are only added to the plot. No need to remove labels
                 if (evtName === "Contraction"){
                     //currentView.chart().setAxisX(axisX, currentHrSeries);
-                    currentEventAxisX.append(evt[1].toString(), evt[1])
+                    xToShow = showAbsoluteTm? evt[1]:evt[1] - lastStepEventTm
+                    currentEventAxisX.append((xToShow + 1000).toString(), evt[1])
                     currentContractionSeries.append( evt[1], p_session.pulse[evt[1]])
-                    console.log("event = ", evtName, "X = ", evt[1], "Y = ", p_session.pulse[evt[1]])
+                    console.log("event = ", evtName, "X = ", xToShow, "Y = ", p_session.pulse[evt[1]])
 
                 }
+                lastPressEventNb = i
             }
 
-            lastShownPressEventNb = i
-            //currentStepAxisX.append((p_session.pulse[evt[1]]).toString(), p_session.pulse[evt[1]])
         }
-        //the last unfinished lap if it exists
-        if (lastShownPulseTm <= p_session.pulse.length){
+        //the last not fully shown lap if it exists
+        if (lastStepEventTm <= p_session.pulse.length){
             //console.log("currenGaugeName=", currentGaugeName)
             if (! (currentGaugeName === undefined)){
                 postEventHrSeries.color = runColors[currentGaugeName]
             }
-            //hrPlot.currentStepAxisX.remove((lastShownPressEventTm + 1).toString())
-            if (lastShownPulseTm > lastShownStepEventTm){
-                currentStepAxisX.remove(lastShownPulseTm.toString())
+            if (lastPulseTm !== lastStepEventTm){
+                xToShow = showAbsoluteTm? lastPulseTm:lastPulseTm - lastStepEventTm
+                currentStepAxisX.remove((xToShow + 1000).toString())
             }
 
-            for (var k = lastShownPulseTm ; k < p_session.pulse.length; k++){
+            for (var k = Math.max(lastPulseTm, lastStepEventTm) ; k < p_session.pulse.length; k++){
                 postEventHrSeries.append( k , p_session.pulse[k])
-                lastShownPulseTm = k
-                //console.log("lastShownPressEventTm=", lastShownPressEventTm, "p_session.pulse.length=", currentSession.pulse.length, "k=", k)
+                lastPulseTm = k
+                //console.log("lastPressEventTm=", lastPressEventTm, "p_session.pulse.length=", currentSession.pulse.length, "k=", k)
             }
-            currentStepAxisX.append(lastShownPulseTm.toString(), lastShownPulseTm)
+            xToShow = showAbsoluteTm? lastPulseTm:lastPulseTm - lastStepEventTm
+            currentStepAxisX.append((xToShow + 1000).toString(), lastPulseTm)
         }
         currentChartView.title = p_session.sessionName + " " + p_session.when
         currentChartView.update()
@@ -270,21 +289,23 @@ Rectangle{
 
         title: currentSession.sessionName + " " + currentSession.when
         anchors.fill: parent
+        margins{top:dp(50); bottom:dp(50)}
         //to make visible part of the graph taking bigger part
         //anchors.topMargin: dp(-20)
         antialiasing: true
         theme: ChartView.ChartThemeBlueIcy
         legend.visible: false
         property CategoryAxis plotAxisX: plotAxisX
+        property CategoryAxis eventAxisX: eventAxisX
         CategoryAxis {
             id: plotAxisX
             startValue:0
             min: 0
             max: sessionDuration
             labelsAngle: -45
-            labelsPosition: CategoryAxis.AxisLabelsPositionCenter
-            labelsColor: "black"
-            //labelsFont:lblsFnt
+            labelsPosition: CategoryAxis.AxisLabelsPositionOnValue
+            labelsColor: "navy"
+            labelsFont:lblsFnt
             //count: 0
             gridLineColor:labelsColor
 
@@ -296,7 +317,7 @@ Rectangle{
             max: sessionDuration
             labelsAngle: -45
             labelsColor: "#FF7F50"
-            //labelsFont:lblsFnt
+            labelsFont:lblsFnt
             //count: 0
             gridLineColor: labelsColor
             labelsPosition: CategoryAxis.AxisLabelsPositionOnValue
@@ -328,14 +349,14 @@ Rectangle{
             borderColor: "black"
             markerShape: ScatterSeries.MarkerShapeCircle
             markerSize: dp(6)
-            axisX:plotAxisX
+            axisXTop: eventAxisX
             axisY:plotAxisY
             XYPoint { x: 25;  y: 25 }
             XYPoint { x: 50; y: 50 }
         }
         Component.onCompleted:{
             currentChartView  = chartView
-            currentStepAxisX      = plotAxisX
+            currentStepAxisX  = plotAxisX
             currentAxisY      = plotAxisY
             currentEventAxisX = eventAxisX
         }
