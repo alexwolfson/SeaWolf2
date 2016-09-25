@@ -3,7 +3,7 @@ import QtQuick 2.7
 //import QtQuick.Controls.Styles 1.4
 //import QtQuick.Dialogs 1.2
 //import QtQuick.Extras 1.4
-//import QtQuick.Layouts 1.2
+import QtQuick.Layouts 1.2
 import QtMultimedia 5.6
 //import QtQml 2.2
 import QtCharts 2.1
@@ -40,15 +40,31 @@ Rectangle{
     property int  lastPressEventNb:-1
     property int  lastStepEventNb:-1
     property int  lastPulseTm:-1
+    property int  demoModePlusTm:0
     property bool showAbsoluteTm:true //TODO: for switching to showing
                                       //  the relative to the step time
     property font lblsFnt:Qt.font({
-      family: 'Encode Sans',
+      //family: 'Encode Sans',
       //weight: Font.Black,
       italic: true,
       //pixelSize: dp(10)
-      pointSize: dp(10)
+      //pointSize: dp(15)
     })
+    property Rectangle zoomRect:  Rectangle {
+           //id: zoomRect
+    }
+    // number of steps on plot
+    property int stepsOnPlot:1000
+    property int firstStepNb:0
+    function demoHrm(){
+        demoModePlusTm = 1000
+        console.log("demoModePlusTm = ", demoModePlusTm)
+    }
+    function realHrm(){
+        demoModePlusTm = 0
+        console.log("demoModePlusTm = ", demoModePlusTm)
+    }
+
     function invert (obj) {
         var new_obj = {};
         for (var prop in obj) {
@@ -75,6 +91,8 @@ Rectangle{
         setupCurrentSeries()
         lastPressEventNb = -1;
         lastStepEventNb = -1;
+        stepsOnPlot = 1000;
+        firstStepNb = 0;
         //prevStepEventNb = -1;
         lastPulseTm = -1;
         currentStepAxisX = chartView.plotAxisX
@@ -89,7 +107,8 @@ Rectangle{
         for (var i = 0; i < cnt; i++){
             currentEventAxisX.remove(eventAxisX.categoriesLabels[0])
         }
-
+        //awdebug
+        //zoomTimer.start()
     }
     //creates new series graph
     function setupCurrentSeries(){
@@ -163,33 +182,6 @@ Rectangle{
         console.log("read = ", qstr);
         currentSession = JSON.parse(qstr);
         qfa.close();
-//        var currentIndex = 0;
-//        currentChartView.removeAllSeries();
-//        currentContractionSeries = currentChartView.createSeries(ChartView.SeriesTypeScatter, "", currentChartView.axisX, currentChartView.axisY);
-//        //there is no post event here just creating to avoid runtime error in showSessionPlot
-//        postEventHrSeries = currentChartView.createSeries(ChartView.SeriesTypeLine, "", currentStepAxisX, currentAxisY)
-//        lastPressEventNb = -1;
-//        for (var i = 0; i < currentSession.event.length; i++){
-//            var evt     = currentSession.event[i]
-//            var evtName = myEventsNb2Nm[evt[0]]
-//            //console.log("step = ", evtName, "step duration = ", evt[1])
-
-//            if (evtName === "Contraction"){
-//                //currentView.chart().setAxisX(axisX, currentHrSeries);
-//                currentContractionSeries.append( evt[1], currentSession.pulse[evt[1]])
-//            }
-
-//            //only use events like brth, hold, walk, back to fill the pulse data
-//            if (!(runColors[evtName] === undefined)){
-//                currentHrSeries = currentChartView.createSeries(ChartView.SeriesTypeLine, "", currentChartView.axisX, currentChartView.axisY);
-//                //currentView.chart().setAxisX(axisX, currentHrSeries);
-//                currentHrSeries.color = runColors[evtName]
-//                for (var j = 0; j < evt[1]; j++){
-//                    currentHrSeries.append( j, currentSession.pulse[j])
-
-//                }
-//            }
-//        }
 
         showSessionGraph(currentSession)
 
@@ -227,7 +219,7 @@ Rectangle{
             if (!(runColors[evtName] === undefined)){
                 //xToShow is an event time so we add new category (in reality just sting with time to stepAxisX
                 xToShow = showAbsoluteTm? evt[1]:evt[1] - lastStepEventTm
-                currentStepAxisX.append((xToShow + 1000).toString(), evt[1])
+                currentStepAxisX.append((xToShow + demoModePlusTm).toString(), evt[1])
                 currentHrSeries = currentChartView.createSeries(ChartView.SeriesTypeLine, "", currentStepAxisX, currentAxisY);
                 currentHrSeries.color = runColors[evtName]
                 //console.log("prevStepEventTm = ", prevStepEventTm, "lastStepEventTm = ", lastStepEventTm, "evt[1] = ", evt[1])
@@ -238,7 +230,7 @@ Rectangle{
                 // remove the category label created by the Last shown pulse time if needed
                 if ((lastPulseTm !== lastStepEventTm) && (lastPulseTm !== lastStepEventTm)){
                     xToShow = showAbsoluteTm? lastPulseTm-1:lastPulseTm-1 - lastStepEventTm
-                    currentStepAxisX.remove((xToShow + 1000).toString())
+                    currentStepAxisX.remove((xToShow + demoModePlusTm).toString())
                 }
                 lastStepEventNb = i
                 lastStepEventTm = lastStepEventNb >= 0 ? p_session.event[lastStepEventNb][1]:0
@@ -249,7 +241,7 @@ Rectangle{
                 if (evtName === "Contraction"){
                     //currentView.chart().setAxisX(axisX, currentHrSeries);
                     xToShow = showAbsoluteTm? evt[1]:evt[1] - lastStepEventTm
-                    currentEventAxisX.append((xToShow + 1000).toString(), evt[1])
+                    currentEventAxisX.append((xToShow + demoModePlusTm).toString(), evt[1])
                     currentContractionSeries.append( evt[1], p_session.pulse[evt[1]])
                     console.log("event = ", evtName, "X = ", xToShow, "Y = ", p_session.pulse[evt[1]])
 
@@ -266,7 +258,7 @@ Rectangle{
             }
             if (lastPulseTm !== lastStepEventTm){
                 xToShow = showAbsoluteTm? lastPulseTm:lastPulseTm - lastStepEventTm
-                currentStepAxisX.remove((xToShow + 1000).toString())
+                currentStepAxisX.remove((xToShow + demoModePlusTm).toString())
             }
 
             for (var k = Math.max(lastPulseTm, lastStepEventTm) ; k < p_session.pulse.length; k++){
@@ -275,11 +267,12 @@ Rectangle{
                 //console.log("lastPressEventTm=", lastPressEventTm, "p_session.pulse.length=", currentSession.pulse.length, "k=", k)
             }
             xToShow = showAbsoluteTm? lastPulseTm:lastPulseTm - lastStepEventTm
-            currentStepAxisX.append((xToShow + 1000).toString(), lastPulseTm)
+            currentStepAxisX.append((xToShow + demoModePlusTm).toString(), lastPulseTm)
         }
         currentChartView.title = p_session.sessionName + " " + p_session.when
         currentChartView.update()
     }
+
     ChartView {
         id:chartView
         //                margins.bottom:dp(0)
@@ -302,7 +295,7 @@ Rectangle{
             startValue:0
             min: 0
             max: sessionDuration
-            labelsAngle: -45
+            labelsAngle: -90
             labelsPosition: CategoryAxis.AxisLabelsPositionOnValue
             labelsColor: "navy"
             labelsFont:lblsFnt
@@ -315,7 +308,7 @@ Rectangle{
             startValue:0
             min: 0
             max: sessionDuration
-            labelsAngle: -45
+            labelsAngle: -90
             labelsColor: "#FF7F50"
             labelsFont:lblsFnt
             //count: 0
@@ -359,6 +352,49 @@ Rectangle{
             currentStepAxisX  = plotAxisX
             currentAxisY      = plotAxisY
             currentEventAxisX = eventAxisX
+        }
+    }
+    RowLayout {
+        id: plotControls
+        width:parent.width
+        MenuButton {
+            id: left
+            text: "< "
+            onClicked: {
+                firstStepNb = Math.max(0, firstStepNb - stepsOnPlot)
+            }
+        }
+        MenuButton {
+            id: x1
+            text: " x1 "
+            onClicked: { stepsOnPlot = 1 }
+        }
+        MenuButton {
+            id: x2
+            text: " x2 "
+            onClicked: { stepsOnPlot = 2 }
+        }
+        MenuButton {
+            id: x4
+            text: " x4 "
+            onClicked: { stepsOnPlot = 4 }
+
+        }
+        MenuButton {
+            id: xAll
+            text: " x" + String.fromCharCode(0x221e) + " "  //infinity
+            onClicked: { stepsOnPlot = 1000 }
+        }
+        MenuButton {
+            id: right
+            text: " >"
+            onClicked: {
+                var totalSteps = currentSession.event.length
+                if (currentSession.event[lastStepEventNb][1] < lastPulseTm) {
+                    ++totalSteps
+                }
+                firstStepNb = Math.min( firstStepNb - stepsOnPlot, totalSteps - stepsOnPlot)
+            }
         }
     }
 

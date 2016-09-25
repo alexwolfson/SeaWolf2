@@ -31,7 +31,7 @@ ApplicationWindow {
     visible:true
     //for some reason dp(1920) created binding loop and dependence of NONNotifiable factor
     height: Screen.height
-    width: Math.min(Screen.width, Screen.height*9/16)
+    width: Screen.height > Screen.width ? Screen.width : Screen.height * 9/16
     TabView {
         id: tabView
         anchors.fill: parent
@@ -40,6 +40,8 @@ ApplicationWindow {
             //those 2 functions provide different functionslity
             conf.sessionSelected.connect( run.setupSession);
             conf.sessionSelected.connect(run.currentHrPlot.setupSession)
+            hrm.startHrmDemo.connect(run.currentHrPlot.demoHrm)
+            hrm.startHrmSearch.connect(run.currentHrPlot.realHrm)
         }
         style: TabViewStyle {
             frameOverlap: dp(0)

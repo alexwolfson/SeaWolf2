@@ -20,6 +20,7 @@ SceneBase {
     onSetupSessionSignal: {setupSession(sessionName,selectedSession)}
     signal timeLeft(var tm)
     onTimeLeft: {currentStepLeft.text = tm}
+
     function getSessionTime(){
         return sessionTime
     }
@@ -284,17 +285,6 @@ SceneBase {
                     }
 
                     MenuButton {
-                        id: walkControl
-                        z:100
-                        text: qsTr("Finish Step")
-                        enabled: true
-                        onClicked: {
-                            currentGauge.stopVoiceTimers();
-                            currentGauge.state = "initial";
-                        }
-                    }
-
-                    MenuButton {
                         id: button2
                         z:100
                         text: qsTr("Stop")
@@ -318,6 +308,16 @@ SceneBase {
 
                             walkControl.enabled = true
                             //button2.enabled = false
+                        }
+                    }
+                    MenuButton {
+                        id: walkControl
+                        z:100
+                        text: qsTr("Finish Step")
+                        enabled: true
+                        onClicked: {
+                            currentGauge.stopVoiceTimers();
+                            currentGauge.state = "initial";
                         }
                     }
                 }

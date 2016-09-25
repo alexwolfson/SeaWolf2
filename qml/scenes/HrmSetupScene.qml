@@ -6,12 +6,14 @@ import "../common"
 
 SceneBase {
     id: hrmSetupScene
+    signal startHrmDemo()
+    signal startHrmSearch()
     Item {
         id: container
         width: parent.width
         height: parent.height
         anchors.fill: parent
-        anchors.topMargin:tabHeaderHight
+        //anchors.topMargin:tabHeaderHight
         anchors.horizontalCenter: parent.horizontalCenter;
 
         Rectangle {
@@ -144,33 +146,35 @@ SceneBase {
                 }
             }
 
-            Button {
+            MenuButton {
                 id:scanAgain
-                buttonWidth: parent.width /2 -10
-                buttonHeight: 0.1*parent.height
+                //buttonWidth: parent.width /2 -10
+                //buttonHeight: 0.1*parent.height
                 anchors.left: parent.left
                 anchors.bottom: parent.bottom
                 text: "Scan Again"
                 visible:true
                 //onButtonClick: backButtonPressed()
-                onButtonClick: {
+                onClicked: {
                     heartRate.disconnectService()
                     console.log("Started new BT device search")
                     heartRate.deviceSearch();
                     spinner.visible=true;
+                    startHrmSearch()
                 }
             }
-            Button {
+            MenuButton {
                 id:startDemo
-                buttonWidth: parent.width /2 - 10
-                buttonHeight: 0.1*parent.height
+                //buttonWidth: parent.width /2 - 10
+                //buttonHeight: 0.1*parent.height
                 anchors.right: parent.right
                 anchors.bottom: parent.bottom
                 text: "Demo Mode"
                 visible:true
                 //onButtonClick: backButtonPressed()
-                onButtonClick: {
+                onClicked: {
                     heartRate.startDemo()
+                    startHrmDemo()
                 }
             }
         }
