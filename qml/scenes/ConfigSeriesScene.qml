@@ -107,15 +107,16 @@ SceneBase {
             }
 
             //Label { text: qsTr("sessionName") }
-            SeaWolfInput{ type:"str";   lbl: qsTr("sessionName");    sft:"";        onResult: {sessionName=res}}
-            SeaWolfInput{ type:"int";   lbl: qsTr("numberOfCycles"); ift:"6";       onResult: {numberOfCycles=parseInt(res)}}
+            SeaWolfInput{ type:"str";   lbl: qsTr("sessionName");    sfv:"";        onResult: {sessionName=res}}
+            SeaWolfInput{ type:"int";   lbl: qsTr("numberOfCycles"); ifv:"6";       onResult: {numberOfCycles=parseInt(res)}}
+            SeaWolfInput{ type:"spinBox";   lbl: qsTr("numberOfCycles"); sbv:6; sbfrom:1; sbto: 10; sbstep: 1;  onResult: {numberOfCycles=res}}
             SeaWolfInput{ id: rLast; type:"switch";lbl: qsTr("repeatLast");         onResult: {repeatLast=swYesNo}}
-            SeaWolfInput{ type:"int";   lbl: qsTr("minBreathTime");  ift:"15";      onResult: {minBreathTime=parseInt(res)}}
-            SeaWolfInput{ id:breathDecrementEdit; type:"int";   lbl: qsTr("breathDecrement");ift:"15";      onResult: {breathDecrement=parseInt(res)}}
-            SeaWolfInput{ type:"int";   lbl: qsTr("maxHoldTime");    ift:"120";     onResult: {maxHoldTime=parseInt(res)}}
-            SeaWolfInput{ id:holdIncrementEdit; type:"int";   lbl: qsTr("holdIncrement");  ift:"15";      onResult: {holdIncrement=parseInt(res)}}
-            SeaWolfInput{ id:walkTimeEdit; type:"int";   lbl: qsTr("walkTime");       ift:"120";     onResult: {walkTime=parseInt(res)}}
-            SeaWolfInput{ id:backTimeEdit; type:"int";   lbl: qsTr("walkBackTime");   ift:"120";     onResult: {walkBackTime=parseInt(res)}}
+            SeaWolfInput{ type:"int";   lbl: qsTr("minBreathTime");  ifv:"15";      onResult: {minBreathTime=parseInt(res)}}
+            SeaWolfInput{ id:breathDecrementEdit; type:"int";   lbl: qsTr("breathDecrement");ifv:"15";      onResult: {breathDecrement=parseInt(res)}}
+            SeaWolfInput{ type:"int";   lbl: qsTr("maxHoldTime");    ifv:"120";     onResult: {maxHoldTime=parseInt(res)}}
+            SeaWolfInput{ id:holdIncrementEdit; type:"int";   lbl: qsTr("holdIncrement");  ifv:"15";      onResult: {holdIncrement=parseInt(res)}}
+            SeaWolfInput{ id:walkTimeEdit; type:"int";   lbl: qsTr("walkTime");       ifv:"120";     onResult: {walkTime=parseInt(res)}}
+            SeaWolfInput{ id:backTimeEdit; type:"int";   lbl: qsTr("walkBackTime");   ifv:"120";     onResult: {walkBackTime=parseInt(res)}}
         }
 
     // had trouble with multidimension arrays in javascript function, so stated to use 1 dimension
