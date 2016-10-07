@@ -1,5 +1,6 @@
-import QtQuick 2.6
+import QtQuick 2.7
 import Qt.labs.folderlistmodel 2.1
+import QtQuick.Layouts 1.3
 import "../common"
 SceneBase{
     id:browseScene
@@ -32,7 +33,7 @@ SceneBase{
                     Rectangle{
                         id: fileRect
                         width: browseScene.width
-                        height: dp(40)
+                        height: dp(60)
                         border.color: "black"
                         Text {
                             text: fileName
@@ -68,11 +69,12 @@ SceneBase{
                 height: browseScene.height/2
             }
 
-            Row{
+            RowLayout{
                 id:browseMenu
                 height:dp(100)
                 width:parent.width
-                padding: dp(20)
+                //padding: dp(20)
+                //anchors.bottom: browseScene.bottom
                 //anchors.topMargin: folderListView.height
                 MenuButton{
                     id: show

@@ -2,6 +2,8 @@ QT += quick bluetooth widgets
 
 # allows to add DEPLOYMENTFOLDERS and links to the V-Play library and QtCreator auto-completion
 #CONFIG += v-play
+
+CONFIG+=qml_debug
 qmlFolder.source = qml
 DEPLOYMENTFOLDERS += qmlFolder # comment for publishing
 
@@ -108,18 +110,13 @@ DISTFILES += \
     android/gradle.properties \
     android/local.properties \
     qml/common/Button.qml \
-    qml/common/dialog.qml \
-    qml/common/home.qml \
     qml/common/MenuButton.qml \
-    qml/common/monitor.qml \
-    qml/common/Point.qml \
     qml/common/SceneBase.qml \
     qml/common/SeaWolfButton.qml \
     qml/common/SeaWolfControls.qml \
     qml/scenes/AboutScene.qml \
     qml/scenes/ConfigSeriesScene.qml \
     qml/scenes/HrmSetupScene.qml \
-    qml/scenes/MenuScene.qml \
     qml/scenes/RunSessionScene.qml \
     qml/Main.qml \
     qml/common/SeaWolfInput.qml \

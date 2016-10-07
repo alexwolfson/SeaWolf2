@@ -1,7 +1,8 @@
 //#import VPlay 2.0
 import QtQuick 2.7
 import QtQuick.Window 2.2
-import QtQuick.Controls 1.4
+import QtQuick.Controls 2.0
+import QtQuick.Layouts 1.3
 import QtQuick.Controls.Styles 1.4
 import QtQuick.Dialogs 1.1
 
@@ -32,10 +33,25 @@ ApplicationWindow {
     //for some reason dp(1920) created binding loop and dependence of NONNotifiable factor
     height: Screen.height
     width: Screen.height > Screen.width ? Screen.width : Screen.height * 9/16
-    TabView {
+    header:TabBar {
         id: tabView
-        anchors.fill: parent
-        anchors.margins: 4
+        position:TabBar.Header
+        //anchors.fill: parent
+        //anchors.margins: 4
+        background: Rectangle {
+            color: tabView.enabled ? "steelblue" :"lightsteelblue"
+            border.color:  "steelblue"
+            border.width: dp(4)
+            implicitWidth: Math.max(text.width + dp(20), dp(100))
+            implicitHeight: dp(100)
+            radius: dp(4)
+            Text {
+                id: text
+                anchors.centerIn: parent
+                //text: styleData.title
+                //color: styleData.selected ? "white" : "black"
+            }
+        }
         Component.onCompleted:  {
             //those 2 functions provide different functionslity
             conf.sessionSelected.connect( run.setupSession);
@@ -43,44 +59,48 @@ ApplicationWindow {
             hrm.startHrmDemo.connect(run.currentHrPlot.demoHrm)
             hrm.startHrmSearch.connect(run.currentHrPlot.realHrm)
         }
-        style: TabViewStyle {
-            frameOverlap: dp(0)
-            tab: Rectangle {
-                color: styleData.selected ? "steelblue" :"lightsteelblue"
-                border.color:  "steelblue"
-                border.width: dp(4)
-                implicitWidth: Math.max(text.width + dp(20), dp(100))
-                implicitHeight: dp(100)
-                radius: dp(4)
-                Text {
-                    id: text
-                    anchors.centerIn: parent
-                    text: styleData.title
-                    color: styleData.selected ? "white" : "black"
-                }
-            }
-            frame:     Image {
-                //z:90
-                id: bkgImg
-                source: "../../assets/img/surface.png"
-                fillMode: Image.PreserveAspectCrop
-                opacity: 0.4
-                anchors.fill: parent
-            }
+        //style: TabViewStyle {
+            //frameOverlap: dp(0)
+//            frame:     Image {
+//                //z:90
+//                id: bkgImg
+//                source: "../../assets/img/surface.png"
+//                fillMode: Image.PreserveAspectCrop
+//                opacity: 0.4
+//                anchors.fill: parent
+//            }
 
-        }
+        TabButton { id: confTab; text: qsTr("Conf")}
+        TabButton { id: runTab; text: qsTr("Run")}
+        TabButton { id: hrmTab; text: qsTr("HRM")}
+        TabButton { id: browseResTab; text: qsTr("Browse")}
+        TabButton { id: aboutTab; text: qsTr("About")}
+        TabButton { id: finishTab; text: qsTr("Finish")}
+    }
+    StackLayout {
+        id:stackLayout
+        width: parent.width
+        currentIndex: tabView.currentIndex
 
-        ConfigSeriesScene{ id:conf; title: qsTr("Conf")}
-        RunSessionScene{ id:run;    title: qsTr("Run")}
-        HrmSetupScene{  id:hrm;     title: qsTr("HRM")}
-        BrowseResultsScene{  id:browseRes; title: qsTr("Browse")}
-        AboutScene{  id:about;      title: qsTr("About")}
-        Tab {
+        ConfigSeriesScene{ id:conf; }
+        RunSessionScene{ id:run;    }
+        HrmSetupScene{  id:hrm;     }
+        BrowseResultsScene{  id:browseRes; }
+        AboutScene{  id:about;      }
+        SceneBase {
+            z:100
             id:finish;
-            title: qsTr("Finish");
+            width: root.width
+            height: root.height
+            visible:true
+            //anchors.leftMargin: dp(20)
+            //Text {text:qsTr("Finish")}
             Item {
                 id: quit
+                visible:true
+                anchors.fill: parent
                 MenuButton{
+                    z:100
                     id:quitButton
                     width:parent.width/3
                     height: parent.height/3

@@ -64,14 +64,14 @@ Item {
         horizontalAlignment: TextInput.AlignHCenter
         //style: TextFieldStyle {
             color: "black"
-            background: Rectangle {
-                radius: dp(20)
-                color: "#F0EBEB"
-                implicitWidth: dp(240)
-                implicitHeight: dp(60)
-                border.color: "#000000"
-                border.width: dp(1)
-            }
+        background: Rectangle {
+            radius: dp(20)
+            color: "#F0EBEB"
+            implicitWidth: dp(240)
+            implicitHeight: dp(60)
+            border.color: "#000000"
+            border.width: dp(1)
+        }
         //}
         onEditingFinished: {res=text; result()}
     }
@@ -99,20 +99,38 @@ Item {
         visible: type=="spinBox"
         width: dp(240)
         height: dp(60)
-//        up.indicator: Rectangle{
-//            id:up
-//            Text: { text : " > " }
-//            anchors.right: parent.right
-//            height: parent.height
-//            //onClicked: parent.value += stepSize
-//        }
-//        down.indicator: Rectangle{
-//            id:down
-//            Text: {text : " < " }
-//            anchors.left: parent.left
-//            height: parent.height
-//            //onClicked: parent.value -= stepSize
-//        }
+        background: Rectangle {
+            radius: dp(20)
+            color: "#F0EBEB"
+            implicitWidth: dp(240)
+            implicitHeight: dp(60)
+            border.color: "#000000"
+            border.width: dp(1)
+        }
+        up.indicator: Rectangle{
+            id:up
+            Text { text : ">"; anchors.centerIn: parent }
+            anchors.right: parent.right
+            height: parent.height
+            width: parent.height * 1.25
+            radius: dp(20)
+            color: "white"
+            border.color: "#000000"
+            border.width: dp(1)
+            //onClicked: parent.value += stepSize
+        }
+        down.indicator: Rectangle{
+            id:down
+            Text {text : "<"; anchors.centerIn: parent }
+            anchors.left: parent.left
+            height: parent.height
+            width: parent.height * 1.25
+            radius: dp(20)
+            color: "white"
+            border.color: "#000000"
+            border.width: dp(1)
+            //onClicked: parent.value -= stepSize
+        }
 
 //        background: Rectangle {
 //            radius: dp(20)

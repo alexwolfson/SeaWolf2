@@ -55,19 +55,13 @@
         <file>ios/Project-Info.plist</file>
         <file>macx/app_icon.icns</file>
         <file>qml/common/Button.qml</file>
-        <file>qml/common/dialog.qml</file>
-        <file>qml/common/draw.js</file>
-        <file>qml/common/home.qml</file>
         <file>qml/common/MenuButton.qml</file>
-        <file>qml/common/monitor.qml</file>
-        <file>qml/common/Point.qml</file>
         <file>qml/common/SceneBase.qml</file>
         <file>qml/common/SeaWolfButton.qml</file>
         <file>qml/common/SeaWolfControls.qml</file>
         <file>qml/scenes/AboutScene.qml</file>
         <file>qml/scenes/ConfigSeriesScene.qml</file>
         <file>qml/scenes/HrmSetupScene.qml</file>
-        <file>qml/scenes/MenuScene.qml</file>
         <file>qml/scenes/RunSessionScene.qml</file>
         <file>qml/config.json</file>
         <file>qml/Main.qml</file>

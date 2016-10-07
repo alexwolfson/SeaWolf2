@@ -1,6 +1,6 @@
 //import VPlay 2.0
 import QtQuick 2.7
-import QtQuick.Controls 1.4
+import QtQuick.Controls 2.0
 import "../common"
 SceneBase{
     id: aboutScene
@@ -8,7 +8,7 @@ SceneBase{
     Item{
         id: aboutText
         anchors.fill: parent
-        anchors.topMargin:25 //TODO generalize
+        anchors.margins: dp(20)
 
         Text {
 

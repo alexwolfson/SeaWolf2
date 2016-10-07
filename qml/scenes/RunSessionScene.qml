@@ -1,5 +1,5 @@
 import QtQuick 2.7
-import QtQuick.Controls 1.4
+import QtQuick.Controls 2.0
 import QtQuick.Controls.Styles 1.4
 import QtQuick.Dialogs 1.2
 import QtQuick.Extras 1.4
@@ -20,26 +20,6 @@ SceneBase {
     onSetupSessionSignal: {setupSession(sessionName,selectedSession)}
     signal timeLeft(var tm)
     onTimeLeft: {currentStepLeft.text = tm}
-
-    function getSessionTime(){
-        return sessionTime
-    }
-    function setupSession(sessionName, selectedSession){
-        console.log("**** In setupSession width ", sessionName, ":", selectedSession)
-        var step;
-        currentModel.clear();
-        //hrPlot.sessionDuration = 0.0
-        for (step in selectedSession){
-            currentModel.append({"time": selectedSession[step].time, "typeName":selectedSession[step].typeName, "isCurrent": false});
-            //hrPlot.sessionDuration += selectedSession[step].time;
-        }
-        currentGaugeBrth.maximumValue = currentModel.get(brthIndx).time
-        currentGaugeHold.maximumValue = currentModel.get(holdIndx).time
-        currentGaugeWalk.maximumValue = currentModel.get(walkIndx).time
-        currentGaugeBack.maximumValue = currentModel.get(backIndx).time
-        //currentSession.sessionName = sessionName
-    }
-    active: true
     function enableWalkControl(){currentWalkControl.enabled=true}
     //anchors.fill: parent
     //anchors.top: runSessionScene.gameWindowAnchorItem.top
@@ -51,7 +31,7 @@ SceneBase {
     property SeaWolfControls currentGauge
     property var runGauge
     //property alias hrPoints: hrSeries
-    property real sessionTime: 0.0
+    property int sessionTime: 0
     //The set of properties that are created to get around the
     // loading of the Tab. Not all of the Tab's elements are simultaniously available
     // so we create top level properties that are set by Component.onComplete() when lower level elements are created
@@ -72,6 +52,26 @@ SceneBase {
     property color borderColorFooterWalk
     property bool  noWalk: true
 
+
+    function getSessionTime(){
+        return sessionTime
+    }
+    function setupSession(sessionName, selectedSession){
+        console.log("**** In setupSession width ", sessionName, ":", selectedSession)
+        var step;
+        currentModel.clear();
+        //hrPlot.sessionDuration = 0.0
+        for (step in selectedSession){
+            currentModel.append({"time": selectedSession[step].time, "typeName":selectedSession[step].typeName, "isCurrent": false});
+            //hrPlot.sessionDuration += selectedSession[step].time;
+        }
+        currentGaugeBrth.maximumValue = currentModel.get(brthIndx).time
+        currentGaugeHold.maximumValue = currentModel.get(holdIndx).time
+        currentGaugeWalk.maximumValue = currentModel.get(walkIndx).time
+        currentGaugeBack.maximumValue = currentModel.get(backIndx).time
+        //currentSession.sessionName = sessionName
+    }
+    //active: true
     Item {
         id: currentModelContainer
         width: parent.width
@@ -159,7 +159,7 @@ SceneBase {
             anchors.leftMargin: currentStepLeft.width + currentStepLeft.anchors.margins
             anchors.rightMargin: currentStepSpent.width
             //anchors.top: parent.top
-            anchors.fill: parent
+            //anchors.fill: parent
             cellWidth: (parent.width - anchors.leftMargin - anchors.rightMargin) /8
             cellHeight: cellWidth *0.75
             clip: true
@@ -221,8 +221,10 @@ SceneBase {
                     sessionTime++
                     // update heart rate information
                     hrPlot.currentSession.pulse.push( Math.round(heartRate.hr))
+                    hrPlot.markEvent(currentGauge.gaugeName)
                     //hrPlot.currentHrSeries.append(sessionTime, Math.round(heartRate.hr))
-                    hrPlot.showSessionGraph(hrPlot.currentSession, currentGauge.gaugeName)
+                    //hrPlot.showSessionGraph(hrPlot.currentSession, currentGauge.gaugeName)
+                    hrPlot.showSessionGraph(hrPlot.currentSession)
                 }
             }
 
