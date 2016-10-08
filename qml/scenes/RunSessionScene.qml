@@ -71,145 +71,153 @@ SceneBase {
         currentGaugeBack.maximumValue = currentModel.get(backIndx).time
         //currentSession.sessionName = sessionName
     }
-    //active: true
-    Item {
-        id: currentModelContainer
-        width: parent.width
-        //hight:50
-        anchors.top:parent.top
-        //anchors.topMargin:tabHeaderHight
-        //height: parent.height
-        //anchors.fill: parent
-        anchors.horizontalCenter: parent.horizontalCenter;
-
         // List elements are created dynamically, when fillListModel is called
-        ListModel {
-            id: apneaModel
-            //the following 3 properties will be used as indexes
-            //added something so user will not be confused if runs before configuring
-            //          ListElement { time: 3; typeName: "brth";    isCurrent: false }
-            //          ListElement { time: 4; typeName: "hold";    isCurrent: false }
-            //          ListElement { time: 5; typeName: "walk";    isCurrent: false }
-            //          ListElement { time: 6; typeName: "brth";    isCurrent: false }
-            //          ListElement { time: 7; typeName: "hold";    isCurrent: false }
-            //          ListElement { time: 8; typeName: "walk";    isCurrent: false }
-            //          ListElement { time: 9; typeName: "brth";    isCurrent: false }
-            //          ListElement { time:10; typeName: "hold";    isCurrent: false }
-            //          ListElement { time:11; typeName: "walk";    isCurrent: false }
-
-            ListElement { time: 3; typeName: "brth";    isCurrent: false }
-            ListElement { time: 4; typeName: "hold";    isCurrent: false }
-            ListElement { time: 5; typeName: "walk";    isCurrent: false }
-            ListElement { time: 5; typeName: "back";    isCurrent: false }
-            ListElement { time: 6; typeName: "brth";    isCurrent: false }
-            ListElement { time: 7; typeName: "hold";    isCurrent: false }
-            ListElement { time: 8; typeName: "walk";    isCurrent: false }
-            ListElement { time: 8; typeName: "back";    isCurrent: false }
-            ListElement { time: 9; typeName: "brth";    isCurrent: false }
-            ListElement { time:10; typeName: "hold";    isCurrent: false }
-            ListElement { time:11; typeName: "walk";    isCurrent: false }
-            ListElement { time:11; typeName: "back";    isCurrent: false }
-            Component.onCompleted: {
-                currentModel = apneaModel
-            }
-        }
-        Rectangle{
-            id: currentStepLeft
-            property alias text:txtLeft.text
-            z:1
-            //8 cells + 2 double sized cell for that Rectangle in a row
-            width: (parent.width - 13 * anchors.margins) / 5
-            height: width
-            anchors.margins: dp(4)
-            anchors.top:parent.top
-            anchors.left:parent.left
-            radius: dp(8)
-            border.width: dp(4)
-            border.color: currentGauge.needleColor
-            Text{ id:txtLeft
-                anchors.centerIn: parent
-                font.pixelSize: Math.round(dp(0.4 * parent.height))
-                text: Math.round(currentGauge.maximumValue - currentGauge.value)
-            }
-        }
-        Rectangle{
-            id: currentStepSpent
-            property alias text:txtSpent.text
-            z:1
-            //8 cells + 2 double sized cell for that Rectangle in a row
-            width: (parent.width - 13 * anchors.margins) / 5
-            height: width
-            anchors.margins: dp(4)
-            anchors.top:parent.top
-            anchors.right:parent.right
-            radius: dp(8)
-            border.width: dp(4)
-            border.color: currentGauge.needleColor
-            Text{ id:txtSpent
-                anchors.centerIn: parent
-                font.pixelSize: Math.round(dp(0.4 * parent.height))
-                text: Math.round(currentGauge.value)
-            }
-        }
-
-        GridView {
-            //z:50
-            id: sessionView
-            //height: parent.height
-            anchors.leftMargin: currentStepLeft.width + currentStepLeft.anchors.margins
-            anchors.rightMargin: currentStepSpent.width
-            //anchors.top: parent.top
-            //anchors.fill: parent
-            cellWidth: (parent.width - anchors.leftMargin - anchors.rightMargin) /8
-            cellHeight: cellWidth *0.75
-            clip: true
-            model: currentModel
-            delegate: Component {
-                Loader{
-                    Rectangle {
-
-                        property real myRadius: dp(5)
-                        id: wrapper
-                        z:      {var zdeep=isCurrent ? 100:95; /*console.log("isCurrent, index, zdeep", isCurrent, index, zdeep);*/return zdeep}
-                        width:  /*isCurrent ? 2* sessionView.cellWidth :*/ sessionView.cellWidth - dp(4)
-                        height: width
-                        //height: sessionView.cellHeihght - dp(4)
-                        radius: /*isCurrent ? 2 * myRadius:*/ myRadius
-                        border.color: { if (index == -1) return "grey";
-                            return hrPlot.runColors[currentModel.get(index).typeName];
-                        }
-                        color: index == -1 ? "grey" : "white" //{ if (index == -1) return "grey"; isCurrent? "white": "black"}
-                        border.width: isCurrent? dp(6): dp(2)
-                        function whatToShow() {
-
-                            var wts = /*isCurrent ? Math.round(time - runGauge[index % runGauge.length].value) :*/ time
-                            //timeLeft(wts)
-                            return wts
-                        }
-                        Text {
-                            id:timeText
-                            anchors.centerIn: parent
-                            //font.pointSize: Math.round(parent.height/4)
-                            font.pixelSize: Math.round(dp(0.4 * parent.height))
-                            text: "<b>" + parent.whatToShow() + "</b>"; color: "black"; /*style: Text.Raised; styleColor: "black"*/
-                            //text: index + ". " + typeName + " " + time + "sec."
-
-                        }
-                        Behavior on border.color {ColorAnimation{duration:500}}
-                        Behavior on border.width {NumberAnimation{duration:500}}
-                    }
-                }
-            }
-
-        }
-        // End Of Apnea Model and times grid
         ColumnLayout{
             id:runColumn
             anchors.top:parent.top
-            anchors.topMargin: 3 * sessionView.cellWidth -spacing //dp(120)
+            //anchors.topMargin: 3 * sessionView.cellWidth -spacing //dp(120)
             width:parent.width
             anchors.horizontalCenter: parent.horizontalCenter
             spacing: dp(8)
+            Item {
+                id: apneaTimes
+                Layout.preferredWidth:parent.width
+                ListModel {
+                    id: apneaModel
+                    //the following 3 properties will be used as indexes
+                    //added something so user will not be confused if runs before configuring
+                    //          ListElement { time: 3; typeName: "brth";    isCurrent: false }
+                    //          ListElement { time: 4; typeName: "hold";    isCurrent: false }
+                    //          ListElement { time: 5; typeName: "walk";    isCurrent: false }
+                    //          ListElement { time: 6; typeName: "brth";    isCurrent: false }
+                    //          ListElement { time: 7; typeName: "hold";    isCurrent: false }
+                    //          ListElement { time: 8; typeName: "walk";    isCurrent: false }
+                    //          ListElement { time: 9; typeName: "brth";    isCurrent: false }
+                    //          ListElement { time:10; typeName: "hold";    isCurrent: false }
+                    //          ListElement { time:11; typeName: "walk";    isCurrent: false }
+
+                    ListElement { time: 3; typeName: "brth";    isCurrent: false }
+                    ListElement { time: 4; typeName: "hold";    isCurrent: false }
+                    ListElement { time: 5; typeName: "walk";    isCurrent: false }
+                    ListElement { time: 5; typeName: "back";    isCurrent: false }
+                    ListElement { time: 6; typeName: "brth";    isCurrent: false }
+                    ListElement { time: 7; typeName: "hold";    isCurrent: false }
+                    ListElement { time: 8; typeName: "walk";    isCurrent: false }
+                    ListElement { time: 8; typeName: "back";    isCurrent: false }
+                    ListElement { time: 9; typeName: "brth";    isCurrent: false }
+                    ListElement { time:10; typeName: "hold";    isCurrent: false }
+                    ListElement { time:11; typeName: "walk";    isCurrent: false }
+                    ListElement { time:11; typeName: "back";    isCurrent: false }
+                    Component.onCompleted: {
+                        currentModel = apneaModel
+                    }
+                }
+
+                RowLayout{
+                    id: apneaTimesLayout
+                    width: parent.width
+                    height: sessionView.Layout.preferredHeight
+                    spacing: dp(4)
+                    Rectangle{
+                        id: currentStepLeft
+                        property alias text:txtLeft.text
+                        z:1
+                        Layout.preferredWidth: sessionView.cellWidth * 2
+                        Layout.preferredHeight: sessionView.cellHeight * 3
+                        //8 cells + 2 double sized cell for that Rectangle in a row
+                        //            width: (parent.width - 13 * anchors.margins) / 5
+                        //            height: width
+                        //            anchors.margins: dp(4)
+                        //            anchors.top:parent.top
+                        //            anchors.left:parent.left
+                        radius: dp(8)
+                        border.width: dp(4)
+                        border.color: currentGauge.needleColor
+                        Text{ id:txtLeft
+                            anchors.centerIn: parent
+                            font.pixelSize: Math.round(dp(0.5 * parent.height))
+                            text: Math.round(currentGauge.maximumValue - currentGauge.value)
+                        }
+                    }
+
+                    GridView {
+                        //z:50
+                        Layout.preferredWidth: cellWidth * 12 + 13 * spacing
+                        Layout.preferredHeight: cellHeight * 4 +5 * spacing
+                        id: sessionView
+                        //height: parent.height
+                        //            anchors.leftMargin: currentStepLeft.anchors.margins
+                        //            anchors.rightMargin: currentStepSpent.width + currentStepLeft.anchors.margins
+                        //            anchors.left: currentStepLeft. right
+                        //            anchors.right: currentStepSpent.left
+                        //anchors.top: parent.top
+                        //anchors.fill: parent
+                        cellWidth: (parent.width - 15*spacing) /16
+                        cellHeight: cellWidth *0.75
+                        clip: true
+                        model: currentModel
+                        delegate: Component {
+                            Loader{
+                                Rectangle {
+
+                                    property real myRadius: dp(5)
+                                    id: wrapper
+                                    z:      {var zdeep=isCurrent ? 100:95; /*console.log("isCurrent, index, zdeep", isCurrent, index, zdeep);*/return zdeep}
+                                    width:  /*isCurrent ? 2* sessionView.cellWidth :*/ sessionView.cellWidth - dp(4)
+                                    height: width
+                                    //height: sessionView.cellHeihght - dp(4)
+                                    radius: /*isCurrent ? 2 * myRadius:*/ myRadius
+                                    border.color: { if (index == -1) return "grey";
+                                        return hrPlot.runColors[currentModel.get(index).typeName];
+                                    }
+                                    color: index == -1 ? "grey" : "white" //{ if (index == -1) return "grey"; isCurrent? "white": "black"}
+                                    border.width: isCurrent? dp(6): dp(2)
+                                    function whatToShow() {
+
+                                        var wts = /*isCurrent ? Math.round(time - runGauge[index % runGauge.length].value) :*/ time
+                                        //timeLeft(wts)
+                                        return wts
+                                    }
+                                    Text {
+                                        id:timeText
+                                        anchors.centerIn: parent
+                                        //font.pointSize: Math.round(parent.height/4)
+                                        font.pixelSize: Math.round(dp(0.5 * parent.height))
+                                        text: "<b>" + parent.whatToShow() + "</b>"; color: "black"; /*style: Text.Raised; styleColor: "black"*/
+                                        //text: index + ". " + typeName + " " + time + "sec."
+
+                                    }
+                                    Behavior on border.color {ColorAnimation{duration:500}}
+                                    Behavior on border.width {NumberAnimation{duration:500}}
+                                }
+                            }
+                        }
+
+                    }
+                    Rectangle{
+                        id: currentStepSpent
+                        property alias text:txtSpent.text
+                        Layout.preferredWidth: sessionView.cellWidth * 2
+                        Layout.preferredHeight: sessionView.cellHeight * 3
+                        z:1
+                        //8 cells + 2 double sized cell for that Rectangle in a row
+                        //            width: (parent.width - 13 * anchors.margins) / 5
+                        //            height: width
+                        //            anchors.margins: dp(4)
+                        //            anchors.top:parent.top
+                        //            anchors.right:parent.right
+                        radius: dp(8)
+                        border.width: dp(4)
+                        border.color: currentGauge.needleColor
+                        Text{ id:txtSpent
+                            anchors.centerIn: parent
+                            font.pixelSize: Math.round(dp(0.5 * parent.height))
+                            text: Math.round(currentGauge.value)
+                        }
+                    }
+                }
+                // End Of Apnea Model and times grid
+            }
 
 
             Timer{
@@ -227,23 +235,24 @@ SceneBase {
                     hrPlot.showSessionGraph(hrPlot.currentSession)
                 }
             }
+            Item{
+                id: sessionPlot
+                Layout.preferredWidth:runSessionScene.width
+                Layout.preferredHeight:runSessionScene.height / 2
 
-            SeaWolfPlot{
-                id:hrPlot
-                Layout.preferredHeight: currentModelContainer.height / 2
-                Layout.preferredWidth: currentModelContainer.width
+
+                SeaWolfPlot{
+                    id:hrPlot
+                    height: parent.height
+                    width:  parent.width
+                }
             }
             RowLayout{
 
-                //        QMLFileAccess {
-                //            id:qfa
-                //        }
-
-
                 ColumnLayout{
                     id:col1
-                    Layout.preferredHeight: currentModelContainer.height / 3
-                    Layout.preferredWidth: currentModelContainer.width/4
+                    Layout.preferredHeight: runSessionScene.height / 3
+                    Layout.preferredWidth: runSessionScene.width/4
 
                     spacing:dp(8)
                     //anchors.horizontalCenter: parent.horizontalCenter
@@ -325,13 +334,8 @@ SceneBase {
                 }
                 Item {
                     id: gauges
-                    Layout.preferredHeight: currentModelContainer.height / 3
-                    Layout.preferredWidth: currentModelContainer.width * 0.5
-                    //width: runSessionScene.width * 0.6
-                    //height: width
-                    //anchors.horizontalCenter: parent.horizontalCenter
-                    //anchors.top:hrPlot.bottom
-                    //anchors.topMargin: dp(20)
+                    Layout.preferredHeight: runSessionScene.height / 3
+                    Layout.preferredWidth: runSessionScene.width * 0.5
 
                     SoundEffect {
                         id: brthSnd
@@ -446,8 +450,8 @@ SceneBase {
 
                 ColumnLayout{
                     id:col2
-                    Layout.preferredHeight: currentModelContainer.height / 3
-                    Layout.preferredWidth: currentModelContainer.width/4
+                    Layout.preferredHeight: runSessionScene.height / 3
+                    Layout.preferredWidth: runSessionScene.width/4
 
                     //anchors.horizontalCenter: parent.horizontalCenter
                     spacing:dp(8)
@@ -493,6 +497,5 @@ SceneBase {
 
             }
         }
-    }
 }
 

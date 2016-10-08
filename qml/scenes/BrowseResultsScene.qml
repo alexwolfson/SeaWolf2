@@ -73,6 +73,7 @@ SceneBase{
                 id:browseMenu
                 height:dp(100)
                 width:parent.width
+                Layout.alignment: Qt.AlignCenter
                 //padding: dp(20)
                 //anchors.bottom: browseScene.bottom
                 //anchors.topMargin: folderListView.height
