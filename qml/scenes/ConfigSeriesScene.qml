@@ -34,11 +34,11 @@ SceneBase {
         var mySession = []
         sessionType = "O2"
 
-        var cycles4Calculation = session.repeatLast ? session.numberOfCycles - 2 : session.numberOfCycles - 1;
+        var cycles4Calculation = repeatLast ? numberOfCycles - 2 : numberOfCycles - 1;
         mySession.unshift( {"time" : 0, "typeName" :"back"});
         mySession.unshift( {"time" : 0, "typeName" :"walk"});
-        mySession.unshift( {"time" : session.maxHoldTime, "typeName" :"hold"});
-        mySession.unshift( {"time" : session.minBreathTime, "typeName" :"brth"});
+        mySession.unshift( {"time" : maxHoldTime, "typeName" :"hold"});
+        mySession.unshift( {"time" : minBreathTime, "typeName" :"brth"});
         // copy the last group
         if (session.repeatLast){
             mySession.unshift( mySession[mySession.length -1]);
@@ -50,11 +50,11 @@ SceneBase {
             //mySession[i] = new Array (3)
             mySession.unshift( {"time": 0, "typeName": "back"});
             mySession.unshift( {"time": 0, "typeName": "walk"});
-            console.log("***** mySession=", mySession[0].time, mySession[1].time, mySession[2].time, mySession[3].time)
+            //console.log("***** mySession=", mySession[0].time, mySession[1].time, mySession[2].time, mySession[3].time)
             // we are adding to the beginning of the array so the previous time is always in element 2 (if starting from 0)
-            mySession.unshift( {"time": mySession[3].time - session.holdIncrement, "typeName": "hold"});
-            mySession.unshift( {"time": session.minBreathTime, "typeName": "brth"});
-            console.log("***** mySession=", mySession[0].time, mySession[1].time, mySession[2].time)
+            mySession.unshift( {"time": mySession[3].time - holdIncrement, "typeName": "hold"});
+            mySession.unshift( {"time": minBreathTime, "typeName": "brth"});
+            //console.log("***** mySession=", mySession[0].time, mySession[1].time, mySession[2].time)
         }
 
         return mySession
@@ -67,11 +67,11 @@ SceneBase {
         var mySession = []
         sessionType = "CO2"
 
-        var cycles4Calculation = session.repeatLast ? session.numberOfCycles - 2 : session.numberOfCycles - 1;
+        var cycles4Calculation = repeatLast ? numberOfCycles - 2 : numberOfCycles - 1;
         mySession.unshift( {"time" : 0, "typeName" :"back"});
         mySession.unshift( {"time" : 0, "typeName" :"walk"});
-        mySession.unshift( {"time" : session.maxHoldTime, "typeName" :"hold"});
-        mySession.unshift( {"time" : session.minBreathTime, "typeName" :"brth"});
+        mySession.unshift( {"time" : maxHoldTime, "typeName" :"hold"});
+        mySession.unshift( {"time" : minBreathTime, "typeName" :"brth"});
         // copy the last group
         if (session.repeatLast){
             mySession.unshift( mySession[mySession.length -1]);
@@ -83,8 +83,8 @@ SceneBase {
             // we are adding to the beginning of the array so the previous time is always in element 2 (if starting from 0)
             mySession.unshift( {"time": 0, "typeName": "back"});
             mySession.unshift( {"time": 0, "typeName": "walk"});
-            mySession.unshift( {"time": session.maxHoldTime, "typeName": "hold"});
-            mySession.unshift( {"time": mySession[3].time + session.breathDecrement, "typeName": "brth"});
+            mySession.unshift( {"time": maxHoldTime, "typeName": "hold"});
+            mySession.unshift( {"time": mySession[3].time + breathDecrement, "typeName": "brth"});
         }
 
         return mySession
@@ -97,12 +97,12 @@ SceneBase {
         var mySession = []
         sessionType = "WALK"
 
-        for (var i = 0; i < session.numberOfCycles; i++){
+        for (var i = 0; i < numberOfCycles; i++){
             // we are adding to the beginning of the array so the previous time is always in element 2 (if starting from 0)
-            mySession.unshift( {"time": session.walkTime,   "typeName": "back"});
-            mySession.unshift( {"time": session.walkTime,   "typeName": "walk"});
-            mySession.unshift( {"time": session.maxHoldTime,   "typeName": "hold"});
-            mySession.unshift( {"time": session.minBreathTime, "typeName": "brth"});
+            mySession.unshift( {"time": walkTime,   "typeName": "back"});
+            mySession.unshift( {"time": walkTime,   "typeName": "walk"});
+            mySession.unshift( {"time": maxHoldTime,   "typeName": "hold"});
+            mySession.unshift( {"time": minBreathTime, "typeName": "brth"});
         }
         return mySession
     }
@@ -171,21 +171,41 @@ SceneBase {
                 MenuButton {
                     text: "Select"
                     onClicked: {
+                        //AWDEBUG
+//                        property string name
+//                        //property alias numberOfCycles:nbOfCycles.result
+//                        property bool repeatLast:false
+//                        property int minBreathTime:5
+//                        property int breathDecrement:5
+//                        property int maxHoldTime:20
+//                        property int holdIncrement:5
+//                        property int walkTime:120
+//                        property int walkBackTime:120
+//                        property var currentSessionProperties
+//                        property  string sessionType:"WALK"
+//                        property string sessionName
+//                        property int numberOfCycles
+                        root.listByName("ConfigSeriesScene attached properites list", configSeriesScene, ["name", "repeatLast", "minBreathTime", "breathDecrement",
+                                   "maxHoldTime", "holdIncrement", "walkTime", "walkBackTime", "sessionType", "sessionName", "numberOfCycles"] )
+                        //console.log("minBreathTime =", minBreathTime, configSeriesScene["minBreathTime"], this["configSeriesScene"])
+
+                        //root.listProperty(this)
+                        //console.log(JSON.stringify(configSeriesScene))
                         if (sessionType == "CO2"){
                             currentSessionProperties = generateCO2Session()
-                            console.log(" **** generated CO2 session=", currentSessionProperties)
+                            //console.log(" **** generated CO2 session=", currentSessionProperties)
                        }
                         else if (sessionType == "O2"){
                             currentSessionProperties = generateO2Session()
-                            console.log(" **** generated O2 session=", currentSessionProperties)
+                            //console.log(" **** generated O2 session=", currentSessionProperties)
                         }
                         else if (sessionType == "WALK"){
                             currentSessionProperties = generateWalkSession()
-                            console.log(" **** generated WALK session=", currentSessionProperties)
+                            //console.log(" **** generated WALK session=", currentSessionProperties)
                         }
-                        //sessionName = session.name
+                        //sessionName = name
                         sessionSelected(sessionName, currentSessionProperties)
-                      //  levelEditor.saveCurrentLevel( {levelMetaData: {levelName: session.name}, customData:currentSessionProperties} )
+                      //  levelEditor.saveCurrentLevel( {levelMetaData: {levelName: name}, customData:currentSessionProperties} )
                     }
                 }
             }
@@ -193,12 +213,12 @@ SceneBase {
             //Label { text: qsTr("sessionName") }
             SeaWolfInput{ type:"str";   lbl: qsTr("sessionName");    sfv:"";        onResult: {sessionName=res}}
             SeaWolfInput{ type:"int";   lbl: qsTr("numberOfCycles"); ifv:"6";       onResult: {numberOfCycles=parseInt(res)}}
-            SeaWolfInput{ type:"spinBox";   lbl: qsTr("numberOfCycles"); sbv:6; sbfrom:1; sbto: 10; sbstep: 1;  onResult: {numberOfCycles=res}}
+            SeaWolfInput{ type:"spinBox";   lbl: qsTr("numberOfCycles"); sbv:6; sbfrom:1; sbto: 10; sbstep: 1;  onResult: {numberOfCycles=intRes}}
             SeaWolfInput{ id: rLast; type:"switch";lbl: qsTr("repeatLast");         onResult: {repeatLast=swYesNo}}
             SeaWolfInput{ type:"int";   lbl: qsTr("minBreathTime");  ifv:"15";      onResult: {minBreathTime=parseInt(res)}}
             SeaWolfInput{ id:breathDecrementEdit; type:"int";   lbl: qsTr("breathDecrement");ifv:"15";      onResult: {breathDecrement=parseInt(res)}}
             SeaWolfInput{ type:"int";   lbl: qsTr("maxHoldTime");    ifv:"120";     onResult: {maxHoldTime=parseInt(res)}}
-            SeaWolfInput{ type:"spinBox";   lbl: qsTr("maxHoldTime"); sbv:120; sbfrom:30; sbto: 600; sbstep: 5;  onResult: {maxHoldTime=res}}
+            SeaWolfInput{ type:"spinBox";   lbl: qsTr("maxHoldTime"); sbv:120; sbfrom:30; sbto: 600; sbstep: 5;  onResult: {maxHoldTime=intRes}}
             SeaWolfInput{ id:holdIncrementEdit; type:"int";   lbl: qsTr("holdIncrement");  ifv:"15";      onResult: {holdIncrement=parseInt(res)}}
             SeaWolfInput{ id:walkTimeEdit; type:"int";   lbl: qsTr("walkTime");       ifv:"120";     onResult: {walkTime=parseInt(res)}}
             SeaWolfInput{ id:backTimeEdit; type:"int";   lbl: qsTr("walkBackTime");   ifv:"120";     onResult: {walkBackTime=parseInt(res)}}

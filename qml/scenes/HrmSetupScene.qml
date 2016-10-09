@@ -91,8 +91,8 @@ SceneBase {
 
             Rectangle{
                 id: hrmListView
-                width:parent.width
-                height: parent.height/2
+                Layout.preferredWidth: parent.width
+                Layout.preferredHeight:  parent.height/2
 
                 ListView {
                 id: theListView

@@ -238,7 +238,7 @@ Rectangle{
         return hrMax
     }
     function setupSession(sessionName, selectedSession){
-        console.log("**** In setupSession width ", sessionName, ":", selectedSession)
+        //console.log("**** In setupSession width ", sessionName, ":", selectedSession)
         var step;
         init()
         sessionDuration = 0

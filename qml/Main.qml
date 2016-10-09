@@ -20,6 +20,26 @@ ApplicationWindow {
         return Math.min(/*sfDen, */sfWidth, sfHeight)
     }
     property int firstTime:1
+
+    //for debugging
+    function listProperty(item)
+    {
+        for (var p in item){
+            console.log(p + ": " , item[p]);
+        }
+    }
+    function listByName(msg, item, nameList){
+        var name
+        console.log(" *** " + msg + " start " + " ***")
+//        for (name in nameList){
+//            console.log(name,": ", item[name])
+//        }
+        for (var i =0; i < nameList.length; i++){
+            console.log(nameList[i],": ", item[nameList[i]])
+        }
+        console.log(" *** " + msg + " end " + " ***")
+    }
+
     function dp(pix){
         if (firstTime){
             console.log("Screen.pixelDensity = ", Screen.pixelDensity, "scale_factor = ", scale_factor)

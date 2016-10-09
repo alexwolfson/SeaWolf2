@@ -9,6 +9,7 @@ Item {
     property alias lbl: lbl.text
     property string type: "str" //"str","int","switch", spinBox
     property string res
+    property int    intRes
     property alias  ifv:   intField.text
     property alias  sfv:   strField.text
     property alias  swYesNo: swtch.checked
@@ -90,6 +91,7 @@ Item {
             border.color: "#000000"
             border.width: dp(1)
         }
+        Component.onCompleted: result()
     }
     SpinBox{
         id: spinBox
@@ -141,7 +143,7 @@ Item {
 //            border.width: dp(1)
 //        }
 
-        onValueChanged: {res=value; result()}
+        onValueChanged: {intRes=value; result()}
 
     }
 
