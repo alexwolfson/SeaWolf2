@@ -20,7 +20,7 @@ Item {
     signal result()
     Label {
         id:lbl
-        width: dp(360)
+        width: parent.width/2
         text: "Label"
     }
     TextField {
@@ -33,6 +33,8 @@ Item {
         text: "12"
         validator: IntValidator{}
         horizontalAlignment: TextInput.AlignHCenter
+        inputMethodHints: Qt.ImhDigitsOnly
+
         //style: TextFieldStyle {
             color: "black"
             background: Rectangle {

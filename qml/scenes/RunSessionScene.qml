@@ -247,6 +247,7 @@ SceneBase {
                 id:col1
                 Layout.preferredHeight: runSessionScene.height / 3
                 Layout.preferredWidth: runSessionScene.width/4
+                Layout.alignment: Qt.AlignHCenter
 
                 spacing:dp(8)
                 //anchors.horizontalCenter: parent.horizontalCenter
@@ -446,6 +447,7 @@ SceneBase {
                 id:col2
                 Layout.preferredHeight: runSessionScene.height / 3
                 Layout.preferredWidth: runSessionScene.width/4
+                Layout.alignment: Qt.AlignHCenter
 
                 //anchors.horizontalCenter: parent.horizontalCenter
                 spacing:dp(8)

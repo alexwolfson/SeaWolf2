@@ -1,4 +1,7 @@
 import QtQuick 2.7
+import QtGraphicalEffects 1.0
+
+
 //import VPlay 2.0
 Rectangle {
     id: button
@@ -33,8 +36,8 @@ Rectangle {
         anchors.centerIn: parent
         font.pixelSize: dp (50)
         elide: Text.ElideMiddle
-        color: "#F0EBED"
-        //color: "black"
+        //color: "#F0EBED"
+        color: "white"
     }
 
     MouseArea {
@@ -45,4 +48,14 @@ Rectangle {
         onPressed: button.opacity = 0.4
         onReleased: button.opacity = 0.6
     }
+    DropShadow {
+        anchors.fill: button
+        horizontalOffset: 3
+        verticalOffset: 3
+        radius: 8.0
+        samples: 17
+        color: "#80000000"
+        source: button
+    }
+
 }
