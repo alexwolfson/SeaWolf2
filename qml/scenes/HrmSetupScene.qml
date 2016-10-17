@@ -1,7 +1,7 @@
 //import VPlay 2.0
 import QtQuick 2.7
 import QtQuick.Controls 2.0
-import QtQuick.Layouts 1.1
+import QtQuick.Layouts 1.3
 
 import "../common"
 
@@ -24,7 +24,7 @@ SceneBase {
         //            anchors.horizontalCenter: parent.horizontalCenter;
         property string message: heartRate.message
         onMessageChanged: {
-            if (heartRate.message != "Scanning for devices..." && heartRate.message != "Low Energy device found. Scanning for more...") {
+            if (heartRate.message !== "Scanning for devices..." && heartRate.message !== "Low Energy device found. Scanning for more...") {
                 background.visible = true;
                 //demoMode.visible = true;
             }

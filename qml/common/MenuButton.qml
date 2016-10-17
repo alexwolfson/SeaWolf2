@@ -1,5 +1,5 @@
 import QtQuick 2.7
-import QtGraphicalEffects 1.0
+//import QtGraphicalEffects 1.0
 
 
 //import VPlay 2.0
@@ -48,14 +48,14 @@ Rectangle {
         onPressed: button.opacity = 0.4
         onReleased: button.opacity = 0.6
     }
-    DropShadow {
-        anchors.fill: button
-        horizontalOffset: 3
-        verticalOffset: 3
-        radius: 8.0
-        samples: 17
-        color: "#80000000"
-        source: button
-    }
+//    DropShadow {
+//        anchors.fill: button
+//        horizontalOffset: 3
+//        verticalOffset: 3
+//        radius: 8.0
+//        //samples: 17
+//        color: "#80000000"
+//        source: button
+//    }
 
 }

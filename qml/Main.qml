@@ -28,17 +28,32 @@ ApplicationWindow {
             console.log(p + ": " , item[p]);
         }
     }
-    function listByName(msg, item, nameList){
+    function listPropertiesByName(msg, item, nameList){
         var name
-        console.log(" *** " + msg + " start " + " ***")
+        console.log(" *** " + msg + ": print start " + " ***")
 //        for (name in nameList){
 //            console.log(name,": ", item[name])
 //        }
         for (var i =0; i < nameList.length; i++){
             console.log(nameList[i],": ", item[nameList[i]])
         }
-        console.log(" *** " + msg + " end " + " ***")
+        console.log(" *** " + msg + ": print end " + " ***")
     }
+    function listByName(that, msg, nameList){
+        var name
+        var val = "undefined"
+        console.log(" *** " + msg + ": print start " + " ***")
+        for (var i =0; i < nameList.length; i++){
+            val = eval(nameList[i])
+            if (typeof (val) === "undefined"){
+                val = that[nameList[i]]
+            }
+
+            console.log(nameList[i], ": ", val)
+        }
+        console.log(" *** " + msg + ": print end " + " ***")
+    }
+
 
     function dp(pix){
         if (firstTime){

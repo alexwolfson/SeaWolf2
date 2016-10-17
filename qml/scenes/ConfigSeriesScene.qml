@@ -1,7 +1,7 @@
 //import VPlay 2.0
 import QtQuick 2.7
 import QtQuick.Controls 2.0
-import QtQuick.Layouts 1.2
+import QtQuick.Layouts 1.3
 
 import "../common"
 
@@ -185,7 +185,7 @@ SceneBase {
 //                        property  string sessionType:"WALK"
 //                        property string sessionName
 //                        property int numberOfCycles
-                        root.listByName("ConfigSeriesScene attached properites list", configSeriesScene, ["name", "repeatLast", "minBreathTime", "breathDecrement",
+                        root.listPropertiesByName("ConfigSeriesScene attached properites list", configSeriesScene, ["name", "repeatLast", "minBreathTime", "breathDecrement",
                                    "maxHoldTime", "holdIncrement", "walkTime", "walkBackTime", "sessionType", "sessionName", "numberOfCycles"] )
                         //console.log("minBreathTime =", minBreathTime, configSeriesScene["minBreathTime"], this["configSeriesScene"])
 

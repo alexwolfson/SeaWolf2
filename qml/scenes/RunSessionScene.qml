@@ -3,7 +3,7 @@ import QtQuick.Controls 2.0
 import QtQuick.Controls.Styles 1.4
 import QtQuick.Dialogs 1.2
 import QtQuick.Extras 1.4
-import QtQuick.Layouts 1.2
+import QtQuick.Layouts 1.3
 import QtMultimedia 5.6
 import QtQml 2.2
 import QtCharts 2.1
@@ -220,12 +220,14 @@ SceneBase {
             repeat:true
 
             onTriggered:{
+                //TODO does it make sence to synchronyze with ending steps in SeaWolfControls ? Mutex?
+                // Is some sort of race condition is possible here?
+                // May be call markEvent from here instead of from the gauges state change?
                 sessionTime++
                 // update heart rate information
                 hrPlot.currentSession.pulse.push( Math.round(heartRate.hr))
-                hrPlot.markEvent(currentGauge.gaugeName)
+                //hrPlot.markEvent(currentGauge.gaugeName)
                 //hrPlot.currentHrSeries.append(sessionTime, Math.round(heartRate.hr))
-                //hrPlot.showSessionGraph(hrPlot.currentSession, currentGauge.gaugeName)
                 hrPlot.showSessionGraph(hrPlot.currentSession)
             }
         }
@@ -456,7 +458,7 @@ SceneBase {
                     z:100
                     text: qsTr("-Medit")
                     onClicked: {
-                        //hrPlot.currentSession.event.push([myEventsNm2Nb["EndOfMeditativeZone"], Math.round(currentGauge.value)])
+                        //hrPlot.currentSession.event.push([myEventsNm2Enum["EndOfMeditativeZone"], Math.round(currentGauge.value)])
                         hrPlot.markEvent("EndOfMeditativeZone")
                     }
                     enabled:true

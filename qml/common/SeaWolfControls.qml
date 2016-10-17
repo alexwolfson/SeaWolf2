@@ -277,7 +277,7 @@ CircularGauge {
                 if (running){
                     // Add start event with it's duration
                     //if (!gaugeName in ["walk", "back"] ){
-//                        var eventNb = hrPlot.myEventsNm2Nb[gaugeName];
+//                        var eventNb = hrPlot.myEventsNm2Enum[gaugeName];
 //                        console.log("gaugeName=", gaugeName, "eventNb=", eventNb)
 //                        hrPlot.currentSession.event.push([eventNb, maximumValue])
                     //}
@@ -329,9 +329,11 @@ CircularGauge {
                         }
 
                         //emit signal
-                        runSessionScene.currentGauge = nextGauge
                         //seting up next gauge as current if it's time is not 0
                         nextGauge.state = "stateRun"
+                        runSessionScene.currentGauge = nextGauge
+                        hrPlot.currentStepEnum = hrPlot.myEventsNm2Enum[currentGauge.gaugeName]
+                        hrPlot.currentStepStartTm = sessionTime
                     }
                     else {
                         // The session is over
