@@ -657,6 +657,7 @@ Rectangle{
             axisX:plotAxisX
             axisY:plotAxisY
             XYPoint { x: 0;  y: 0 }
+            XYPoint { x: 50; y: 50 }
         }
         ScatterSeries {
             id: contractionSeries
@@ -696,6 +697,46 @@ Rectangle{
                                          console.log(" In rangeSlider: first.from, to, value, visualPosition = " , from, to, first.value, first.visualPosition)}
         second.onVisualPositionChanged: { var v1 = Math.round(from + (to - from ) * second.visualPosition); second.value = v1;
                                          console.log(" In rangeSlider: second.from, to, value, visualPoition = " , from, to, second.value, second.visualPosition)}
+        first.handle: Rectangle {
+            x: parent.leftPadding + parent.first.visualPosition * (parent.availableWidth - width)
+            y: parent.topPadding + parent.availableHeight / 2 - height / 2
+            implicitWidth: dp(60)
+            implicitHeight: dp(60)
+            radius: dp(30)
+            //color: parent.first.pressed ? "#f0f0f0" : "#f6f6f6"
+            color: "orange"
+            border.color: "#bdbebf"
+            Text {
+                id: leftRangeSliderText
+                anchors.centerIn: parent
+                font.pixelSize: dp (30)
+                elide: Text.ElideMiddle
+                //color: "#F0EBED"
+                color: "black"
+                text:  "<->"
+            }
+
+        }
+
+        second.handle: Rectangle {
+            x: parent.leftPadding + parent.second.visualPosition * (parent.availableWidth - width)
+            y: parent.topPadding + parent.availableHeight / 2 - height / 2
+            implicitWidth: dp(60)
+            implicitHeight: dp(60)
+            radius: dp(30)
+            //color: parent.second.pressed ? "#f0f0f0" : "#f6f6f6"
+            color:"orange"
+            border.color: "#bdbebf"
+            Text {
+                id: rightRangeSliderText
+                anchors.centerIn: parent
+                font.pixelSize: dp (30)
+                elide: Text.ElideMiddle
+                //color: "#F0EBED"
+                color: "black"
+                text: "<->"
+            }
+        }
     }
 
 //    RowLayout {
