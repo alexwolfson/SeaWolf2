@@ -234,6 +234,13 @@ SceneBase {
                 //hrPlot.lastStepEventTm = sessionTime
 
                 hrPlot.addPointToPlot(sessionTime, Math.round(heartRate.hr))
+                hrPlot.rangeSliderUpdate()
+//                hrPlot.plotRangeControl.to = hrPlot.currentSession.pulse.length
+//                hrPlot.plotRangeControl.from = 0;
+//                hrPlot.plotRangeControl.first.visualPositionChanged()
+//                hrPlot.plotRangeControl.second.visualPositionChanged()
+//                hrPlot.currentChartView.update()
+
                 if (triggerMark !== ""){
                     hrPlot.markEvent(triggerMark, sessionTime)
                     triggerMark = ""

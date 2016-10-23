@@ -405,6 +405,13 @@ Rectangle{
         showSessionGraph(currentSession)
 
     }
+    function rangeSliderUpdate(){
+        plotRangeControl.from = 0;
+        plotRangeControl.to = currentSession.pulse.length
+        plotRangeControl.first.visualPositionChanged()
+        plotRangeControl.second.visualPositionChanged()
+        currentChartView.update()
+    }
 
     function showSessionGraph(p_session){
         console.log("*** Enetered showSessionGraph ")
@@ -443,7 +450,12 @@ Rectangle{
                 addPointToPlot(tm, p_session.pulse[tm])
             }
         }
-        currentChartView.update()
+        rangeSliderUpdate()
+//        plotRangeControl.from = 0;
+//        plotRangeControl.to = p_session.pulse.length
+//        plotRangeControl.first.visualPositionChanged()
+//        plotRangeControl.second.visualPositionChanged()
+//        currentChartView.update()
 
     }
 
@@ -673,20 +685,17 @@ Rectangle{
         anchors.right:  chartView.right
         anchors.bottom: chartView.bottom
         from: 0
-        to:   50
-        stepSize: 10
+        to:   50 //undefined === currentSession.pulse.length? 50 : currentSession.pulse.length
+        stepSize: 1
         //first.value: 10
         //second.value: 50
         first.onValueChanged:  {currentStepAxisX.min = first.value}
         second.onValueChanged: {currentStepAxisX.max = second.value}
         //For some reason the visual position change requires a manual value setup. A bug or wrong usage?
-        first.onVisualPositionChanged:  { var v1 = Math.round(from +  (to -  from )  * first.visualPosition);  first.value =  v1 -v1 % stepSize;
+        first.onVisualPositionChanged:  { var v1 = Math.round(from +  (to -  from )  * first.visualPosition);  first.value =  v1;
                                          console.log(" In rangeSlider: first.from, to, value, visualPosition = " , from, to, first.value, first.visualPosition)}
-        second.onVisualPositionChanged: { var v1 = Math.round(from + (to - from ) * second.visualPosition); second.value = v1 -v1 % stepSize;
-                                         console.log(" In rangeSlider: second.from, to, value, visualPosition = " , from, to, second.value, second.visualPosition)}
-
-        //first.onVisualPositionChanged: { console.log(" In rangeSlider: first.value = " , first.value)}
-        //second.onVisualPositionChanged:{ console.log(" In rangeSlider: second.value = ", second.value)}
+        second.onVisualPositionChanged: { var v1 = Math.round(from + (to - from ) * second.visualPosition); second.value = v1;
+                                         console.log(" In rangeSlider: second.from, to, value, visualPoition = " , from, to, second.value, second.visualPosition)}
     }
 
 //    RowLayout {
