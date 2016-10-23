@@ -1,5 +1,5 @@
 import QtQuick 2.7
-//import QtQuick.Controls 1.4
+import QtQuick.Controls 2.0
 //import QtQuick.Controls.Styles 1.4
 //import QtQuick.Dialogs 1.2
 //import QtQuick.Extras 1.4
@@ -308,14 +308,19 @@ Rectangle{
     }
     function addPointToPlot(tm, y){
         currentStepHrSeries.append(tm,y)
-        currentStepAxisX.min = 0
-        currentStepAxisX.max = currentSession.pulse.length
+//        currentStepAxisX.min = 0
+//        currentStepAxisX.max = currentSession.pulse.length
+        //currentStepAxisX.min = plotRangeControl.first.value
+        //currentStepAxisX.max = plotRangeControl.second.value
         currentAxisY.min = getSesssionHRMin(currentSession)
         currentAxisY.max = getSesssionHRMax(currentSession)
+        // currentStepAxisX.min and max are set by the range slider
         currentEventAxisX.min = currentStepAxisX.min
         currentEventAxisX.max = currentStepAxisX.max
         //testing that the last X label was't end of step label
-        console.log( " In addPointToPlot: tm = ", tm,  "lastStepEventTm = ", lastStepEventTm)
+
+        console.log( " In addPointToPlot: tm = ", tm,  "lastStepEventTm = ", lastStepEventTm,
+                    "currentStepAxisX.min =", currentStepAxisX.min, "currentStepAxisX.max = ", currentStepAxisX.max)
         if ( (tm -1) !== lastStepEventTm ){
             currentStepAxisX.remove(lastStepXLabel)
             console.log("removing [", lastStepXLabel, "] tm = ", tm)
@@ -662,53 +667,75 @@ Rectangle{
             currentEventAxisX = eventAxisX
         }
     }
-    RowLayout {
-        id: plotControls
-        width:parent.width
-        MenuButton {
-            id: left
-            text: "< "
-            onClicked: {
-                var tmpPrev =  getPrevStepEventNb(firstStepEventToPlotNb)
-                if (tmpPrev > 0){
-                    firstStepEventToPlotNb = tmpPrev
-                }
-                showSessionGraph(currentSession)
-            }
-        }
-        MenuButton {
-            id: x1
-            text: " x1 "
-            onClicked: { maxStepsOnPlot = 1; resetShow(); showSessionGraph(currentSession) }
-        }
-        MenuButton {
-            id: x2
-            text: " x2 "
-            onClicked: { maxStepsOnPlot = 2; resetShow(); showSessionGraph(currentSession) }
-        }
-        MenuButton {
-            id: x4
-            text: " x4 "
-            onClicked: { maxStepsOnPlot = 4; resetShow(); showSessionGraph(currentSession) }
+    RangeSlider{
+        id: plotRangeControl
+        anchors.left:   chartView.left
+        anchors.right:  chartView.right
+        anchors.bottom: chartView.bottom
+        from: 0
+        to:   50
+        stepSize: 10
+        //first.value: 10
+        //second.value: 50
+        first.onValueChanged:  {currentStepAxisX.min = first.value}
+        second.onValueChanged: {currentStepAxisX.max = second.value}
+        //For some reason the visual position change requires a manual value setup. A bug or wrong usage?
+        first.onVisualPositionChanged:  { var v1 = Math.round(from +  (to -  from )  * first.visualPosition);  first.value =  v1 -v1 % stepSize;
+                                         console.log(" In rangeSlider: first.from, to, value, visualPosition = " , from, to, first.value, first.visualPosition)}
+        second.onVisualPositionChanged: { var v1 = Math.round(from + (to - from ) * second.visualPosition); second.value = v1 -v1 % stepSize;
+                                         console.log(" In rangeSlider: second.from, to, value, visualPosition = " , from, to, second.value, second.visualPosition)}
 
-        }
-        MenuButton {
-            id: xAll
-            text: " x" + String.fromCharCode(0x221e) + " "  //infinity
-            onClicked: { maxStepsOnPlot = 1000; init(); showSessionGraph(currentSession) }
-        }
-        MenuButton {
-            id: right
-            text: " >"
-            onClicked: {
-                var tmpNb =  getNextStepEventNb(firstStepEventToPlotNb)
-                if (tmpNb > 0){
-                    firstStepEventToPlotNb = tmpNb
-                }
-                showSessionGraph(currentSession)
-            }
-        }
+        //first.onVisualPositionChanged: { console.log(" In rangeSlider: first.value = " , first.value)}
+        //second.onVisualPositionChanged:{ console.log(" In rangeSlider: second.value = ", second.value)}
     }
+
+//    RowLayout {
+//        id: plotControls
+//        width:parent.width
+//        MenuButton {
+//            id: left
+//            text: "< "
+//            onClicked: {
+//                var tmpPrev =  getPrevStepEventNb(firstStepEventToPlotNb)
+//                if (tmpPrev > 0){
+//                    firstStepEventToPlotNb = tmpPrev
+//                }
+//                showSessionGraph(currentSession)
+//            }
+//        }
+//        MenuButton {
+//            id: x1
+//            text: " x1 "
+//            onClicked: { maxStepsOnPlot = 1; resetShow(); showSessionGraph(currentSession) }
+//        }
+//        MenuButton {
+//            id: x2
+//            text: " x2 "
+//            onClicked: { maxStepsOnPlot = 2; resetShow(); showSessionGraph(currentSession) }
+//        }
+//        MenuButton {
+//            id: x4
+//            text: " x4 "
+//            onClicked: { maxStepsOnPlot = 4; resetShow(); showSessionGraph(currentSession) }
+
+//        }
+//        MenuButton {
+//            id: xAll
+//            text: " x" + String.fromCharCode(0x221e) + " "  //infinity
+//            onClicked: { maxStepsOnPlot = 1000; init(); showSessionGraph(currentSession) }
+//        }
+//        MenuButton {
+//            id: right
+//            text: " >"
+//            onClicked: {
+//                var tmpNb =  getNextStepEventNb(firstStepEventToPlotNb)
+//                if (tmpNb > 0){
+//                    firstStepEventToPlotNb = tmpNb
+//                }
+//                showSessionGraph(currentSession)
+//            }
+//        }
+//    }
 
 } //End Of Plot
 
