@@ -93,6 +93,7 @@ ApplicationWindow {
             conf.sessionSelected.connect(run.currentHrPlot.setupSession)
             hrm.startHrmDemo.connect(run.currentHrPlot.demoHrm)
             hrm.startHrmSearch.connect(run.currentHrPlot.realHrm)
+            //SeaWolfControls.needToMarkEvent.connect(run.gotMarkSignal)
         }
         //style: TabViewStyle {
             //frameOverlap: dp(0)

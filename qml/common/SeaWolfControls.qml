@@ -288,7 +288,6 @@ CircularGauge {
                 //onStopped:{
                 if ((!running) /*&& (gaugeModelElement.typeName === gaugeName)*/) {
                     //console.log("running=", running, "modelIndex=", modelIndex, "index=", gridView.delegate.index)
-                    hrPlot.markEvent(gaugeName)
                     state = "initial";
                     gaugeModel.get(modelIndex).isCurrent = false
                     // update all gauges if we are about to run the "breath"gauge
@@ -328,12 +327,15 @@ CircularGauge {
                             runSessionScene.runGauge[walkIndx].visible = true
                         }
 
-                        //emit signal
                         //seting up next gauge as current if it's time is not 0
                         nextGauge.state = "stateRun"
                         runSessionScene.currentGauge = nextGauge
-                        hrPlot.currentStepEnum = hrPlot.myEventsNm2Enum[currentGauge.gaugeName]
-                        hrPlot.currentStepStartTm = sessionTime
+                        //hrPlot.currentStepEventEnum = hrPlot.myEventsNm2Enum[currentGauge.gaugeName]
+                        //hrPlocurrentStepEventStartTmTm = sessionTime
+                        //emit signal
+                        //TODO - why signal approach did not work?
+                        run.triggerMark = gaugeName
+                        run.nextStepName = nextGauge.gaugeName
                     }
                     else {
                         // The session is over

@@ -44,13 +44,18 @@ SceneBase {
     property SeaWolfControls currentGaugeBack
 
     //called by onSessionSelected
-    property int   timeFooterBrth
-    property color borderColorFooterBrth
-    property int   timeFooterHold
-    property color borderColorFooterHold
-    property int   timeFooterWalk
-    property color borderColorFooterWalk
-    property bool  noWalk: true
+    property int    timeFooterBrth
+    property color  borderColorFooterBrth
+    property int    timeFooterHold
+    property color  borderColorFooterHold
+    property int    timeFooterWalk
+    property color  borderColorFooterWalk
+    property bool   noWalk: true
+    property string triggerMark: ""
+    property string nextStepName: "brth"
+//    function gotMarkSignal(name){
+//        triggerMark = name
+//    }
 
 
     function getSessionTime(){
@@ -205,7 +210,7 @@ SceneBase {
                     border.color: currentGauge.needleColor
                     Text{ id:txtSpent
                         anchors.centerIn: parent
-                        font.pixelSize: Math.round(dp(0.5 * parent.height))
+                        font.pixelSize: Math.round(dp(0.75 * parent.height))
                         text: Math.round(currentGauge.value)
                     }
                 }
@@ -226,9 +231,18 @@ SceneBase {
                 sessionTime++
                 // update heart rate information
                 hrPlot.currentSession.pulse.push( Math.round(heartRate.hr))
+                //hrPlot.lastStepEventTm = sessionTime
+
+                hrPlot.addPointToPlot(sessionTime, Math.round(heartRate.hr))
+                if (triggerMark !== ""){
+                    hrPlot.markEvent(triggerMark)
+                    triggerMark = ""
+                    //hrPlot.addPointToPlot(sessionTime, Math.round(heartRate.hr))
+                }
+
                 //hrPlot.markEvent(currentGauge.gaugeName)
                 //hrPlot.currentHrSeries.append(sessionTime, Math.round(heartRate.hr))
-                hrPlot.showSessionGraph(hrPlot.currentSession)
+                //hrPlot.showSessionGraph(hrPlot.currentSession)
             }
         }
         Item{
@@ -284,6 +298,7 @@ SceneBase {
                         walkControl.enabled = true
                         walkControl.text= qsTr("Finish Step")
                         button2.enabled = true;
+                        nextStepName = "brth"
                         hrPlot.init()
                         oneTimer.start()
                         //console.log("Time=", Qt.formatDateTime(new Date(), "yyyy-MM-dd-hh-mm-ss"))
