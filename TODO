@@ -2,9 +2,10 @@
 - Pedometer for apnea walk
   http://qmldevelopment.tumblr.com/page/13
 - Configuration saving (JSON or LevelEditor)
-- Save data (JSON or LevelEditor)
+- Save session templates (JSON or LevelEditor)
 - Add music with ability to  choose
 - Add particles using particle editor as air bubble
 - Heart rate biofeedback
 - Refactor the architecture - SeaWolfControls are using RunSessionScene and RunSeessionScene uses SeaWolfControls
 - Remove pulse spikes caused by sensor's problems
+- Last second is not shown or recorded

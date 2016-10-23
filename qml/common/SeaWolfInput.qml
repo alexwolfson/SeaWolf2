@@ -17,6 +17,10 @@ Item {
     property alias  sbfrom: spinBox.from
     property alias  sbto: spinBox.to
     property alias  sbstep: spinBox.stepSize
+//    property real  sbv:   spinBox.value
+//    property real  sbfrom: spinBox.from
+//    property real  sbto: spinBox.to
+//    property real  sbstep: spinBox.stepSize
     signal result()
     Label {
         id:lbl
@@ -36,23 +40,23 @@ Item {
         inputMethodHints: Qt.ImhDigitsOnly
 
         //style: TextFieldStyle {
-            color: "black"
-            background: Rectangle {
-                radius: dp(20)
-                color: "#F0EBEB"
-                implicitWidth: dp(120)
-                implicitHeight: dp(60)
-                border.color: "#000000"
-                border.width: dp(1)
-            }
+        color: "black"
+        background: Rectangle {
+            radius: dp(20)
+            color: "#F0EBEB"
+            implicitWidth: dp(120)
+            implicitHeight: dp(60)
+            border.color: "#000000"
+            border.width: dp(1)
+        }
         //}
         //onEditingFinished: {res=text; result()}
         onTextChanged: {res=text; result()}
-//        Binding{
-//            target:textFieldInt
-//            property:"text"
-//            value:lbl.text
-//        }
+        //        Binding{
+        //            target:textFieldInt
+        //            property:"text"
+        //            value:lbl.text
+        //        }
     }
 
     TextField {
@@ -66,7 +70,7 @@ Item {
         //validator: IntValidator{}
         horizontalAlignment: TextInput.AlignHCenter
         //style: TextFieldStyle {
-            color: "black"
+        color: "black"
         background: Rectangle {
             radius: dp(20)
             color: "#F0EBEB"
@@ -103,6 +107,10 @@ Item {
         visible: type=="spinBox"
         width: dp(240)
         height: dp(60)
+        from: sbfrom
+        to:   sbto
+        value:sbv
+        stepSize: sbstep
         background: Rectangle {
             radius: dp(20)
             color: "#F0EBEB"
@@ -135,19 +143,34 @@ Item {
             border.width: dp(1)
             //onClicked: parent.value -= stepSize
         }
-
-//        background: Rectangle {
-//            radius: dp(20)
-//            color: "#F0EBEB"
-//            implicitWidth: dp(240)
-//            implicitHeight: dp(60)
-//            border.color: "#000000"
-//            border.width: dp(1)
-//        }
-
-        onValueChanged: {intRes=value; result()}
-
+        onValueChanged: { intRes=value; result()}
     }
-
+    Slider{
+        id: slider
+        anchors.left:spinBox.right
+        anchors.leftMargin: dp(10)
+        enabled: type=="spinBox"
+        visible: type=="spinBox"
+        width: dp(360)
+        height: dp(60)
+        from: sbfrom
+        to:   sbto
+        stepSize: sbstep
+        value:    sbv
+        //snapMode: Slider.SnapAlways
+        background: Rectangle {
+            radius: dp(20)
+            color: "#F0EBEB"
+            implicitWidth: dp(240)
+            implicitHeight: dp(60)
+            border.color: "#000000"
+            border.width: dp(1)
+        }
+        //For some reason the visual position requires a manual snap, even when snapMode is set
+        onVisualPositionChanged: { var v1 = Math.round(from + (to - from ) * visualPosition); sbv = v1 -v1 % stepSize;
+            /*console.log("sbv = ", Math.round(from + (to - from ) * visualPosition))*/
+        }
+        //onValueChanged: {sbv = value; intRes=value; result()}
+    }
 }
 

@@ -29,7 +29,7 @@ Rectangle{
                 "event":[],
                 "pulse":[]
     }
-    property LineSeries    currentHrSeries
+    //property LineSeries    currentHrSeries
     property LineSeries    currentStepHrSeries
     property ScatterSeries currentContractionSeries: contractionSeries
     property ChartView     currentChartView
@@ -105,6 +105,7 @@ Rectangle{
         lastPulseOnPlotTm = -1;
         currentStepAxisX = chartView.plotAxisX
         currentStepAxisX.max = 0
+        lastStepEventNm = "brth"
         var cnt = currentStepAxisX.count
         for (var i = 0; i < cnt; i++){
             currentStepAxisX.remove(currentStepAxisX.categoriesLabels[0])
@@ -126,7 +127,6 @@ Rectangle{
         currentStepEventEnum    = -1
         currentStepEventStartTm = -1
         currentStepEventStopTm  = -1
-        lastPulseOnPlotTm  = -1
         lastStepEventToShowNb = -1
         currentSession.when = Qt.formatDateTime(new Date(), "yyyy-MM-dd-hh-mm-ss");
         lastPressEventNb = -1;
@@ -136,14 +136,14 @@ Rectangle{
     }
 
     // TODO add check for the currentNm existence?
-//    function getNextStepEventEnum(currentNm){
-//        var nm
-//        var nb
-//        var stepEnum = myEventsNm2Enum[currentNm]
-//        var eventTypesNb = runColors.length
-//        nb = stepEnum < eventTypesNb -1 ? myEventsEnum2Nm[stepEnum] : 0
-//        return myEventsEnum2Nm[nb]
-//    }
+    //    function getNextStepEventEnum(currentNm){
+    //        var nm
+    //        var nb
+    //        var stepEnum = myEventsNm2Enum[currentNm]
+    //        var eventTypesNb = runColors.length
+    //        nb = stepEnum < eventTypesNb -1 ? myEventsEnum2Nm[stepEnum] : 0
+    //        return myEventsEnum2Nm[nb]
+    //    }
     function getNextStepEventEnum(stepEnum){
         var nb
         var stepEventTypesNb = runColors.length
@@ -265,10 +265,10 @@ Rectangle{
 
     //creates new series graph
     function setupCurrentSeries(){
-        currentHrSeries = currentChartView.createSeries(ChartView.SeriesTypeLine, "0", currentStepAxisX, currentAxisY);
-        currentHrSeries.color = runColors[currentGauge.gaugeName]
+        //currentHrSeries = currentChartView.createSeries(ChartView.SeriesTypeLine, "0", currentStepAxisX, currentAxisY);
+        //currentHrSeries.color = runColors[currentGauge.gaugeName]
         currentContractionSeries = currentChartView.createSeries(ChartView.SeriesTypeScatter, "contraction", currentEventAxisX, currentAxisY);
-        currentStepHrSeries = currentChartView.createSeries(ChartView.SeriesTypeLine, "", currentStepAxisX, currentAxisY)
+        currentStepHrSeries = currentChartView.createSeries(ChartView.SeriesTypeLine, "0", currentStepAxisX, currentAxisY)
     }
 
     function listByNameLocal(that, msg, nameList){
@@ -293,9 +293,9 @@ Rectangle{
         console.log(" *** " + msg + ": print end " + " ***")
     }
 
-    function markEvent(eventName){
+    function markEvent(eventName, tm){
+        canCreateSeriesFlag = false
         var eventEnum = myEventsNm2Enum[eventName];
-        var tm      = runSessionScene.getSessionTime()//Math.round(currentGauge.value)
         currentSession.event.push([eventEnum, tm])
         if (! (runColors[eventName] === undefined)){
             lastStepEventTm = tm
@@ -321,7 +321,7 @@ Rectangle{
             console.log("removing [", lastStepXLabel, "] tm = ", tm)
         }else{
             //currentStepAxisX.append(lastStepXLabel, tm-1)
-            console.log("addingg [", lastStepXLabel, "]")
+            //console.log("addingg [", lastStepXLabel, "]")
         }
 
         lastStepXLabel = (tm + demoModePulseTm).toString()
@@ -330,9 +330,9 @@ Rectangle{
 
         //update if series creation is finished
         if (canCreateSeriesFlag){
-            console.log("tm = ", tm, "lastStepXLabel = ", lastStepXLabel, "currentStepAxisX.min =", currentStepAxisX.min, "currentStepAxisX.max =", currentStepAxisX.max)
+            //console.log("tm = ", tm, "lastStepXLabel = ", lastStepXLabel, "currentStepAxisX.min =", currentStepAxisX.min, "currentStepAxisX.max =", currentStepAxisX.max)
             currentChartView.update()
-            console.log("Plot Updated")
+            //console.log("Plot Updated")
         }
     }
     function makeStepAxisXLabel(tm){
@@ -401,9 +401,50 @@ Rectangle{
 
     }
 
+    function showSessionGraph(p_session){
+        console.log("*** Enetered showSessionGraph ")
+        var tmStart = 0
+        var tmStop  = 0
+        var eventNb = -1
+        var hrMin = getSesssionHRMin(p_session);
+        var hrMax = getSesssionHRMax(p_session);
+        var eventName = ""
+        // var currentHrSeries
+        //  the relative to the step time
+
+        currentAxisY.min = (hrMin - 1);
+        currentAxisY.max = (hrMax + 1);
+
+        //TODO does it make sence to synchronyze with ending steps in SeaWolfControls ? Mutex?
+        // Is some sort of race condition is possible here?
+        // May be call markEvent from here instead of from the gauges state change?
+        console.log("In showSessionGraph: p_session.event.length", p_session.event.length)
+        run.nextStepName = "brth"
+        for (eventNb = 0; eventNb < p_session.event.length; eventNb++){
+            tmStart = tmStop
+            tmStop = p_session.event[eventNb][1]
+            eventName = myEventsEnum2Nm[p_session.event[eventNb][0]]
+            // for step events only
+            if (! (runColors[eventName] === undefined)){
+                //run.nextStepName is used in onSeriesAdded
+                // TODO: consolidate and make SeaWolfPlot self sofficient?
+                run.nextStepName = myEventsEnum2Nm[p_session.event[eventNb][0]]
+                lastStepEventTm = tmStart
+            }
+            //markEvent(myEventsEnum2Nm[p_session.event[eventNb][0]], tmStop)
+            currentStepHrSeries = currentChartView.createSeries(ChartView.SeriesTypeLine, tmStop.toString(), currentStepAxisX, currentAxisY)
+
+            for (var tm = tmStart; tm <= tmStop; tm ++){
+                addPointToPlot(tm, p_session.pulse[tm])
+            }
+        }
+        currentChartView.update()
+
+    }
+
     // currentGaugeName is passed if routine is called from the 1 sec timer
     // in the case of the browsing previous sessions or zooming/shifting currentGaugeName is undefined
-    function showSessionGraph(p_session){
+    function showSessionGraphOld(p_session){
         console.log("*** Enetered showSessionGraph ")
         var currentGaugeName = "brth"
         var lastPressEventTm = lastPressEventNb >= 0 ? p_session.event[lastPressEventNb][1]:0

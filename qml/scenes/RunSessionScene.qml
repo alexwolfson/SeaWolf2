@@ -235,14 +235,11 @@ SceneBase {
 
                 hrPlot.addPointToPlot(sessionTime, Math.round(heartRate.hr))
                 if (triggerMark !== ""){
-                    hrPlot.markEvent(triggerMark)
+                    hrPlot.markEvent(triggerMark, sessionTime)
                     triggerMark = ""
                     //hrPlot.addPointToPlot(sessionTime, Math.round(heartRate.hr))
                 }
 
-                //hrPlot.markEvent(currentGauge.gaugeName)
-                //hrPlot.currentHrSeries.append(sessionTime, Math.round(heartRate.hr))
-                //hrPlot.showSessionGraph(hrPlot.currentSession)
             }
         }
         Item{
@@ -468,36 +465,36 @@ SceneBase {
 
                 //anchors.horizontalCenter: parent.horizontalCenter
                 spacing:dp(8)
-                MenuButton{
-                    id: note1
-                    z:100
-                    text: qsTr("-Medit")
-                    onClicked: {
-                        //hrPlot.currentSession.event.push([myEventsNm2Enum["EndOfMeditativeZone"], Math.round(currentGauge.value)])
-                        hrPlot.markEvent("EndOfMeditativeZone")
-                    }
-                    enabled:true
-                }
-                MenuButton{
-                    id: note2
-                    z:100
-                    text: qsTr("-Cmfrt")
-                    onClicked: {
-                        //console.log("value=", Math.round(currentGauge.value))
-                        hrPlot.markEvent("EndOfComfortZone")
-                        //AWDEDUG
-                        //showSessionGraph(currentSession, chartView)
+//                MenuButton{
+//                    id: note1
+//                    z:100
+//                    text: qsTr("-Medit")
+//                    onClicked: {
+//                        //hrPlot.currentSession.event.push([myEventsNm2Enum["EndOfMeditativeZone"], Math.round(currentGauge.value)])
+//                        hrPlot.markEvent(getSessionTime(), "EndOfMeditativeZone")
+//                    }
+//                    enabled:true
+//                }
+//                MenuButton{
+//                    id: note2
+//                    z:100
+//                    text: qsTr("-Cmfrt")
+//                    onClicked: {
+//                        //console.log("value=", Math.round(currentGauge.value))
+//                        hrPlot.markEvent(getSessionTime(), "EndOfComfortZone")
+//                        //AWDEDUG
+//                        //showSessionGraph(currentSession, chartView)
 
-                    }
-                    enabled:true
-                }
+//                    }
+//                    enabled:true
+//                }
                 MenuButton{
                     id: note3
                     z:100
                     text: qsTr("Cntrct")
                     onClicked: {
                         //console.log("value=", Math.round(currentGauge.value))
-                        hrPlot.markEvent("Contraction")
+                        hrPlot.markEvent(getSessionTime(), "Contraction")
                     }
                     enabled:true
                 }

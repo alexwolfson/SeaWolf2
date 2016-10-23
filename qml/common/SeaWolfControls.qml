@@ -338,7 +338,8 @@ CircularGauge {
                         run.nextStepName = nextGauge.gaugeName
                     }
                     else {
-                        // The session is over
+                        // The session is over markl the last event
+                        hrPlot.markEvent(gaugeName, run.sessionTime + 1)
                         sessionIsOver(nextGauge)
                         // show the session results
 
