@@ -151,7 +151,7 @@ Item {
         anchors.leftMargin: dp(10)
         enabled: type=="spinBox"
         visible: type=="spinBox"
-        width: dp(360)
+        width: dp(300)
         height: dp(60)
         from: sbfrom
         to:   sbto

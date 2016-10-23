@@ -212,16 +212,15 @@ SceneBase {
 
             //Label { text: qsTr("sessionName") }
             SeaWolfInput{ type:"str";   lbl: qsTr("sessionName");    sfv:"";        onResult: {sessionName=res}}
-            SeaWolfInput{ type:"int";   lbl: qsTr("numberOfCycles"); ifv:"6";       onResult: {numberOfCycles=parseInt(res)}}
+            //SeaWolfInput{ type:"int";   lbl: qsTr("numberOfCycles"); ifv:"6";       onResult: {numberOfCycles=parseInt(res)}}
             SeaWolfInput{ type:"spinBox";   lbl: qsTr("numberOfCycles"); sbv:6; sbfrom:1; sbto: 10; sbstep: 1;  onResult: {numberOfCycles=intRes}}
             SeaWolfInput{ id: rLast; type:"switch";lbl: qsTr("repeatLast");         onResult: {repeatLast=swYesNo}}
-            SeaWolfInput{ type:"int";   lbl: qsTr("minBreathTime");  ifv:"15";      onResult: {minBreathTime=parseInt(res)}}
-            SeaWolfInput{ id:breathDecrementEdit; type:"int";   lbl: qsTr("breathDecrement");ifv:"15";      onResult: {breathDecrement=parseInt(res)}}
-            SeaWolfInput{ type:"int";   lbl: qsTr("maxHoldTime");    ifv:"120";     onResult: {maxHoldTime=parseInt(res)}}
+            SeaWolfInput{ type:"spinBox";   lbl: qsTr("minBreathTime"); sbv:15; sbfrom:0; sbto: 180; sbstep: 5;  onResult: {minBreathTime=intRes}}
+            SeaWolfInput{ id:breathDecrementEdit; type:"spinBox";   lbl: qsTr("breathDecrement"); sbv:15; sbfrom:0; sbto: 60; sbstep: 5;  onResult: {holdIncrement=intRes}}
             SeaWolfInput{ type:"spinBox";   lbl: qsTr("maxHoldTime"); sbv:120; sbfrom:30; sbto: 600; sbstep: 5;  onResult: {maxHoldTime=intRes}}
-            SeaWolfInput{ id:holdIncrementEdit; type:"int";   lbl: qsTr("holdIncrement");  ifv:"15";      onResult: {holdIncrement=parseInt(res)}}
-            SeaWolfInput{ id:walkTimeEdit; type:"int";   lbl: qsTr("walkTime");       ifv:"120";     onResult: {walkTime=parseInt(res)}}
-            SeaWolfInput{ id:backTimeEdit; type:"int";   lbl: qsTr("walkBackTime");   ifv:"120";     onResult: {walkBackTime=parseInt(res)}}
+            SeaWolfInput{ id:holdIncrementEdit; type:"spinBox";   lbl: qsTr("holdIncrement"); sbv:15; sbfrom:0; sbto: 60; sbstep: 5;  onResult: {holdIncrement=intRes}}
+            SeaWolfInput{ id:walkTimeEdit; type:"spinBox";   lbl: qsTr("walkTime"); sbv:120; sbfrom:0; sbto: 600; sbstep: 5;  onResult: {walkTime=intRes}}
+            SeaWolfInput{ id:backTimeEdit; type:"spinBox";   lbl: qsTr("walkBackTime"); sbv:120; sbfrom:0; sbto: 600; sbstep: 5;  onResult: {walkBackTime=intRes}}
         }
 
     }
