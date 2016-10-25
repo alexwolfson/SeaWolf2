@@ -71,7 +71,7 @@ Rectangle{
 
     property bool canCreateSeriesFlag: true
     function demoHrm(){
-        demoModePulseTm = 1000
+        demoModePulseTm = 0 //1000
         console.log("demoModePulseTm = ", demoModePulseTm)
     }
 
@@ -135,21 +135,6 @@ Rectangle{
         firstStepEventToPlotNb   = -1;
     }
 
-    // TODO add check for the currentNm existence?
-    //    function getNextStepEventEnum(currentNm){
-    //        var nm
-    //        var nb
-    //        var stepEnum = myEventsNm2Enum[currentNm]
-    //        var eventTypesNb = runColors.length
-    //        nb = stepEnum < eventTypesNb -1 ? myEventsEnum2Nm[stepEnum] : 0
-    //        return myEventsEnum2Nm[nb]
-    //    }
-    function getNextStepEventEnum(stepEnum){
-        var nb
-        var stepEventTypesNb = runColors.length
-        nb = stepEnum < stepEventTypesNb -1 ? stepEnum + 1 : 0
-        return nb
-    }
 
     function getStepEventsNb(){
         var result = 0;
@@ -166,102 +151,6 @@ Rectangle{
         return result
     }
 
-    function getCanShowStepEventsNb(nb){
-        var result = 0;
-        if (currentSession.event[nb] === undefined){
-            return -1;
-        }
-
-        for (var i=nb; i < currentSession.event.length; i++){
-            var evt     = currentSession.event[i]
-            var eventName = myEventsEnum2Nm[evt[0]]
-            //listByName(this, "getStepEventNb", ["result", "eventName", "evt[1]"])
-            //only use events like brth, hold, walk, back to fill the pulse data
-            if (!(runColors[eventName] === undefined)){
-                result++;
-            }
-        }
-        return result
-    }
-
-    function getNextStepEventNb(nb){
-        if (getStepEventsNb() === 0){
-            return -1;
-        }
-
-        var result = -1;
-        for (var i = nb < 0 ? 0 : nb + 1;i < currentSession.event.length -1; i++ ){
-            var evt     = currentSession.event[i]
-            var eventName = myEventsEnum2Nm[evt[0]]
-            //only use events like brth, hold, walk, back to fill the pulse data
-            if (!(runColors[eventName] === undefined)){
-                result = i;
-                break;
-            }
-        }
-        return result
-    }
-
-    function getPrevStepEventNb(nb){
-        if (getStepEventsNb() === 0){
-            return -1;
-        }
-        var result = -1;
-        for ( var i = nb - 1; i >= 0; i-- ){
-            var evt     = currentSession.event[i]
-            var eventName = myEventsEnum2Nm[evt[0]]
-            //only use events like brth, hold, walk, back to fill the pulse data
-            if (!(runColors[eventName] === undefined)){
-                result = i;
-                break;
-            }
-        }
-        return result
-    }
-
-    function getStepEventStartTm(nb){
-        var prevNb = getPrevStepEventNb()
-        if ( prevNb === -1){
-            return 0;
-        }
-        return currentSession.event[prevNb][1];
-    }
-
-    function getPrevStepEventStartTm(nb){
-        var prevNb = getPrevStepEventNb()
-        if ( prevNb === -1){
-            return 0;
-        }
-        return getStepEventStartTm(prevNb);
-    }
-
-    function getPrevStepEventStopTm(nb){
-        return currentSession.event[nb][1];
-    }
-
-    function getNextStepEventStartTm(nb){
-        return currentSession.event[nb][1];
-    }
-
-    function getNextStepEventStopTm(nb){
-        var nextNb = getNextStepEventNb()
-        if ( nextNb === -1){
-            return currentSession.event.length -1;
-        }
-        return currentSession.event[nextNb][1];
-    }
-
-    function getLastStepEventNb(){
-        return getPrevStepEventNb(currentSession.event.length - 1)
-    }
-
-    // this function need to be modiifed if new series types are adde to the plot
-    // currently we have
-    // 1. pulse
-    // 2. press events
-    function getStepsAlreadyOnPlotNb (){
-        return currentChartView.count - 1
-    }
 
     //creates new series graph
     function setupCurrentSeries(){
@@ -408,6 +297,11 @@ Rectangle{
     function rangeSliderUpdate(){
         plotRangeControl.from = 0;
         plotRangeControl.to = currentSession.pulse.length
+        // fixing range slider handle position to the max range for the first time
+        // first time is recognized by the second.value === 0)
+        if (plotRangeControl.second.value === 0){
+            plotRangeControl.second.value = 10000
+        }
         plotRangeControl.first.visualPositionChanged()
         plotRangeControl.second.visualPositionChanged()
         currentChartView.update()
@@ -451,143 +345,10 @@ Rectangle{
             }
         }
         rangeSliderUpdate()
-//        plotRangeControl.from = 0;
-//        plotRangeControl.to = p_session.pulse.length
-//        plotRangeControl.first.visualPositionChanged()
-//        plotRangeControl.second.visualPositionChanged()
-//        currentChartView.update()
-
-    }
-
-    // currentGaugeName is passed if routine is called from the 1 sec timer
-    // in the case of the browsing previous sessions or zooming/shifting currentGaugeName is undefined
-    function showSessionGraphOld(p_session){
-        console.log("*** Enetered showSessionGraph ")
-        var currentGaugeName = "brth"
-        var lastPressEventTm = lastPressEventNb >= 0 ? p_session.event[lastPressEventNb][1]:0
-        //var currentStepEventStartTm = currentStepEventEnum >= 0 ? p_session.event[currentStepNb][1]:0
-        //var prevStepEventTm = prevStepEventNb >= 0 ? p_session.event[prevStepEventNb][1]:0
-        var hrMin = getSesssionHRMin(p_session);
-        var hrMax = getSesssionHRMax(p_session);
-        // var currentHrSeries
-        //  the relative to the step time
-
-        currentAxisY.min = (hrMin - 1);
-        currentAxisY.max = (hrMax + 1);
-        // if we are here for the very first time
-        if (firstStepEventToPlotNb < 0){
-            firstStepEventToPlotNb = getNextStepEventNb(-1)
-        }
-        currentStepAxisX.min  = firstStepEventToPlotNb < 0 ? 0 : p_session.event[firstStepEventToPlotNb][1]
-
-        // going over events. If we reach the end before going over all maxStepsOnPlot,
-        //    set currentStepAxisX.max to last pulse time
-        var i;
-        var canShowStepsOnPlot = Math.min(getCanShowStepEventsNb(firstStepEventToPlotNb), maxStepsOnPlot)
-        var lastStepEventToShowNb = firstStepEventToPlotNb
-        console.log("canShowStepsOnPlot = ", canShowStepsOnPlot, "lastStepEventToShowNb = ", lastStepEventToShowNb)
-        for (i = 0; (i < canShowStepsOnPlot) && (lastStepEventToShowNb >= 0); i++ ){
-            console.log("before: Nb ofEvents = ", p_session.event.length, "lastStepEventToShowNb = ", lastStepEventToShowNb)
-            currentStepAxisX.max = currentSession.event[lastStepEventToShowNb][1]
-            console.log("after: Nb ofEvents = ", p_session.event.length, "lastStepEventToShowNb = ", lastStepEventToShowNb)
-            lastStepEventToShowNb = getNextStepEventNb(lastStepEventToShowNb)
-        }
-        currentEventAxisX.min = currentStepAxisX.min
-        currentEventAxisX.max = currentStepAxisX.max
-
-        // going over events that are still not part of the plot
-        // if no step type events happened yet, the for loop will be skipped
-
-        if (firstStepEventToPlotNb >= 0){
-            var eventName
-            //listByName(this, "Before for loop", ["firstStepEventToPlotNb", "currentStepEventEnum", "canShowStepsOnPlot"])
-            console.log("showSessionGraph before i cycle: firstStepEventToPlotNb = ", firstStepEventToPlotNb, "lastStepEventToShowNb = ", lastStepEventToShowNb,
-                        /*"lastStepEventOnPlotTm = ", lastStepEventOnPlotTm,*/ "canShowStepsOnPlot = ", canShowStepsOnPlot)
-            for ( i = firstStepEventToPlotNb; (i >= 0) && (i < lastStepEventToShowNb); i++){
-
-                if (lastStepEventToShowNb < 0){
-                    eventName = myEventsEnum2Nm[0]
-                    lastStepEventOnPlotTm = 0 //p_session.event.length -1
-                    currentStepEventStartTm = 0
-                } else {
-                    var evt     = p_session.event[i]
-                    eventName = myEventsEnum2Nm[evt[0]]
-                    lastStepEventOnPlotTm = evt[1]
-                    currentStepEventStartTm = getStepEventStartTm(i)
-                }
-
-                console.log("showSessionGraph in i for loop: i =", i, "firstStepEventToPlotNb = ", firstStepEventToPlotNb, "lastStepEventToShowNb = ", lastStepEventToShowNb, "i = ", i,
-                            "canShowStepsOnPlot = ", canShowStepsOnPlot, "currentStepEventStartTm = ", currentStepEventStartTm, "lastStepEventOnPlotTm = ", lastStepEventOnPlotTm)
-                //prevStepEventTm = p_session.event[currentStepEventEnum][1]
-                //console.log("prevStepEventTm = ", prevStepEventTm, "currentStepEventEnum = ", currentStepEventEnum, "lastStepEventOnPlotTm = ", lastStepEventOnPlotTm)
-
-                //only use events like brth, hold, walk, back to fill the pulse data
-                if (!(runColors[eventName] === undefined)){
-                    //xToShow is an event time so we add new category (in reality just sting with time to stepAxisX
-                    xToShow = showAbsoluteTm? lastStepEventOnPlotTm:lastStepEventOnPlotTm - currentStepEventStartTm
-                    currentStepAxisX.append((xToShow + demoModePulseTm).toString(), lastStepEventOnPlotTm)
-                    if (currentHrSeries.color !== runColors[eventName]){
-                        currentHrSeries = currentChartView.createSeries(ChartView.SeriesTypeLine, "", currentStepAxisX, currentAxisY);
-                        currentHrSeries.color = runColors[eventName]
-                    }
-                    //console.log("prevStepEventTm = ", prevStepEventTm, "currentStepEventStartTm = ", currentStepEventStartTm, "lastStepEventOnPlotTm = ", lastStepEventOnPlotTm)
-                    currentStepEventStopTm = getStepEventStartTm(i)
-                    for (var j = currentStepEventStartTm; j <= currentStepEventStopTm; j++){
-                        currentHrSeries.append( j, currentSession.pulse[j])
-                    }
-                    lastPulseOnPlotTm = currentStepEventStopTm
-
-                }else{
-                    // non step (key press) events are only added to the plot. No need to remove labels
-                    if (eventName === "Contraction"){
-                        //currentView.chart().setAxisX(axisX, currentHrSeries);
-                        xToShow = showAbsoluteTm? lastStepEventOnPlotTm:lastStepEventOnPlotTm - currentStepEventStartTm
-                        currentEventAxisX.append((xToShow + demoModePulseTm).toString(), lastStepEventOnPlotTm)
-                        currentContractionSeries.append( lastStepEventOnPlotTm, p_session.pulse[lastStepEventOnPlotTm])
-                        console.log("event = ", eventName, "X = ", xToShow, "Y = ", p_session.pulse[lastStepEventOnPlotTm])
-
-                    }
-                    lastPressEventNb = i
-                }
-            }
-        }
-        //the last not fully shown lap if it exists
-        console.log("lastStepEventToShowNb = ", lastStepEventToShowNb)
-        if (lastStepEventToShowNb < 0){
-            lastStepEventOnPlotTm = 0 //p_session.event.length -1
-            currentGaugeName = "brth"
-        } else {
-            evt     = p_session.event[lastStepEventToShowNb]
-            lastStepEventOnPlotTm = evt[1]
-            currentGaugeName = myEventsEnum2Nm[getNextStepEventEnum(evt[0])]
-        }
-
-        console.log("showSessionGraph: after Last Step", "currentGaugeName = ", currentGaugeName, "lastStepEventOnPlotTm = ", lastStepEventOnPlotTm, "p_session.pulse.length = ", p_session.pulse.length)
-        if (lastStepEventOnPlotTm <= p_session.pulse.length){
-            lastPulseOnPlotTm = Math.max(lastPulseOnPlotTm, lastStepEventOnPlotTm)
-            currentStepHrSeries.color = runColors[currentGaugeName]
-
-            //            if (lastPulseOnPlotTm !== currentStepEventStartTm){
-            //                xToShow = showAbsoluteTm? lastPulseOnPlotTm:lastPulseOnPlotTm - currentStepEventStartTm
-            //                currentStepAxisX.remove((xToShow + demoModePulseTm).toString())
-            //            }
-
-            for (; lastPulseOnPlotTm < p_session.pulse.length; lastPulseOnPlotTm++){
-                currentStepHrSeries.append( lastPulseOnPlotTm , p_session.pulse[lastPulseOnPlotTm])
-                //console.log("lastPressEventTm=", lastPressEventTm, "p_session.pulse.length=", currentSession.pulse.length, "k=", k)
-            }
-
-            xToShow = showAbsoluteTm? lastPulseOnPlotTm:lastPulseOnPlotTm - currentStepEventStartTm
-            if (!(lastStepXLabel === "" )){
-                currentStepAxisX.remove(lastStepXLabel)
-            }
-
-            lastStepXLabel = (xToShow + demoModePulseTm).toString()
-            currentStepAxisX.append(lastStepXLabel, lastPulseOnPlotTm)
-        }
         currentChartView.title = p_session.sessionName + " " + p_session.when
-        currentChartView.update()
+
     }
+
 
     ChartView {
         id:chartView
@@ -656,8 +417,8 @@ Rectangle{
             width: dp(5)
             axisX:plotAxisX
             axisY:plotAxisY
-            XYPoint { x: 0;  y: 0 }
-            XYPoint { x: 50; y: 50 }
+//            XYPoint { x: 0;  y: 0 }
+//            XYPoint { x: 50; y: 50 }
         }
         ScatterSeries {
             id: contractionSeries
@@ -669,8 +430,8 @@ Rectangle{
             markerSize: dp(6)
             axisXTop: eventAxisX
             axisY:plotAxisY
-            XYPoint { x: 25;  y: 25 }
-            XYPoint { x: 50; y: 50 }
+//            XYPoint { x: 25;  y: 25 }
+//            XYPoint { x: 50; y: 50 }
         }
         Component.onCompleted:{
             console.log("In SeaWolfPlotComponent.onCompleted")
@@ -686,7 +447,7 @@ Rectangle{
         anchors.right:  chartView.right
         anchors.bottom: chartView.bottom
         from: 0
-        to:   50 //undefined === currentSession.pulse.length? 50 : currentSession.pulse.length
+        to:   0 //undefined === currentSession.pulse.length? 50 : currentSession.pulse.length
         stepSize: 1
         //first.value: 10
         //second.value: 50
@@ -738,54 +499,6 @@ Rectangle{
             }
         }
     }
-
-//    RowLayout {
-//        id: plotControls
-//        width:parent.width
-//        MenuButton {
-//            id: left
-//            text: "< "
-//            onClicked: {
-//                var tmpPrev =  getPrevStepEventNb(firstStepEventToPlotNb)
-//                if (tmpPrev > 0){
-//                    firstStepEventToPlotNb = tmpPrev
-//                }
-//                showSessionGraph(currentSession)
-//            }
-//        }
-//        MenuButton {
-//            id: x1
-//            text: " x1 "
-//            onClicked: { maxStepsOnPlot = 1; resetShow(); showSessionGraph(currentSession) }
-//        }
-//        MenuButton {
-//            id: x2
-//            text: " x2 "
-//            onClicked: { maxStepsOnPlot = 2; resetShow(); showSessionGraph(currentSession) }
-//        }
-//        MenuButton {
-//            id: x4
-//            text: " x4 "
-//            onClicked: { maxStepsOnPlot = 4; resetShow(); showSessionGraph(currentSession) }
-
-//        }
-//        MenuButton {
-//            id: xAll
-//            text: " x" + String.fromCharCode(0x221e) + " "  //infinity
-//            onClicked: { maxStepsOnPlot = 1000; init(); showSessionGraph(currentSession) }
-//        }
-//        MenuButton {
-//            id: right
-//            text: " >"
-//            onClicked: {
-//                var tmpNb =  getNextStepEventNb(firstStepEventToPlotNb)
-//                if (tmpNb > 0){
-//                    firstStepEventToPlotNb = tmpNb
-//                }
-//                showSessionGraph(currentSession)
-//            }
-//        }
-//    }
 
 } //End Of Plot
 
