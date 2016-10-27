@@ -499,6 +499,56 @@ Rectangle{
             }
         }
     }
+    Slider {
+        id: discomfortSlider
+        //anchors.left:   chartView.left
+        anchors.right:  chartView.right
+        anchors.rightMargin: discomfortSliderHandle.width/2
+        anchors.top: chartView.top
+        anchors.bottom: chartView.bottom
+        value: 0.5
+        from:0
+        to:10
+        implicitWidth: dp(20)
+        orientation:Qt.Vertical
+//        background: Rectangle {
+//            x: discomfortSlider.leftPadding
+//            y: discomfortSlider.topPadding + discomfortSlider.availableHeight / 2 - height / 2
+//            implicitHeight: dp(200)
+//            implicitWidth: dp(20)
+//            height: discomfortSlider.availableHeight
+//            width: implicitWidth
+//            radius: dp(4)
+//            //color: "#bdbebf"
 
+//            Rectangle {
+//                height: discomfortSlider.visualPosition * parent.height
+//                width: parent.width
+//                color: "#21be2b"
+//                radius: 2
+//                gradient: Gradient {
+//                    GradientStop {
+//                        position: 0.00;
+//                        color: "blue";
+//                    }
+//                    GradientStop {
+//                        position: 1.00;
+//                        color: "red";
+//                    }
+//                }
+//            }
+//        }
+
+        handle: Rectangle {
+            id:discomfortSliderHandle
+            y: discomfortSlider.bottomPadding + discomfortSlider.visualPosition * (discomfortSlider.availableHeight - height)
+            x: discomfortSlider.leftPadding + discomfortSlider.availableWidth / 2 - width / 2
+            implicitWidth: dp(120)
+            implicitHeight: dp(120)
+            radius: dp(60)
+            color: discomfortSlider.pressed ? "red" : "orange"
+            border.color: "#bdbebf"
+        }
+   }
 } //End Of Plot
 

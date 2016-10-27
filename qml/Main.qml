@@ -105,6 +105,7 @@ ApplicationWindow {
 //                anchors.fill: parent
 //            }
 
+        TabButton { id: prefTab; text: qsTr("Pref")}
         TabButton { id: confTab; text: qsTr("Conf")}
         TabButton { id: runTab; text: qsTr("Run")}
         TabButton { id: hrmTab; text: qsTr("HRM")}
@@ -116,7 +117,7 @@ ApplicationWindow {
         id:stackLayout
         width: parent.width
         currentIndex: tabView.currentIndex
-
+        ConfigPreferencesScene{ id: pref }
         ConfigSeriesScene{ id:conf; }
         RunSessionScene{ id:run;    }
         HrmSetupScene{  id:hrm;     }

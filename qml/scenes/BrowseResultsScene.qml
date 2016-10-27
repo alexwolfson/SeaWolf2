@@ -36,7 +36,7 @@ SceneBase{
                         height: dp(60)
                         border.color: "black"
                         Text {
-                            text: fileName
+                            text: fileIsDir ? fileName : fileName + "(" + fileSize + ")"
                             anchors.leftMargin: dp(20)
                             font.pixelSize: dp(30)
                             color:folderModel.isFolder(index)? "red":"black"

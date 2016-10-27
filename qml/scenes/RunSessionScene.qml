@@ -53,9 +53,9 @@ SceneBase {
     property bool   noWalk: true
     property string triggerMark: ""
     property string nextStepName: "brth"
-//    function gotMarkSignal(name){
-//        triggerMark = name
-//    }
+    //    function gotMarkSignal(name){
+    //        triggerMark = name
+    //    }
 
 
     function getSessionTime(){
@@ -459,55 +459,166 @@ SceneBase {
 
             } // End of gauges
 
-            ColumnLayout{
+            Rectangle{
                 id:col2
+                color: "transparent"
+                //border.color: "black"
                 Layout.preferredHeight: runSessionScene.height / 3
-                Layout.preferredWidth: runSessionScene.width/4
-                Layout.alignment: Qt.AlignHCenter
+                Layout.preferredWidth: runSessionScene.width/4 - dp(20)
+                Layout.alignment: Qt.AlignRight
 
-                //anchors.horizontalCenter: parent.horizontalCenter
-                spacing:dp(8)
-//                MenuButton{
-//                    id: note1
-//                    z:100
-//                    text: qsTr("-Medit")
-//                    onClicked: {
-//                        //hrPlot.currentSession.event.push([myEventsNm2Enum["EndOfMeditativeZone"], Math.round(currentGauge.value)])
-//                        hrPlot.markEvent(getSessionTime(), "EndOfMeditativeZone")
-//                    }
-//                    enabled:true
-//                }
-//                MenuButton{
-//                    id: note2
-//                    z:100
-//                    text: qsTr("-Cmfrt")
-//                    onClicked: {
-//                        //console.log("value=", Math.round(currentGauge.value))
-//                        hrPlot.markEvent(getSessionTime(), "EndOfComfortZone")
-//                        //AWDEDUG
-//                        //showSessionGraph(currentSession, chartView)
+//                Slider {
+//                    id: discomfortSlider
+//                    value: 0.5
+//                    from:0
+//                    to:10
+//                    implicitHeight: dp(20)
+//                    background: Rectangle {
+//                        x: discomfortSlider.leftPadding
+//                        y: discomfortSlider.topPadding + discomfortSlider.availableHeight / 2 - height / 2
+//                        implicitWidth: dp(200)
+//                        implicitHeight: dp(20)
+//                        width: discomfortSlider.availableWidth
+//                        height: implicitHeight
+//                        radius: dp(4)
+//                        //color: "#bdbebf"
 
+//                        Rectangle {
+//                            width: discomfortSlider.visualPosition * parent.width
+//                            height: parent.height
+//                            color: "#21be2b"
+//                            radius: 2
+//                            gradient: Gradient {
+//                                GradientStop {
+//                                    position: 0.00;
+//                                    color: "blue";
+//                                }
+//                                GradientStop {
+//                                    position: 1.00;
+//                                    color: "red";
+//                                }
+//                            }
+//                        }
 //                    }
-//                    enabled:true
+
+//                    handle: Rectangle {
+//                        x: discomfortSlider.leftPadding + discomfortSlider.visualPosition * (discomfortSlider.availableWidth - width)
+//                        y: discomfortSlider.topPadding + discomfortSlider.availableHeight / 2 - height / 2
+//                        implicitWidth: dp(120)
+//                        implicitHeight: dp(120)
+//                        radius: dp(60)
+//                        color: discomfortSlider.pressed ? "red" : "orange"
+//                        border.color: "#bdbebf"
+//                    }
 //                }
-                MenuButton{
-                    id: note3
-                    z:100
-                    text: qsTr("Cntrct")
-                    onClicked: {
-                        //console.log("value=", Math.round(currentGauge.value))
-                        hrPlot.markEvent(getSessionTime(), "Contraction")
-                    }
-                    enabled:true
+                //                Slider{
+                //                    id: discomfortSlider
+                //                    enabled: true
+                //                    visible: true
+                //                    //anchors.left:spinBox.right
+                //                    //anchors.leftMargin: dp(10)
+                //                    //enabled: type=="spinBox"
+                //                    //visible: type=="spinBox"
+                //                    anchors.horizontalCenter: parent.horizontalCenter
+                //                    width: dp(20)
+                //                    height: parent.height
+                //                    //Layout.preferredHeight: parent.height
+                //                    //Layout.preferredWidth:  dp(20)
+                //                    //Layout.alignment: Qt.AlignHCenter
+                //                    orientation: Qt.Vertical
+                //                    from: 0
+                //                    to:   10
+                //                    stepSize: 1
+                //                    value:    3
+                //                    //snapMode: Slider.SnapAlways
+                //                    background:  Rectangle{
+                //                        //anchors.right: parent.right
+                //                        //height:parent.height
+                //                        //radius: dp(20)
+
+                //                        //width:dp(40)
+                //                        gradient: Gradient {
+                //                            GradientStop {
+                //                                position: 0.00;
+                //                                color: "blue";
+                //                            }
+                //                            GradientStop {
+                //                                position: 1.00;
+                //                                color: "red";
+                //                            }
+                //                        }
+                //                        Text{
+                //                            anchors.fill: parent
+                //                            color:"white"
+                //                            text: qsTr("Discomfort Level")
+                //                            verticalAlignment: Text.AlignVCenter
+                //                            rotation: -90
+                //                            horizontalAlignment: Text.AlignHCenter
+                //                            //anchors.verticalCenter: parent.verticalCenter
+                //                        }
+
+                //                    }
+
+                //                    //For some reason the visual position requires a manual snap, even when snapMode is set
+                //                    //onVisualPositionChanged: { var v1 = Math.round(from + (to - from ) * visualPosition); sbv = v1 -v1 % stepSize;
+                //                        /*console.log("sbv = ", Math.round(from + (to - from ) * visualPosition))*/
+                //                    //}
+                //                    handle: Rectangle{
+                //                        id: contr
+                //                        color: "orange"
+                //                        width: dp(80)
+                //                        height: dp(80)
+                //                        radius: dp(24)
+                //                        //enabled: true
+                //                        anchors.horizontalCenter: parent.horizontalCenter
+                //                        z:100
+                //                        Image {
+                //                            id: seaWolHandleImage
+                //                            source: "../../assets/img/SeaWolf.png"
+                //                            anchors.horizontalCenter: parent.horizontalCenter
+                //                            width: parent.width
+                //                            height:width
+                //                        }
+
+                //                        //                        text: qsTr("Cntrct")
+                ////                        onClicked: {
+                ////                            //console.log("value=", Math.round(currentGauge.value))
+                ////                            hrPlot.markEvent(getSessionTime(), "Contraction")
+                ////                        }
+                ////                        enabled:true
+                //                    }
+
+
+                ////                        Rectangle {
+                ////                                x: parent.leftPadding + parent.first.visualPosition * (parent.availableWidth - width)
+                ////                                y: parent.topPadding + parent.availableHeight / 2 - height / 2
+                ////                                implicitWidth: dp(60)
+                ////                                implicitHeight: dp(60)
+                ////                                radius: dp(30)
+                ////                                //color: parent.first.pressed ? "#f0f0f0" : "#f6f6f6"
+                ////                                color: "orange"
+                ////                                border.color: "#bdbebf"
+                ////                                Text {
+                ////                                    id: leftRangeSliderText
+                ////                                    anchors.centerIn: parent
+                ////                                    font.pixelSize: dp (30)
+                ////                                    elide: Text.ElideMiddle
+                ////                                    //color: "#F0EBED"
+                ////                                    color: "black"
+                ////                                    text: "Contraction"
+                ////                                }
+                ////                    }
+                //                    //onValueChanged: {sbv = value; intRes=value; result()}
+                //                }
+
+                //            }
+                Component.onCompleted:{
+                    currentWalkControl = walkControl
+                    currentGauge       = gaugeBrth
+                    currentHrPlot      = hrPlot
                 }
-            }
-            Component.onCompleted:{
-                currentWalkControl = walkControl
-                currentGauge       = gaugeBrth
-                currentHrPlot      = hrPlot
-            }
 
+            }
         }
     }
-}
-
+ }

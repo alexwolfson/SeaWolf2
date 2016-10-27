@@ -9,16 +9,16 @@ Rectangle {
     width: buttonText.width + paddingHorizontal * 2
     height: buttonText.height + paddingVertical * 2
 
-    color: mouseArea.pressed ? "#3265A7" : "#3870BA"
-
-    border.color: "#F0EBED"
+    color: mouseArea.pressed ? "red" : "orange" //"#3265A7" : "#3870BA"
+    border.color: "#bdbebf"
+    //border.color: "#F0EBED"
     border.width: dp(5)
     //radius: 10
     //color: "#e9e9e9"
     //border.color: "black"
-    opacity: 0.6
+    opacity: 1.0 //0.6
     // round edges
-    radius: dp(10)
+    radius: dp(20)
 
     // the horizontal margin from the Text element to the Rectangle at both the left and the right side.
     property int paddingHorizontal: dp(10)
@@ -37,7 +37,7 @@ Rectangle {
         font.pixelSize: dp (50)
         elide: Text.ElideMiddle
         //color: "#F0EBED"
-        color: "white"
+        color: "black" //"white"
     }
 
     MouseArea {
@@ -45,8 +45,8 @@ Rectangle {
         anchors.fill: parent
         hoverEnabled: true
         onClicked: button.clicked()
-        onPressed: button.opacity = 0.4
-        onReleased: button.opacity = 0.6
+        onPressed: button.opacity =  1.0
+        onReleased: button.opacity = 1.0
     }
 //    DropShadow {
 //        anchors.fill: button
