@@ -339,13 +339,13 @@ Rectangle{
                 // TODO: consolidate and make SeaWolfPlot self sofficient?
                 run.nextStepName = myEventsEnum2Nm[p_session.event[eventNb][0]]
                 lastStepEventTm = tmStart
+               //markEvent(myEventsEnum2Nm[p_session.event[eventNb][0]], tmStop)
+               currentStepHrSeries = currentChartView.createSeries(ChartView.SeriesTypeLine, tmStop.toString(), currentStepAxisX, currentAxisY)
             }
-            //markEvent(myEventsEnum2Nm[p_session.event[eventNb][0]], tmStop)
-            currentStepHrSeries = currentChartView.createSeries(ChartView.SeriesTypeLine, tmStop.toString(), currentStepAxisX, currentAxisY)
 
             for (var tm = tmStart; tm <= tmStop; tm ++){
                 addPointToPlot(tm, p_session.pulse[tm])
-                discomfortSeries.append(tm, p_session.discomfort[tm])
+                currentDiscomfortSeries.append(tm, p_session.discomfort[tm])
 
             }
         }
