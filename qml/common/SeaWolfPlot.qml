@@ -27,48 +27,47 @@ Rectangle{
                 "when":"ChangeMe", //Qt.formatDateTime(new Date(), "yyyy-MM-dd-hh-mm-ss"),
                 "eventNames":myEventsNm2Enum,
                 "event":[],
-                "pulse":[]
+                "pulse":[],
+                "discomfort":[]
     }
     //property LineSeries    currentHrSeries
     property LineSeries    currentStepHrSeries
+    property LineSeries    currentDiscomfortSeries
     property ScatterSeries currentContractionSeries: contractionSeries
     property ChartView     currentChartView
     property CategoryAxis  currentStepAxisX
     property CategoryAxis  currentEventAxisX
     property ValueAxis     currentAxisY
+    property real discomfortValue: 0.0 //discomfortSlider.from + (discomfortSlider.to - discomfortSlider.from) * discomfortSlider.visualPosition
     //property int           currentStepEventEnum
-    property real minHr:10
-    property real maxHr:150
-    property int  sessionDuration:0
-    property int  lastPressEventNb:-1
-    property int  currentStepEventNb:-1
-    property int  currentStepEventEnum:-1
-    property int  currentStepEventStartTm: -1
-    property int  currentStepEventStopTm: -1
-    property int  lastPulseOnPlotTm:-1
-    property int  lastStepEventToShowNb: -1
-    property int  lastStepEventOnPlotTm: -1
-    property int  lastStepEventTm: -1
-    property string  lastStepEventNm: "brth"
+    property real  minHr:10
+    property real  maxHr:150
+    property int   sessionDuration:0
+    property int   lastPressEventNb:-1
+    property int   currentStepEventNb:-1
+    property int   currentStepEventEnum:-1
+    property int   currentStepEventStartTm: -1
+    property int   currentStepEventStopTm: -1
+    property int   lastPulseOnPlotTm:-1
+    property int   lastStepEventToShowNb: -1
+    property int   lastStepEventOnPlotTm: -1
+    property int   lastStepEventTm: -1
+    property string lastStepEventNm: "brth"
     // maximal number of steps on plot
-    property int maxStepsOnPlot:1000
-    property int firstStepEventToPlotNb:-1
+    property int  maxStepsOnPlot:1000
+    property int  firstStepEventToPlotNb:-1
     property string lastStepXLabel: ""
-    property int    xToShow: 0  //TODO: for switching to showing
-    property int  demoModePulseTm:0
-    property bool showAbsoluteTm:true //TODO: for switching to showing
+    property int   xToShow: 0  //TODO: for switching to showing
+    property int   demoModePulseTm:0
+    property bool  showAbsoluteTm:true //TODO: for switching to showing
     //  the relative to the step time
-    property font lblsFnt:Qt.font({
+    property font  lblsFnt:Qt.font({
                                       //family: 'Encode Sans',
                                       //weight: Font.Black,
                                       italic: true,
                                       //pixelSize: dp(10)
                                       //pointSize: dp(15)
                                   })
-    property Rectangle zoomRect:  Rectangle {
-        //id: zoomRect
-    }
-
     property bool canCreateSeriesFlag: true
     function demoHrm(){
         demoModePulseTm = 0 //1000
@@ -122,6 +121,7 @@ Rectangle{
         resetShow()
         currentSession.event=[]
         currentSession.pulse=[]
+        currentSession.discomfort = []
         sessionDuration    = 0
         lastPressEventNb   = -1
         currentStepEventEnum    = -1
@@ -158,6 +158,9 @@ Rectangle{
         //currentHrSeries.color = runColors[currentGauge.gaugeName]
         currentContractionSeries = currentChartView.createSeries(ChartView.SeriesTypeScatter, "contraction", currentEventAxisX, currentAxisY);
         currentStepHrSeries = currentChartView.createSeries(ChartView.SeriesTypeLine, "0", currentStepAxisX, currentAxisY)
+        currentDiscomfortSeries    = currentChartView.createSeries(ChartView.SeriesTypeLine, "0", currentStepAxisX, discomfortAxisY)
+        currentDiscomfortSeries.color = "red"
+        currentDiscomfortSeries.width = dp(5)
     }
 
     function listByNameLocal(that, msg, nameList){
@@ -342,6 +345,8 @@ Rectangle{
 
             for (var tm = tmStart; tm <= tmStop; tm ++){
                 addPointToPlot(tm, p_session.pulse[tm])
+                discomfortSeries.append(tm, p_session.discomfort[tm])
+
             }
         }
         rangeSliderUpdate()
@@ -409,6 +414,15 @@ Rectangle{
             gridLineColor:"blue"
             tickCount:6
         }
+        ValueAxis {
+            id: discomfortAxisY
+            labelFormat:"%.0f"
+            //labelsFont: Qt.font({pixelSize : sp(10)})
+            min: 0
+            max: 10
+            gridLineColor:"grey"
+            tickCount:10
+         }
 
         LineSeries {
             id: hrSeries
@@ -417,6 +431,16 @@ Rectangle{
             width: dp(5)
             axisX:plotAxisX
             axisY:plotAxisY
+//            XYPoint { x: 0;  y: 0 }
+//            XYPoint { x: 50; y: 50 }
+        }
+        LineSeries {
+            id: discomfortSeries
+            name: qsTr("Discomfort")
+            opacity: 1
+            width: dp(5)
+            axisX:plotAxisX
+            axisY:discomfortAxisY
 //            XYPoint { x: 0;  y: 0 }
 //            XYPoint { x: 50; y: 50 }
         }
@@ -439,6 +463,7 @@ Rectangle{
             currentStepAxisX  = plotAxisX
             currentAxisY      = plotAxisY
             currentEventAxisX = eventAxisX
+            currentDiscomfortSeries  = discomfortSeries
         }
     }
     RangeSlider{
@@ -455,9 +480,11 @@ Rectangle{
         second.onValueChanged: {currentStepAxisX.max = second.value}
         //For some reason the visual position change requires a manual value setup. A bug or wrong usage?
         first.onVisualPositionChanged:  { var v1 = Math.round(from +  (to -  from )  * first.visualPosition);  first.value =  v1;
-                                         console.log(" In rangeSlider: first.from, to, value, visualPosition = " , from, to, first.value, first.visualPosition)}
+            //                             console.log(" In rangeSlider: first.from, to, value, visualPosition = " , from, to, first.value, first.visualPosition)
+            }
         second.onVisualPositionChanged: { var v1 = Math.round(from + (to - from ) * second.visualPosition); second.value = v1;
-                                         console.log(" In rangeSlider: second.from, to, value, visualPoition = " , from, to, second.value, second.visualPosition)}
+            //                             console.log(" In rangeSlider: second.from, to, value, visualPoition = " , from, to, second.value, second.visualPosition)
+            }
         first.handle: Rectangle {
             x: parent.leftPadding + parent.first.visualPosition * (parent.availableWidth - width)
             y: parent.topPadding + parent.availableHeight / 2 - height / 2
@@ -503,41 +530,49 @@ Rectangle{
         id: discomfortSlider
         //anchors.left:   chartView.left
         anchors.right:  chartView.right
-        anchors.rightMargin: discomfortSliderHandle.width/2
         anchors.top: chartView.top
         anchors.bottom: chartView.bottom
-        value: 0.5
+        anchors.margins: {
+            top:   chartView.margins.top;
+            right: discomfortSliderHandle.width/2;
+            bottom:chartView.margins.bottom
+        }
+        value: 0.0
         from:0
         to:10
-        implicitWidth: dp(20)
+        //stepSize: 0.1
+        implicitWidth: dp(40)
         orientation:Qt.Vertical
-//        background: Rectangle {
-//            x: discomfortSlider.leftPadding
-//            y: discomfortSlider.topPadding + discomfortSlider.availableHeight / 2 - height / 2
-//            implicitHeight: dp(200)
-//            implicitWidth: dp(20)
-//            height: discomfortSlider.availableHeight
-//            width: implicitWidth
-//            radius: dp(4)
-//            //color: "#bdbebf"
+        onPositionChanged:  { var v1 = from +  (to -  from )  * position;  value =  v1; discomfortValue = v1;
+                                                 console.log(" In discomfortSlider: from, to, value, position = " , from, to, value, position)
+                    }
+        background:Rectangle {
+            height: parent.height
+            width: parent.width
+            //color: "#21be2b"
+            radius: dp(8)
+            gradient: Gradient {
+                GradientStop {
+                    position: 1.00;
+                    color: "blue";
+                }
+                GradientStop {
+                    position: 0.00;
+                    color: "red";
+                }
+            }
+            Text{
+                anchors.fill: parent
+                anchors.margins: dp(2)
+                color:"white"
+                text: qsTr("Discomfort Level")
+                verticalAlignment: Text.AlignVCenter
+                rotation: -90
+                horizontalAlignment: Text.AlignHCenter
+                //anchors.verticalCenter: parent.verticalCenter
+            }
 
-//            Rectangle {
-//                height: discomfortSlider.visualPosition * parent.height
-//                width: parent.width
-//                color: "#21be2b"
-//                radius: 2
-//                gradient: Gradient {
-//                    GradientStop {
-//                        position: 0.00;
-//                        color: "blue";
-//                    }
-//                    GradientStop {
-//                        position: 1.00;
-//                        color: "red";
-//                    }
-//                }
-//            }
-//        }
+        }
 
         handle: Rectangle {
             id:discomfortSliderHandle
@@ -546,7 +581,8 @@ Rectangle{
             implicitWidth: dp(120)
             implicitHeight: dp(120)
             radius: dp(60)
-            color: discomfortSlider.pressed ? "red" : "orange"
+            opacity: discomfortSlider.pressed ? 0.8 : 1.0
+            color: "orange"
             border.color: "#bdbebf"
         }
    }

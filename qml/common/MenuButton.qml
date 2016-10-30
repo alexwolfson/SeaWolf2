@@ -9,7 +9,7 @@ Rectangle {
     width: buttonText.width + paddingHorizontal * 2
     height: buttonText.height + paddingVertical * 2
 
-    color: mouseArea.pressed ? "red" : "orange" //"#3265A7" : "#3870BA"
+    color: "orange" //mouseArea.pressed ? "red" : "orange" //"#3265A7" : "#3870BA"
     border.color: "#bdbebf"
     //border.color: "#F0EBED"
     border.width: dp(5)
@@ -45,7 +45,7 @@ Rectangle {
         anchors.fill: parent
         hoverEnabled: true
         onClicked: button.clicked()
-        onPressed: button.opacity =  1.0
+        onPressed: button.opacity =  0.8
         onReleased: button.opacity = 1.0
     }
 //    DropShadow {
