@@ -161,6 +161,7 @@ Rectangle{
         currentDiscomfortSeries    = currentChartView.createSeries(ChartView.SeriesTypeLine, "0", currentStepAxisX, discomfortAxisY)
         currentDiscomfortSeries.color = "red"
         currentDiscomfortSeries.width = dp(5)
+        currentDiscomfortSeries.axisYRight = discomfortAxisY;
     }
 
     function listByNameLocal(that, msg, nameList){
@@ -440,7 +441,7 @@ Rectangle{
             opacity: 1
             width: dp(5)
             axisX:plotAxisX
-            axisY:discomfortAxisY
+            axisYRight:discomfortAxisY
 //            XYPoint { x: 0;  y: 0 }
 //            XYPoint { x: 50; y: 50 }
         }
@@ -534,7 +535,7 @@ Rectangle{
         anchors.bottom: chartView.bottom
         anchors.margins: {
             top:   chartView.margins.top;
-            right: discomfortSliderHandle.width/2;
+            //right: -discomfortSliderHandle.width/2;
             bottom:chartView.margins.bottom
         }
         value: 0.0
@@ -550,6 +551,7 @@ Rectangle{
             height: parent.height
             width: parent.width
             //color: "#21be2b"
+            opacity:0.6
             radius: dp(8)
             gradient: Gradient {
                 GradientStop {

@@ -149,7 +149,15 @@ ApplicationWindow {
                         Qt.quit()
                     }
                 }
+
             }
+            Image {
+               source: "../../assets/img/SeaWolf.png"
+               anchors.horizontalCenter: parent.horizontalCenter
+               //anchors.bottom: parent.bottom
+               width: dp(150)
+               height:width
+           }
         }
     }
     Loader {

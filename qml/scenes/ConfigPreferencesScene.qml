@@ -18,7 +18,7 @@ SceneBase {
     property  bool thirtySecSignal
     property  bool tenSecSignal
     property  var  language
-//    property
+    //    property
     //property alias numberOfCycles:nbOfCycles.result
     // had trouble with multidimension arrays in javascript function, so stated to use 1 dimension
     function get2DimIndex(dim0, dim1){
@@ -36,7 +36,7 @@ SceneBase {
         //flags: Qt.Dialog
         //modality: Qt.ApplicationModal
 
-         ColumnLayout {
+        ColumnLayout {
             //z:100
             id: mainLayout
             //columns: 2
@@ -51,9 +51,9 @@ SceneBase {
             }
             RowLayout {
                 id: buttonsRow
-//                anchors.bottom: parent.bottom
-//                anchors.left: parent.left
-//                anchors.right: parent.right
+                //                anchors.bottom: parent.bottom
+                //                anchors.left: parent.left
+                //                anchors.right: parent.right
                 spacing: dp(3)
 
                 MenuButton {
@@ -72,7 +72,7 @@ SceneBase {
                     onClicked: {
                         //AWDEBUG
                         root.listPropertiesByName("ConfigSeriesScene attached properites list", configPreferencesScene, ["userName", "music", "oneMinSignal", "thirtySecSignal",
-                                   "tenSecSignal", "language"])
+                                                                                                                         "tenSecSignal", "language"])
                         //console.log("minBreathTime =", minBreathTime, configSeriesScene["minBreathTime"], this["configSeriesScene"])
 
                         //root.listProperty(this)
@@ -89,17 +89,15 @@ SceneBase {
             SeaWolfInput{ id: timer1min; type:"switch";lbl: qsTr("oneMinTimer");        onResult: {oneMinSignal=swYesNo}}
             //SeaWolfInput{ type:"int";   lbl: qsTr("numberOfCycles"); ifv:"6";       onResult: {numberOfCycles=parseInt(res)}}
             //SeaWolfInput{ type:"spinBox";   lbl: qsTr("numberOfCycles"); sbv:6; sbfrom:1; sbto: 10; sbstep: 1;  onResult: {numberOfCycles=intRes}}
+            Image {
+                source: "../../assets/img/SeaWolf.png"
+                //anchors.horizontalCenter: parent.horizontalCenter
+                anchors.bottom: parent.bottom
+                anchors.right: parent.right
+                width: dp(150)
+                height:width
+            }
         }
-
     }
-//    Image {
-//        source: "../../assets/img/SeaWolf.png"
-//        width: dp(160)
-//        height: dp(160)
-////        anchors.right: parent.right
-////        anchors.rightMargin: dp(10)
-//        anchors.bottom: parent.bottom
-//        anchors.bottomMargin: dp(10)
-//    }
 
 }// end of Scene

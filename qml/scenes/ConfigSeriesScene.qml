@@ -221,17 +221,15 @@ SceneBase {
             SeaWolfInput{ id:holdIncrementEdit; type:"spinBox";   lbl: qsTr("holdIncrement"); sbv:15; sbfrom:0; sbto: 60; sbstep: 5;  onResult: {holdIncrement=intRes}}
             SeaWolfInput{ id:walkTimeEdit; type:"spinBox";   lbl: qsTr("walkTime"); sbv:120; sbfrom:0; sbto: 600; sbstep: 5;  onResult: {walkTime=intRes}}
             SeaWolfInput{ id:backTimeEdit; type:"spinBox";   lbl: qsTr("walkBackTime"); sbv:120; sbfrom:0; sbto: 600; sbstep: 5;  onResult: {walkBackTime=intRes}}
+            Image {
+               source: "../../assets/img/SeaWolf.png"
+               anchors.right: parent.right
+               anchors.bottom: parent.bottom
+               width: dp(150)
+               height:width
+           }
         }
 
     }
-//    Image {
-//        source: "../../assets/img/SeaWolf.png"
-//        width: dp(160)
-//        height: dp(160)
-////        anchors.right: parent.right
-////        anchors.rightMargin: dp(10)
-//        anchors.bottom: parent.bottom
-//        anchors.bottomMargin: dp(10)
-//    }
 
 }// end of Scene
