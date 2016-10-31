@@ -36,33 +36,46 @@ SceneBase{
                    font-size: small;
                    }
                    .auto-style3 {
-                   background-color: #FFFF00;
+                   <!--background-color: #FFFF00;-->
                    }
                   </style>
                   </head>
 
                   <body>
-                   <p><b>About The application</b><br/></p>
+                   <p><b>About the application</b><br/></p>
                    <span class="auto-style3">
                 This project is created to provide <br>
                  an open source appliation<br> for
                 the different aspects of Apnea training.
-                <br>Qt/QML 5.5+ is used as a developmet toolkit.<br>
+                <br>Qt/QML 5.7+ is used as a developmet toolkit.<br>
                 I used this app as a way to become proficient with<br>
-                 QML/Qt development
+                 QML/Qt development.
+                 <br >The source code is located at <br>
+                 <a href=\"https://github.com/alexwolfson/SeaWolf2/tree/TabVersion"> GitHub</a><br>
+
                 <p><b> Apnea influences </b></p>
                    <span class="auto-style3">
-                <br>
-                <i>Nick Fazah</i> <br>One of the owners of the
+                <br><br>
+                <i>Nick Fazah</i>
+                <br><br>One of the owners of the
                 <br><a href=\"http://www.ecdivers.com\">East Cost divers</a><br>
                 and SSI international training director.<br>
-                Nick was able to create a freediving comunity in New England (USA)<br>
-                   which is located very far from the tropical waters <br>
+                Nick was able to create an active  freediving comunity <br>
+                in New England (USA) which is located very far <br>
+                from the tropical waters <br>
                 <br><i>Aharon Solomons</i>
+                <br><br>From
                 <br><a href=\"http://freedivers.net">freedivers.net</a> <br>
                 with whom I trained for several days in Eilat<br>
-                and whos concepts of Apnea walk <br>and empty longs training inspired me <br>
-                to start that application
+                and whos concepts of Apnea walk <br>
+                and empty longs training inspired me <br>
+                to start that application<br><br>
+                <i>Alexander Bubenchikov</i>
+                <br>
+                <br><a href=\"https://www.facebook.com/a.bubenchikov">See his facebook page</a><br>
+                <br> His seminar in Massachusetts USA explained to me <br>
+                 some of my problems with statics<br>
+                 and inspired me to add ability to record discomfort level to the app
                    </span>
                    <hr />
                   </body>
