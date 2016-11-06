@@ -232,19 +232,12 @@ SceneBase {
                 // update heart rate information
                 var hrValue = Math.round(heartRate.hr)
                 hrPlot.currentSession.pulse.push(hrValue)
-                hrPlot.addPointToPlot(sessionTime, hrValue)
-                hrPlot.rangeSliderUpdate()
+                hrPlot.timerUpdate(sessionTime, hrValue)
                 if (triggerMark !== ""){
-                    hrPlot.markEvent(triggerMark, sessionTime)
+                    hrPlot.markEvent(triggerMark, sessionTime -1)
                     triggerMark = ""
                     //hrPlot.addPointToPlot(sessionTime, Math.round(heartRate.hr))
                 }
-
-                // update discomfort information
-                var disValue = hrPlot.discomfortValue
-                hrPlot.currentSession.discomfort.push(disValue)
-                hrPlot.currentDiscomfortSeries.append(sessionTime, disValue)
-                //hrPlot.addPointToPlot(sessionTime, disValue)
 
             }
         }

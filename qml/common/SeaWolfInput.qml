@@ -44,7 +44,7 @@ Item {
         background: Rectangle {
             radius: dp(20)
             color: "#F0EBEB"
-            implicitWidth: dp(240)
+            implicitWidth: dp(120)
             implicitHeight: dp(60)
             border.color: "#000000"
             border.width: dp(1)
@@ -74,7 +74,7 @@ Item {
         background: Rectangle {
             radius: dp(20)
             color: "#F0EBEB"
-            implicitWidth: dp(240)
+            implicitWidth: dp(400)
             implicitHeight: dp(60)
             border.color: "#000000"
             border.width: dp(1)

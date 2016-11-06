@@ -84,5 +84,6 @@
         <file>qml/scenes/BrowseResultsScene.qml</file>
         <file>qml/common/SeaWolfPlot.qml</file>
         <file>qml/scenes/ConfigPreferencesScene.qml</file>
+        <file>qml/common/SeaWolfFiles.qml</file>
     </qresource>
 </RCC>

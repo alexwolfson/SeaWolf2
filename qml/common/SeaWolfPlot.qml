@@ -51,7 +51,7 @@ Rectangle{
     property int   lastPulseOnPlotTm:-1
     property int   lastStepEventToShowNb: -1
     property int   lastStepEventOnPlotTm: -1
-    property int   lastStepEventTm: -1
+    property int   lastStepEventTm: 0
     property string lastStepEventNm: "brth"
     // maximal number of steps on plot
     property int  maxStepsOnPlot:1000
@@ -104,6 +104,7 @@ Rectangle{
         lastPulseOnPlotTm = -1;
         currentStepAxisX = chartView.plotAxisX
         currentStepAxisX.max = 0
+        lastStepEventTm = 0;
         lastStepEventNm = "brth"
         var cnt = currentStepAxisX.count
         for (var i = 0; i < cnt; i++){
@@ -115,6 +116,7 @@ Rectangle{
         for (var ev = 0; ev < cnt; ev++){
             currentEventAxisX.remove(eventAxisX.categoriesLabels[0])
         }
+        timerUpdate(0, Math.round(heartRate.hr))
     }
 
     function init(){
@@ -134,23 +136,6 @@ Rectangle{
         maxStepsOnPlot        = 1000;
         firstStepEventToPlotNb   = -1;
     }
-
-
-    function getStepEventsNb(){
-        var result = 0;
-
-        for (var i=0; i < currentSession.event.length; i++){
-            var evt     = currentSession.event[i]
-            var eventName = myEventsEnum2Nm[evt[0]]
-            //listByName(this, "getStepEventNb", ["result", "eventName", "evt[1]"])
-            //only use events like brth, hold, walk, back to fill the pulse data
-            if (!(runColors[eventName] === undefined)){
-                result++;
-            }
-        }
-        return result
-    }
-
 
     //creates new series graph
     function setupCurrentSeries(){
@@ -185,56 +170,8 @@ Rectangle{
         }
         console.log(" *** " + msg + ": print end " + " ***")
     }
-
-    function markEvent(eventName, tm){
-        canCreateSeriesFlag = false
-        var eventEnum = myEventsNm2Enum[eventName];
-        currentSession.event.push([eventEnum, tm])
-        if (! (runColors[eventName] === undefined)){
-            lastStepEventTm = tm
-            lastStepEventNm = eventName
-            // the rest of the setup will be done during onSeriesAdded signal processing
-            currentStepHrSeries = currentChartView.createSeries(ChartView.SeriesTypeLine, lastStepEventTm.toString(), currentStepAxisX, currentAxisY)
-            //currentHrSeries = currentChartView.createSeries(ChartView.SeriesTypeLine, "", currentStepAxisX, currentAxisY);
-        }
-        console.log("markEvent: eventName = ", eventName, "lastStepEventNm = ", lastStepEventNm, "eventNb = ", currentSession.event.length)
-    }
-    function addPointToPlot(tm, y){
-        currentStepHrSeries.append(tm,y)
-//        currentStepAxisX.min = 0
-//        currentStepAxisX.max = currentSession.pulse.length
-        //currentStepAxisX.min = plotRangeControl.first.value
-        //currentStepAxisX.max = plotRangeControl.second.value
-        currentAxisY.min = getSesssionHRMin(currentSession)
-        currentAxisY.max = getSesssionHRMax(currentSession)
-        // currentStepAxisX.min and max are set by the range slider
-        currentEventAxisX.min = currentStepAxisX.min
-        currentEventAxisX.max = currentStepAxisX.max
-        //testing that the last X label was't end of step label
-
-        console.log( " In addPointToPlot: tm = ", tm,  "lastStepEventTm = ", lastStepEventTm,
-                    "currentStepAxisX.min =", currentStepAxisX.min, "currentStepAxisX.max = ", currentStepAxisX.max)
-        if ( (tm -1) !== lastStepEventTm ){
-            currentStepAxisX.remove(lastStepXLabel)
-            console.log("removing [", lastStepXLabel, "] tm = ", tm)
-        }else{
-            //currentStepAxisX.append(lastStepXLabel, tm-1)
-            //console.log("addingg [", lastStepXLabel, "]")
-        }
-
-        lastStepXLabel = (tm + demoModePulseTm).toString()
-        currentStepAxisX.append(lastStepXLabel, tm)
-        console.log("addingg [", lastStepXLabel, "]")
-
-        //update if series creation is finished
-        if (canCreateSeriesFlag){
-            //console.log("tm = ", tm, "lastStepXLabel = ", lastStepXLabel, "currentStepAxisX.min =", currentStepAxisX.min, "currentStepAxisX.max =", currentStepAxisX.max)
-            currentChartView.update()
-            //console.log("Plot Updated")
-        }
-    }
-    function makeStepAxisXLabel(tm){
-
+    function makeLabel(tm){
+       return (tm - lastStepEventTm).toString() + "/" + (tm + demoModePulseTm).toString()
     }
 
     function getSesssionHRMin(session){
@@ -281,7 +218,7 @@ Rectangle{
         //var qstr = qfa.read();
         //console.log("read = ", qstr);
         qfa.close();
-        //var data = runSessionScene.currentSession
+        //var data = runSessionScene.currentSessionhttps://community.wd.com/t/automatic-backup/147334/5
         //io.text = JSON.stringify(data, null, 4)
         //io.write()
     }
@@ -296,6 +233,7 @@ Rectangle{
         qfa.close();
 
         showSessionGraph(currentSession)
+        rangeSliderUpdate()
 
     }
     function rangeSliderUpdate(){
@@ -330,29 +268,89 @@ Rectangle{
         // May be call markEvent from here instead of from the gauges state change?
         console.log("In showSessionGraph: p_session.event.length", p_session.event.length)
         run.nextStepName = "brth"
+        lastStepEventTm=0
         for (eventNb = 0; eventNb < p_session.event.length; eventNb++){
-            tmStart = tmStop
-            tmStop = p_session.event[eventNb][1]
             eventName = myEventsEnum2Nm[p_session.event[eventNb][0]]
             // for step events only
             if (! (runColors[eventName] === undefined)){
+                tmStart = tmStop
+                tmStop = p_session.event[eventNb][1]
                 //run.nextStepName is used in onSeriesAdded
                 // TODO: consolidate and make SeaWolfPlot self sofficient?
                 run.nextStepName = myEventsEnum2Nm[p_session.event[eventNb][0]]
-                lastStepEventTm = tmStart
                //markEvent(myEventsEnum2Nm[p_session.event[eventNb][0]], tmStop)
                currentStepHrSeries = currentChartView.createSeries(ChartView.SeriesTypeLine, tmStop.toString(), currentStepAxisX, currentAxisY)
-            }
-
-            for (var tm = tmStart; tm <= tmStop; tm ++){
-                addPointToPlot(tm, p_session.pulse[tm])
-                currentDiscomfortSeries.append(tm, p_session.discomfort[tm])
-
+                for (var tm = tmStart; tm <= tmStop; tm ++){
+                    //TODO review why + 1 is needed, change here and in addPoint to plot?
+                    addPointToPlot(tm + 1, p_session.pulse[tm])
+                    currentDiscomfortSeries.append(tm, p_session.discomfort[tm])
+                }
+                lastStepEventTm = tmStop
             }
         }
         rangeSliderUpdate()
         currentChartView.title = p_session.sessionName + " " + p_session.when
 
+    }
+
+    function markEvent(eventName, tm){
+        canCreateSeriesFlag = false
+        var eventEnum = myEventsNm2Enum[eventName];
+        currentSession.event.push([eventEnum, tm])
+        var eventNb = currentSession.event.length - 1
+        console.log("*** markEvent Enter: time = ", tm, "eventName = ", eventName, "lastStepEventNm = ", lastStepEventNm, "eventNb = ", currentSession.event.length -1 )
+        if (! (runColors[eventName] === undefined)){
+            lastStepEventTm = tm
+            lastStepEventNm = eventName
+            var pulse = currentSession.pulse[currentSession.event[eventNb][1]]
+            // the rest of the setup will be done during onSeriesAdded signal processing
+            currentStepHrSeries = currentChartView.createSeries(ChartView.SeriesTypeLine, lastStepEventTm.toString(), currentStepAxisX, currentAxisY)
+            //adding the last point from the previous series as a first point of the new series
+            // TODO review why +1 is needed !
+            addPointToPlot(lastStepEventTm +1, pulse )
+            console.log("added tm = ", lastStepEventTm, " pulse = ", pulse)
+            //currentHrSeries = currentChartView.createSeries(ChartView.SeriesTypeLine, "", currentStepAxisX, currentAxisY);
+        }
+        console.log("*** markEvent Exit: time = ", tm, "eventName = ", eventName, "lastStepEventNm = ", lastStepEventNm, "eventNb = ", currentSession.event.length -1 )
+    }
+    function timerUpdate(tm, hrValue){
+        hrPlot.addPointToPlot(tm, hrValue)
+        hrPlot.rangeSliderUpdate()
+        // update discomfort information
+        var disValue = hrPlot.discomfortValue
+        hrPlot.currentSession.discomfort.push(disValue)
+        hrPlot.currentDiscomfortSeries.append(tm, disValue)
+
+    }
+    function addPointToPlot(tm, y){
+        currentStepHrSeries.append(tm,y)
+        currentAxisY.min = getSesssionHRMin(currentSession)
+        currentAxisY.max = getSesssionHRMax(currentSession)
+        // currentStepAxisX.min and max are set by the range slider
+        currentEventAxisX.min = currentStepAxisX.min
+        currentEventAxisX.max = currentStepAxisX.max
+        //testing that the last X label was't end of step label
+
+        console.log( " In addPointToPlot: tm = ", tm,  "lastStepEventTm = ", lastStepEventTm,
+                    "currentStepAxisX.min =", currentStepAxisX.min, "currentStepAxisX.max = ", currentStepAxisX.max)
+        if ( (tm - 1 ) !== lastStepEventTm ){
+            currentStepAxisX.remove(lastStepXLabel)
+            console.log("removing [", lastStepXLabel, "] tm = ", tm)
+        }else{
+            //currentStepAxisX.append(lastStepXLabel, tm-1)
+            //console.log("addingg [", lastStepXLabel, "]")
+        }
+
+        lastStepXLabel = makeLabel(tm) //(tm + demoModePulseTm).toString()
+        currentStepAxisX.append(lastStepXLabel, tm)
+        console.log("addingg [", lastStepXLabel, "]")
+
+        //update if series creation is finished
+        if (canCreateSeriesFlag){
+            //console.log("tm = ", tm, "lastStepXLabel = ", lastStepXLabel, "currentStepAxisX.min =", currentStepAxisX.min, "currentStepAxisX.max =", currentStepAxisX.max)
+            currentChartView.update()
+            //console.log("Plot Updated")
+        }
     }
 
 
@@ -373,10 +371,15 @@ Rectangle{
         legend.visible: false
         property CategoryAxis plotAxisX: plotAxisX
         property CategoryAxis eventAxisX: eventAxisX
+
+        //Series is created we can work with it now
         onSeriesAdded:{
-            console.log ("in onSeriesAdded lastStepEventNm:", lastStepEventNm, "myEventsNm2Enum[lastStepEventNm]", myEventsNm2Enum[lastStepEventNm])
+            console.log ("in onSeriesAdded lastStepEventNm:", lastStepEventNm, "lastStepEventTm = ", lastStepEventTm, "pulse = ", currentSession.pulse[lastStepEventTm -1],
+                         "myEventsNm2Enum[lastStepEventNm]", myEventsNm2Enum[lastStepEventNm])
             series.color = runColors[run.nextStepName]
-            console.log ("in onSeriesAdded series.color:", series.color)
+            //console.log ("in onSeriesAdded series.color:", series.color)
+            //addPointToPlot(lastStepEventTm, currentSession.pulse[lastStepEventTm - 1])
+            //currentStepHrSeries.append(lastStepEventTm, currentSession.pulse[lastStepEventTm - 1])
             update()
             canCreateSeriesFlag = true;
         }
@@ -534,9 +537,9 @@ Rectangle{
         anchors.top: chartView.top
         anchors.bottom: chartView.bottom
         anchors.margins: {
-            top:   chartView.margins.top;
+            top:   Math.max(chartView.margins.top, (plotRangeControl.second.handle.height))
             //right: -discomfortSliderHandle.width/2;
-            bottom:chartView.margins.bottom
+            bottom:   Math.max(chartView.margins.bottom, (plotRangeControl.second.handle.height))
         }
         value: 0.0
         from:0
@@ -551,7 +554,7 @@ Rectangle{
             height: parent.height
             width: parent.width
             //color: "#21be2b"
-            opacity:0.6
+            opacity:0.5
             radius: dp(8)
             gradient: Gradient {
                 GradientStop {
@@ -583,7 +586,7 @@ Rectangle{
             implicitWidth: dp(120)
             implicitHeight: dp(120)
             radius: dp(60)
-            opacity: discomfortSlider.pressed ? 0.8 : 1.0
+            opacity: discomfortSlider.pressed ? 0.6 : 0.8
             color: "orange"
             border.color: "#bdbebf"
         }

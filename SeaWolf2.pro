@@ -110,11 +110,13 @@ DISTFILES += \
     android/gradle.properties \
     android/local.properties \
     qml/common/Button.qml \
+    qml/common/SeaWolfFiles.qml \
     qml/common/MenuButton.qml \
     qml/common/SceneBase.qml \
     qml/common/SeaWolfButton.qml \
     qml/common/SeaWolfControls.qml \
     qml/scenes/AboutScene.qml \
+    qml/scenes/ConfigPreferencesScene.qml \
     qml/scenes/ConfigSeriesScene.qml \
     qml/scenes/HrmSetupScene.qml \
     qml/scenes/RunSessionScene.qml \

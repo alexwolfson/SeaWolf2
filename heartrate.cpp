@@ -445,6 +445,17 @@ void HeartRate::receiveDemo()
 
 int HeartRate::randomPulse() const
 {
+    static int lastPulse = 60;
+    const int pmin = 50;
+    const int pmax = 70;
+    int newPulseDelta = qrand() % 3 - 1; //(-1,0,1)
     // random number between 50 and 70
-    return qrand() % (70 - 50) + 50;
+    lastPulse = (lastPulse + newPulseDelta);
+    if(lastPulse < pmin){
+        lastPulse = pmin;
+    }
+    if (lastPulse > pmax){
+        lastPulse = pmax;
+    }
+    return lastPulse;
 }
