@@ -143,6 +143,7 @@ Rectangle{
         //currentHrSeries.color = runColors[currentGauge.gaugeName]
         currentContractionSeries = currentChartView.createSeries(ChartView.SeriesTypeScatter, "contraction", currentEventAxisX, currentAxisY);
         currentStepHrSeries = currentChartView.createSeries(ChartView.SeriesTypeLine, "0", currentStepAxisX, currentAxisY)
+        currentStepHrSeries.width = dp(5)
         currentDiscomfortSeries    = currentChartView.createSeries(ChartView.SeriesTypeLine, "0", currentStepAxisX, discomfortAxisY)
         currentDiscomfortSeries.color = "red"
         currentDiscomfortSeries.width = dp(5)
@@ -240,13 +241,17 @@ Rectangle{
         plotRangeControl.from = 0;
         plotRangeControl.to = currentSession.pulse.length
         // fixing range slider handle position to the max range for the first time
+        // or to prevent stocking all the values in the end
         // first time is recognized by the second.value === 0)
-        if (plotRangeControl.second.value === 0){
-            plotRangeControl.second.value = 10000
+        var oldSecondValue = plotRangeControl.second.value
+        if ((oldSecondValue === 0) || (oldSecondValue > plotRangeControl.to)) {
+            plotRangeControl.second.value = plotRangeControl.to
         }
+        console.log(" second.value = ", plotRangeControl.to, "plotRangeControl.second.visualPosition = ", plotRangeControl.second.visualPosition)
         plotRangeControl.first.visualPositionChanged()
         plotRangeControl.second.visualPositionChanged()
         currentChartView.update()
+        console.log(" second.value = ", plotRangeControl.to, "plotRangeControl.second.visualPosition = ", plotRangeControl.second.visualPosition)
     }
 
     function showSessionGraph(p_session){
@@ -315,7 +320,6 @@ Rectangle{
     }
     function timerUpdate(tm, hrValue){
         hrPlot.addPointToPlot(tm, hrValue)
-        hrPlot.rangeSliderUpdate()
         // update discomfort information
         var disValue = hrPlot.discomfortValue
         hrPlot.currentSession.discomfort.push(disValue)
@@ -324,6 +328,7 @@ Rectangle{
     }
     function addPointToPlot(tm, y){
         currentStepHrSeries.append(tm,y)
+        hrPlot.rangeSliderUpdate()
         currentAxisY.min = getSesssionHRMin(currentSession)
         currentAxisY.max = getSesssionHRMax(currentSession)
         // currentStepAxisX.min and max are set by the range slider
@@ -540,6 +545,7 @@ Rectangle{
             top:   Math.max(chartView.margins.top, (plotRangeControl.second.handle.height))
             //right: -discomfortSliderHandle.width/2;
             bottom:   Math.max(chartView.margins.bottom, (plotRangeControl.second.handle.height))
+            right:    discomfortSlider.width
         }
         value: 0.0
         from:0
@@ -554,7 +560,7 @@ Rectangle{
             height: parent.height
             width: parent.width
             //color: "#21be2b"
-            opacity:0.5
+            opacity:0.7
             radius: dp(8)
             gradient: Gradient {
                 GradientStop {
