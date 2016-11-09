@@ -1,0 +1,4 @@
+#ifndef ELAPSEDTIMER_H
+#define ELAPSEDTIMER_H
+
+#endif // ELAPSEDTIMER_H
