@@ -51,7 +51,8 @@ SceneBase {
     property int    timeFooterWalk
     property color  borderColorFooterWalk
     property bool   noWalk: true
-    property string triggerMark: ""
+    property string triggerStepEventMark: ""
+    property string triggerPressEventMark: ""
     property string nextStepName: "brth"
     //    function gotMarkSignal(name){
     //        triggerMark = name
@@ -233,12 +234,15 @@ SceneBase {
                 var hrValue = Math.round(heartRate.hr)
                 hrPlot.currentSession.pulse.push(hrValue)
                 hrPlot.timerUpdate(sessionTime, hrValue)
-                if (triggerMark !== ""){
-                    hrPlot.markEvent(triggerMark, sessionTime -1)
-                    triggerMark = ""
+                if (triggerStepEventMark !== ""){
+                    hrPlot.markEvent(triggerStepEventMark, sessionTime -1)
+                    triggerStepEventMark = ""
                     //hrPlot.addPointToPlot(sessionTime, Math.round(heartRate.hr))
                 }
-
+                if (triggerPressEventMark === "contraction"){
+                    hrPlot.markEvent(triggerPressEventMark, sessionTime -1)
+                    triggerPressEventMark = ""
+                }
             }
         }
         Item{

@@ -9,6 +9,7 @@ DEPLOYMENTFOLDERS += qmlFolder # comment for publishing
 
 assetsFolder.source = assets
 DEPLOYMENTFOLDERS += assetsFolder
+QML_IMPORT_PATH = .
 
 # Add more folders to ship with the application here
 
@@ -128,7 +129,8 @@ DISTFILES += \
 HEADERS += \
     qmlfileaccess.h \
     deviceinfo.h \
-    heartrate.h
+    heartrate.h \
+    qmlelapsedtimer.h
 
 RESOURCES += \
     resources.qrc

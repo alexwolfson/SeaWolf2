@@ -7,6 +7,7 @@ import QtQuick.Layouts 1.3
 import QtMultimedia 5.6
 //import QtQml 2.2
 import QtCharts 2.1
+import MyStuff 1.0
 // Events have Nb - number in currentSession.event, Enum Enum representation of type ("brth":0, "hold": 1),
 //     Tm - time when it happened
 Rectangle{
@@ -33,7 +34,7 @@ Rectangle{
     //property LineSeries    currentHrSeries
     property LineSeries    currentStepHrSeries
     property LineSeries    currentDiscomfortSeries
-    property ScatterSeries currentContractionSeries: contractionSeries
+    property ScatterSeries currentContractionSeries
     property ChartView     currentChartView
     property CategoryAxis  currentStepAxisX
     property CategoryAxis  currentEventAxisX
@@ -247,11 +248,11 @@ Rectangle{
         if ((oldSecondValue === 0) || (oldSecondValue > plotRangeControl.to)) {
             plotRangeControl.second.value = plotRangeControl.to
         }
-        console.log(" second.value = ", plotRangeControl.to, "plotRangeControl.second.visualPosition = ", plotRangeControl.second.visualPosition)
+//        console.log(" second.value = ", plotRangeControl.to, "plotRangeControl.second.visualPosition = ", plotRangeControl.second.visualPosition)
         plotRangeControl.first.visualPositionChanged()
         plotRangeControl.second.visualPositionChanged()
         currentChartView.update()
-        console.log(" second.value = ", plotRangeControl.to, "plotRangeControl.second.visualPosition = ", plotRangeControl.second.visualPosition)
+//        console.log(" second.value = ", plotRangeControl.to, "plotRangeControl.second.visualPosition = ", plotRangeControl.second.visualPosition)
     }
 
     function showSessionGraph(p_session){
@@ -287,11 +288,19 @@ Rectangle{
                currentStepHrSeries = currentChartView.createSeries(ChartView.SeriesTypeLine, tmStop.toString(), currentStepAxisX, currentAxisY)
                 for (var tm = tmStart; tm <= tmStop; tm ++){
                     //TODO review why + 1 is needed, change here and in addPoint to plot?
-                    addPointToPlot(tm + 1, p_session.pulse[tm])
+                    addPointToHrPlot(tm + 1, p_session.pulse[tm])
                     currentDiscomfortSeries.append(tm, p_session.discomfort[tm])
                 }
                 lastStepEventTm = tmStop
+            }else{
+                var tmEvent = p_session.event[eventNb][1]
+
+                currentContractionSeries.append(tmEvent, p_session.pulse[tmEvent])
+                var lastEventXLabel = makeLabel(tmEvent) //(tm + demoModePulseTm).toString()
+                currentEventAxisX.append(lastEventXLabel, tmEvent)
+
             }
+
         }
         rangeSliderUpdate()
         currentChartView.title = p_session.sessionName + " " + p_session.when
@@ -303,40 +312,45 @@ Rectangle{
         var eventEnum = myEventsNm2Enum[eventName];
         currentSession.event.push([eventEnum, tm])
         var eventNb = currentSession.event.length - 1
+        var pulse = currentSession.pulse[currentSession.event[eventNb][1]]
         console.log("*** markEvent Enter: time = ", tm, "eventName = ", eventName, "lastStepEventNm = ", lastStepEventNm, "eventNb = ", currentSession.event.length -1 )
         if (! (runColors[eventName] === undefined)){
             lastStepEventTm = tm
             lastStepEventNm = eventName
-            var pulse = currentSession.pulse[currentSession.event[eventNb][1]]
             // the rest of the setup will be done during onSeriesAdded signal processing
             currentStepHrSeries = currentChartView.createSeries(ChartView.SeriesTypeLine, lastStepEventTm.toString(), currentStepAxisX, currentAxisY)
             //adding the last point from the previous series as a first point of the new series
             // TODO review why +1 is needed !
-            addPointToPlot(lastStepEventTm +1, pulse )
+            addPointToHrPlot(lastStepEventTm +1, pulse )
             console.log("added tm = ", lastStepEventTm, " pulse = ", pulse)
             //currentHrSeries = currentChartView.createSeries(ChartView.SeriesTypeLine, "", currentStepAxisX, currentAxisY);
+        }else{
+            if (eventName === "contraction"){
+                currentContractionSeries.append(tm, currentSession.pulse[tm])
+                var lastEventXLabel = makeLabel(tm) //(tm + demoModePulseTm).toString()
+                currentEventAxisX.append(lastEventXLabel, tm)
+            }
         }
+
         console.log("*** markEvent Exit: time = ", tm, "eventName = ", eventName, "lastStepEventNm = ", lastStepEventNm, "eventNb = ", currentSession.event.length -1 )
     }
     function timerUpdate(tm, hrValue){
-        hrPlot.addPointToPlot(tm, hrValue)
+        hrPlot.addPointToHrPlot(tm, hrValue)
         // update discomfort information
         var disValue = hrPlot.discomfortValue
         hrPlot.currentSession.discomfort.push(disValue)
         hrPlot.currentDiscomfortSeries.append(tm, disValue)
 
     }
-    function addPointToPlot(tm, y){
+    function addPointToHrPlot(tm, y){
         currentStepHrSeries.append(tm,y)
         hrPlot.rangeSliderUpdate()
         currentAxisY.min = getSesssionHRMin(currentSession)
         currentAxisY.max = getSesssionHRMax(currentSession)
         // currentStepAxisX.min and max are set by the range slider
-        currentEventAxisX.min = currentStepAxisX.min
-        currentEventAxisX.max = currentStepAxisX.max
         //testing that the last X label was't end of step label
 
-        console.log( " In addPointToPlot: tm = ", tm,  "lastStepEventTm = ", lastStepEventTm,
+        console.log( " In addPointToHrPlot: tm = ", tm,  "lastStepEventTm = ", lastStepEventTm,
                     "currentStepAxisX.min =", currentStepAxisX.min, "currentStepAxisX.max = ", currentStepAxisX.max)
         if ( (tm - 1 ) !== lastStepEventTm ){
             currentStepAxisX.remove(lastStepXLabel)
@@ -383,7 +397,7 @@ Rectangle{
                          "myEventsNm2Enum[lastStepEventNm]", myEventsNm2Enum[lastStepEventNm])
             series.color = runColors[run.nextStepName]
             //console.log ("in onSeriesAdded series.color:", series.color)
-            //addPointToPlot(lastStepEventTm, currentSession.pulse[lastStepEventTm - 1])
+            //addPointToHrPlot(lastStepEventTm, currentSession.pulse[lastStepEventTm - 1])
             //currentStepHrSeries.append(lastStepEventTm, currentSession.pulse[lastStepEventTm - 1])
             update()
             canCreateSeriesFlag = true;
@@ -408,11 +422,11 @@ Rectangle{
             min: 0
             max: sessionDuration
             labelsAngle: -90
+            labelsPosition: CategoryAxis.AxisLabelsPositionOnValue
             labelsColor: "#FF7F50"
             labelsFont:lblsFnt
             //count: 0
             gridLineColor: labelsColor
-            labelsPosition: CategoryAxis.AxisLabelsPositionOnValue
         }
         ValueAxis {
             id: plotAxisY
@@ -460,7 +474,7 @@ Rectangle{
             color: "red"
             borderColor: "black"
             markerShape: ScatterSeries.MarkerShapeCircle
-            markerSize: dp(6)
+            markerSize: dp(8            )
             axisXTop: eventAxisX
             axisY:plotAxisY
 //            XYPoint { x: 25;  y: 25 }
@@ -473,6 +487,7 @@ Rectangle{
             currentAxisY      = plotAxisY
             currentEventAxisX = eventAxisX
             currentDiscomfortSeries  = discomfortSeries
+            currentContractionSeries = contractionSeries
         }
     }
     RangeSlider{
@@ -485,8 +500,8 @@ Rectangle{
         stepSize: 1
         //first.value: 10
         //second.value: 50
-        first.onValueChanged:  {currentStepAxisX.min = first.value}
-        second.onValueChanged: {currentStepAxisX.max = second.value}
+        first.onValueChanged:  {currentStepAxisX.min = first.value; currentEventAxisX.min = first.value}
+        second.onValueChanged: {currentStepAxisX.max = second.value; currentEventAxisX.max = second.value}
         //For some reason the visual position change requires a manual value setup. A bug or wrong usage?
         first.onVisualPositionChanged:  { var v1 = Math.round(from +  (to -  from )  * first.visualPosition);  first.value =  v1;
             //                             console.log(" In rangeSlider: first.from, to, value, visualPosition = " , from, to, first.value, first.visualPosition)
@@ -554,8 +569,25 @@ Rectangle{
         implicitWidth: dp(40)
         orientation:Qt.Vertical
         onPositionChanged:  { var v1 = from +  (to -  from )  * position;  value =  v1; discomfortValue = v1;
-                                                 console.log(" In discomfortSlider: from, to, value, position = " , from, to, value, position)
+                                                 //console.log(" In discomfortSlider: from, to, value, position = " , from, to, value, position)
                     }
+        onPressedChanged: {
+            if(pressed){
+                if (timer.running) {
+                    timer.stop()
+                }
+                timer.start()
+            } else {
+                timer.stop()
+                console.log("timer.elapsed = ", timer.elapsed)
+                if (timer.elapsed < 400){
+                    run.triggerPressEventMark = "contraction"
+                }
+            }
+        }
+        QMLElapsedTimer {
+            id: timer
+        }
         background:Rectangle {
             height: parent.height
             width: parent.width
@@ -576,13 +608,21 @@ Rectangle{
                 anchors.fill: parent
                 anchors.margins: dp(2)
                 color:"white"
-                text: qsTr("Discomfort Level")
+                text: qsTr("Slide:Discomfort Level,   Click:Contraction")
                 verticalAlignment: Text.AlignVCenter
+                font.bold: true
                 rotation: -90
                 horizontalAlignment: Text.AlignHCenter
                 //anchors.verticalCenter: parent.verticalCenter
             }
-
+//            MouseArea {
+//                id: mouseArea
+////                drag.target:discomfortSliderHandle
+////                drag.axis: Drag.YAxis
+//                anchors.fill: parent
+//                hoverEnabled: true
+//                onClicked: markEvent("contraction", run.sessionTime)
+//            }
         }
 
         handle: Rectangle {

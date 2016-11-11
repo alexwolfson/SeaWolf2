@@ -28,7 +28,7 @@ Rectangle {
     // access the text of the Text component
     property alias text: buttonText.text
 
-    // this handler is called when the button is clicked.
+    // this signal is emitted when the button is clicked.
     signal clicked
 
     Text {

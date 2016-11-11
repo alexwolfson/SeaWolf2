@@ -13,6 +13,7 @@
 #include <QSplashScreen>
 #include <QScreen>
 #include "heartrate.h"
+#include "qmlelapsedtimer.h"
 
 int main(int argc, char *argv[])
 {
@@ -58,6 +59,7 @@ int main(int argc, char *argv[])
     qDebug() << "Read = " << qfa.read();
     qDebug() << "Close = " << qfa.close();
     qDebug() << "Delete = " << qfa.removeFile("TestQMLRWFile");
+    qmlRegisterType<QMLElapsedTimer>("MyStuff", 1, 0, "QMLElapsedTimer");
 //    //qDebug() << qstr;
 
     // use this during development

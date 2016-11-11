@@ -334,7 +334,7 @@ CircularGauge {
                         //hrPlocurrentStepEventStartTmTm = sessionTime
                         //emit signal
                         //TODO - why signal approach did not work?
-                        run.triggerMark = gaugeName
+                        run.triggerStepEventMark = gaugeName
                         run.nextStepName = nextGauge.gaugeName
                     }
                     else {
