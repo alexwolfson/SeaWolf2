@@ -89,8 +89,8 @@ ApplicationWindow {
         }
         Component.onCompleted:  {
             //those 2 functions provide different functionslity
-            conf.sessionSelected.connect( run.setupSession);
-            conf.sessionSelected.connect(run.currentHrPlot.setupSession)
+            conf.sessionSelected.connect( run.runSetupSession);
+            conf.sessionSelected.connect(run.currentHrPlot.plotSetupSession)
             hrm.startHrmDemo.connect(run.currentHrPlot.demoHrm)
             hrm.startHrmSearch.connect(run.currentHrPlot.realHrm)
         }

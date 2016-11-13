@@ -17,7 +17,7 @@ SceneBase {
 
     id: runSessionScene
     signal setupSessionSignal(var sessionName, var selectedSession)
-    onSetupSessionSignal: {setupSession(sessionName,selectedSession)}
+    onSetupSessionSignal: {runSetupSession(sessionName,selectedSession)}
     signal timeLeft(var tm)
     onTimeLeft: {currentStepLeft.text = tm}
     function enableWalkControl(){currentWalkControl.enabled=true}
@@ -62,7 +62,7 @@ SceneBase {
     function getSessionTime(){
         return sessionTime
     }
-    function setupSession(sessionName, selectedSession){
+    function runSetupSession(sessionName, selectedSession){
         //console.log("**** In setupSession width ", sessionName, ":", selectedSession)
         var step;
         currentModel.clear();
@@ -300,6 +300,7 @@ SceneBase {
                         button2.enabled = true;
                         nextStepName = "brth"
                         hrPlot.init()
+                        hrPlot.timerUpdate(0, Math.round(heartRate.hr))
                         oneTimer.start()
                         //console.log("Time=", Qt.formatDateTime(new Date(), "yyyy-MM-dd-hh-mm-ss"))
                         console.log("Session:",hrPlot.currentSession.sessionName, "started:",hrPlot.currentSession.when)

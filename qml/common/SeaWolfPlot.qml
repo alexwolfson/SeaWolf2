@@ -117,7 +117,7 @@ Rectangle{
         for (var ev = 0; ev < cnt; ev++){
             currentEventAxisX.remove(eventAxisX.categoriesLabels[0])
         }
-        timerUpdate(0, Math.round(heartRate.hr))
+        //timerUpdate(0, Math.round(heartRate.hr))
     }
 
     function init(){
@@ -198,7 +198,7 @@ Rectangle{
         return hrMax
     }
 
-    function setupSession(sessionName, selectedSession){
+    function plotSetupSession(sessionName, selectedSession){
         //console.log("**** In setupSession width ", sessionName, ":", selectedSession)
         var step;
         init()
@@ -326,9 +326,9 @@ Rectangle{
             //currentHrSeries = currentChartView.createSeries(ChartView.SeriesTypeLine, "", currentStepAxisX, currentAxisY);
         }else{
             if (eventName === "contraction"){
-                currentContractionSeries.append(tm, currentSession.pulse[tm])
-                var lastEventXLabel = makeLabel(tm) //(tm + demoModePulseTm).toString()
-                currentEventAxisX.append(lastEventXLabel, tm)
+                currentContractionSeries.append(tm + 1, pulse)
+                var lastEventXLabel = makeLabel(tm + 1) //(tm + demoModePulseTm).toString()
+                currentEventAxisX.append(lastEventXLabel, tm + 1)
             }
         }
 
@@ -345,8 +345,8 @@ Rectangle{
     function addPointToHrPlot(tm, y){
         currentStepHrSeries.append(tm,y)
         hrPlot.rangeSliderUpdate()
-        currentAxisY.min = getSesssionHRMin(currentSession)
-        currentAxisY.max = getSesssionHRMax(currentSession)
+        currentAxisY.min = getSesssionHRMin(currentSession) - 5
+        currentAxisY.max = getSesssionHRMax(currentSession) + 5
         // currentStepAxisX.min and max are set by the range slider
         //testing that the last X label was't end of step label
 
@@ -486,6 +486,7 @@ Rectangle{
             currentStepAxisX  = plotAxisX
             currentAxisY      = plotAxisY
             currentEventAxisX = eventAxisX
+            currentEventAxisX.labelsPosition = CategoryAxis.AxisLabelsPositionOnValue
             currentDiscomfortSeries  = discomfortSeries
             currentContractionSeries = contractionSeries
         }
