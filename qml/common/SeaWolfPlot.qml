@@ -54,6 +54,7 @@ Rectangle{
     property int   lastStepEventOnPlotTm: -1
     property int   lastStepEventTm: 0
     property string lastStepEventNm: "brth"
+    property alias plotRangeControl: plotRangeControl
     // maximal number of steps on plot
     property int  maxStepsOnPlot:1000
     property int  firstStepEventToPlotNb:-1
@@ -382,7 +383,7 @@ Rectangle{
 
         title: currentSession.sessionName + " " + currentSession.when
         anchors.fill: parent
-        margins{top:dp(50); bottom:dp(50)}
+        margins{top:dp(60); bottom:dp(60); left:dp(40); right:(dp(60))}
         //to make visible part of the graph taking bigger part
         //anchors.topMargin: dp(-20)
         antialiasing: true
@@ -490,6 +491,50 @@ Rectangle{
             currentDiscomfortSeries  = discomfortSeries
             currentContractionSeries = contractionSeries
         }
+        MultiPointTouchArea {
+            property real initialFirstVisualPosition
+            property real initialLeftTouchX
+            property real initialSecondVisualPosition
+            property real initialRightTouchX
+            property real initialScale
+            property real initialTouchX0
+            property real initialTouchXMax
+            property real currentLeftTouchX
+            property real currentRightTouchX
+            anchors.fill: parent
+            minimumTouchPoints: 2
+            maximumTouchPoints: 2
+            touchPoints: [
+                TouchPoint { id: touch1 },
+                TouchPoint { id: touch2 }
+            ]
+            onPressed:{
+                initialFirstVisualPosition  = plotRangeControl.first.visualPosition
+                initialSecondVisualPosition = plotRangeControl.second.visualPosition
+                initialLeftTouchX           = Math.min(touchPoints[0].x, touchPoints[1].x)
+                initialRightTouchX          = Math.max(touchPoints[0].x, touchPoints[1].x)
+                initialScale                = (plotRangeControl.second.visualPosition - plotRangeControl.first.visualPosition) /
+                        (initialRightTouchX - initialLeftTouchX )
+                initialTouchX0              = initialLeftTouchX - initialFirstVisualPosition/initialScale
+                initialTouchXMax            = initialRightTouchX  + ( 1 - initialSecondVisualPosition)/initialScale
+                console.log("***In onPressed:", initialFirstVisualPosition, initialSecondVisualPosition, initialLeftTouchX, initialRightTouchX,
+                            initialScale, initialTouchX0, initialTouchXMax)
+            }
+            onUpdated:{
+                //console.log("*** In onUpdated: touchPoints.length = ", touchPoints.length)
+                //root.listProperty(touchPoints[0])
+                //root.listProperty(touch1)
+//                currentLeftTouchX           = Math.min(touchPoints[0].x, touchPoints[1].x)
+//                currentRightTouchX          = Math.max(touchPoints[0].x, touchPoints[1].x)
+                currentLeftTouchX           = Math.min(touch1.x, touch2.x)
+                currentRightTouchX          = Math.max(touch1.x, touch2.x)
+                var plotFirstVisual         = (currentLeftTouchX - initialLeftTouchX) * initialScale
+                var plotSecondVisual        = initialSecondVisualPosition + (currentRightTouchX - initialRightTouchX) * initialScale
+                plotRangeControl.first.value  = Math.round(plotRangeControl.from +  (plotRangeControl.to -  plotRangeControl.from )  * plotFirstVisual)
+                plotRangeControl.second.value = Math.round(plotRangeControl.from +  (plotRangeControl.to -  plotRangeControl.from )  * plotSecondVisual)
+
+            }
+        }
     }
     RangeSlider{
         id: plotRangeControl
@@ -501,8 +546,12 @@ Rectangle{
         stepSize: 1
         //first.value: 10
         //second.value: 50
-        first.onValueChanged:  {currentStepAxisX.min = first.value; currentEventAxisX.min = first.value}
-        second.onValueChanged: {currentStepAxisX.max = second.value; currentEventAxisX.max = second.value}
+        first.onValueChanged:  {
+            currentStepAxisX.min  = first.value;
+            currentEventAxisX.min = first.value}
+        second.onValueChanged: {
+            currentStepAxisX.max  = second.value;
+            currentEventAxisX.max = second.value}
         //For some reason the visual position change requires a manual value setup. A bug or wrong usage?
         first.onVisualPositionChanged:  { var v1 = Math.round(from +  (to -  from )  * first.visualPosition);  first.value =  v1;
             //                             console.log(" In rangeSlider: first.from, to, value, visualPosition = " , from, to, first.value, first.visualPosition)
