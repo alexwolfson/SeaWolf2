@@ -502,37 +502,76 @@ Rectangle{
             property real currentLeftTouchX
             property real currentRightTouchX
             anchors.fill: parent
-            minimumTouchPoints: 2
+            minimumTouchPoints: 1
             maximumTouchPoints: 2
             touchPoints: [
                 TouchPoint { id: touch1 },
                 TouchPoint { id: touch2 }
             ]
+            function getPressedNumber(tp1, tp2){
+                var count = 0
+                if (tp1.pressed){
+                    count++;
+                }
+                if (tp2.pressed){
+                    count++
+                }
+                console.log("pressedNumber = ", count)
+                return count
+            }
+
             onPressed:{
+                console.log("*** On Pressed touch numbet = ", touchPoints.length)
+//                if(touchPoints.length < 2){
+               if(getPressedNumber(touch1, touch2) < 2){
+                    initialScale = (plotRangeControl.second.visualPosition - plotRangeControl.first.visualPosition)/parent.width
+                    //minimumTouchPoints = 1
+                    //maximumTouchPoints = 1
+                }else{
+                    //minimumTouchPoints = 2
+                    //maximumTouchPoints = 2
+                    initialLeftTouchX           = Math.min(touch1.x, touch2.x)
+                    initialRightTouchX          = Math.max(touch1.x, touch2.x)
+                    initialScale                = (plotRangeControl.second.visualPosition - plotRangeControl.first.visualPosition) /
+                            (initialRightTouchX - initialLeftTouchX )
+                    initialTouchX0              = initialLeftTouchX - initialFirstVisualPosition/initialScale
+                    initialTouchXMax            = initialRightTouchX  + ( 1 - initialSecondVisualPosition)/initialScale
+                }
                 initialFirstVisualPosition  = plotRangeControl.first.visualPosition
                 initialSecondVisualPosition = plotRangeControl.second.visualPosition
-                initialLeftTouchX           = Math.min(touchPoints[0].x, touchPoints[1].x)
-                initialRightTouchX          = Math.max(touchPoints[0].x, touchPoints[1].x)
-                initialScale                = (plotRangeControl.second.visualPosition - plotRangeControl.first.visualPosition) /
-                        (initialRightTouchX - initialLeftTouchX )
-                initialTouchX0              = initialLeftTouchX - initialFirstVisualPosition/initialScale
-                initialTouchXMax            = initialRightTouchX  + ( 1 - initialSecondVisualPosition)/initialScale
                 console.log("***In onPressed:", initialFirstVisualPosition, initialSecondVisualPosition, initialLeftTouchX, initialRightTouchX,
                             initialScale, initialTouchX0, initialTouchXMax)
             }
             onUpdated:{
+                var plotFirstVisual
+                var plotSecondVisual
+                console.log("*** On Update touch numbet = ", touchPoints.length)
+//                if(touchPoints.length < 2){
+                if(getPressedNumber(touch1, touch2) < 2){
+                    var visPosChange  = (touchPoints[0].x - touchPoints[0].previousX) * initialScale
+                    plotFirstVisual   = initialFirstVisualPosition - visPosChange
+                    plotSecondVisual  = initialSecondVisualPosition - visPosChange
+                }else{
+                    currentLeftTouchX       = Math.min(touch1.x, touch2.x)
+                    currentRightTouchX      = Math.max(touch1.x, touch2.x)
+                    plotFirstVisual         = ( -currentLeftTouchX + initialLeftTouchX) * initialScale
+                    plotSecondVisual        = initialSecondVisualPosition + (-currentRightTouchX + initialRightTouchX) * initialScale
+                }
+                console.log("***In onUpdated:", visPosChange, plotFirstVisual, plotSecondVisual, currentLeftTouchX, currentRightTouchX,
+                            initialScale)
+
                 //console.log("*** In onUpdated: touchPoints.length = ", touchPoints.length)
                 //root.listProperty(touchPoints[0])
                 //root.listProperty(touch1)
 //                currentLeftTouchX           = Math.min(touchPoints[0].x, touchPoints[1].x)
 //                currentRightTouchX          = Math.max(touchPoints[0].x, touchPoints[1].x)
-                currentLeftTouchX           = Math.min(touch1.x, touch2.x)
-                currentRightTouchX          = Math.max(touch1.x, touch2.x)
-                var plotFirstVisual         = (currentLeftTouchX - initialLeftTouchX) * initialScale
-                var plotSecondVisual        = initialSecondVisualPosition + (currentRightTouchX - initialRightTouchX) * initialScale
                 plotRangeControl.first.value  = Math.round(plotRangeControl.from +  (plotRangeControl.to -  plotRangeControl.from )  * plotFirstVisual)
                 plotRangeControl.second.value = Math.round(plotRangeControl.from +  (plotRangeControl.to -  plotRangeControl.from )  * plotSecondVisual)
 
+            }
+            onReleased:{
+                minimumTouchPoints = 1
+                maximumTouchPoints = 2
             }
         }
     }
@@ -642,7 +681,7 @@ Rectangle{
             height: parent.height
             width: parent.width
             //color: "#21be2b"
-            opacity:0.7
+            opacity:1.0
             radius: dp(8)
             gradient: Gradient {
                 GradientStop {
