@@ -68,9 +68,33 @@ Rectangle{
                                       //weight: Font.Black,
                                       italic: true,
                                       //pixelSize: dp(10)
-                                      //pointSize: dp(15)
+                                      pointSize: dp(10)
                                   })
     property bool canCreateSeriesFlag: true
+    property var additionalXLabels: []
+    property int additionalXLabelsNb: 8
+    function updateAdditionalXLabels(){
+        var lblTm
+        var lbl
+        // Remove old labels first
+        for (lblTm = 0; lblTm < additionalXLabels.length; lblTm++ ){
+            currentPlotAxisX.remove(additionalXLabels[lblTm])
+        }
+
+        // Calculate new additionalXLabels and update Axis
+        additionalXLabels = []
+//        var neededLabelNb = Math.max(0, additionalXLabelsNb - currentPlotAxisX.count)
+        var neededLabelNb = additionalXLabelsNb
+        var interval = (currentPlotAxisX.max - currentPlotAxisX.min)/(neededLabelNb - 1)
+        console.log("updateAdditionalXLabels interval = ", interval)
+        for (lblTm = currentPlotAxisX.min; lblTm <= currentPlotAxisX.max; lblTm += interval){
+            lbl = makeLabel((lblTm))
+            additionalXLabels.push(lbl)
+            currentPlotAxisX.append(lbl, lblTm)
+        }
+
+    }
+
     function demoHrm(){
         demoModePulseTm = 0 //1000
         console.log("demoModePulseTm = ", demoModePulseTm)
@@ -376,11 +400,6 @@ Rectangle{
 
     ChartView {
         id:chartView
-        //                margins.bottom:dp(0)
-        //                margins.left:  dp(0)
-        //                margins.right: dp(0)
-        //                margins.top:   dp(0)
-
         title: currentSession.sessionName + " " + currentSession.when
         anchors.fill: parent
         margins{top:dp(60); bottom:dp(60); left:dp(40); right:(dp(60))}
@@ -413,6 +432,7 @@ Rectangle{
             labelsPosition: CategoryAxis.AxisLabelsPositionOnValue
             labelsColor: "navy"
             labelsFont:lblsFnt
+            //labelFormat: "%8c"
             //count: 0
             gridLineColor:labelsColor
 
@@ -426,6 +446,7 @@ Rectangle{
             labelsPosition: CategoryAxis.AxisLabelsPositionOnValue
             labelsColor: "#FF7F50"
             labelsFont:lblsFnt
+            //labelFormat: "%8c"
             //count: 0
             gridLineColor: labelsColor
         }
@@ -583,14 +604,19 @@ Rectangle{
         from: 0
         to:   0 //undefined === currentSession.pulse.length? 50 : currentSession.pulse.length
         stepSize: 1
+        property bool needAdditionalXLabels:false
         //first.value: 10
         //second.value: 50
         first.onValueChanged:  {
             currentStepAxisX.min  = first.value;
-            currentEventAxisX.min = first.value}
+            currentEventAxisX.min = first.value
+            needAdditionalXLabels = true;
+        }
         second.onValueChanged: {
             currentStepAxisX.max  = second.value;
-            currentEventAxisX.max = second.value}
+            currentEventAxisX.max = second.value
+            needAdditionalXLabels = true;
+        }
         //For some reason the visual position change requires a manual value setup. A bug or wrong usage?
         first.onVisualPositionChanged:  { var v1 = Math.round(from +  (to -  from )  * first.visualPosition);  first.value =  v1;
             //                             console.log(" In rangeSlider: first.from, to, value, visualPosition = " , from, to, first.value, first.visualPosition)
@@ -598,6 +624,13 @@ Rectangle{
         second.onVisualPositionChanged: { var v1 = Math.round(from + (to - from ) * second.visualPosition); second.value = v1;
             //                             console.log(" In rangeSlider: second.from, to, value, visualPoition = " , from, to, second.value, second.visualPosition)
             }
+        onNeedAdditionalXLabelsChanged: {
+            if (needAdditionalXLabels){
+                console.log ("*** needAdditionalXLabels");
+                updateAdditionalXLabels();
+                needAdditionalXLabels = false
+            }
+        }
         first.handle: Rectangle {
             x: parent.leftPadding + parent.first.visualPosition * (parent.availableWidth - width)
             y: parent.topPadding + parent.availableHeight / 2 - height / 2
