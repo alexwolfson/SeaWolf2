@@ -549,13 +549,13 @@ Rectangle{
 //                if(touchPoints.length < 2){
                 if(getPressedNumber(touch1, touch2) < 2){
                     var visPosChange  = (touchPoints[0].x - touchPoints[0].previousX) * initialScale
-                    plotFirstVisual   = initialFirstVisualPosition - visPosChange
-                    plotSecondVisual  = initialSecondVisualPosition - visPosChange
+                    initialFirstVisualPosition   = initialFirstVisualPosition - visPosChange
+                    initialSecondVisualPosition  = initialSecondVisualPosition - visPosChange
                 }else{
-                    currentLeftTouchX       = Math.min(touch1.x, touch2.x)
-                    currentRightTouchX      = Math.max(touch1.x, touch2.x)
-                    plotFirstVisual         = ( -currentLeftTouchX + initialLeftTouchX) * initialScale
-                    plotSecondVisual        = initialSecondVisualPosition + (-currentRightTouchX + initialRightTouchX) * initialScale
+                    currentLeftTouchX           = Math.min(touch1.x, touch2.x)
+                    currentRightTouchX          = Math.max(touch1.x, touch2.x)
+                    initialFirstVisualPosition  = ( -currentLeftTouchX + initialLeftTouchX) * initialScale
+                    initialSecondVisualPosition = initialSecondVisualPosition + (-currentRightTouchX + initialRightTouchX) * initialScale
                 }
                 console.log("***In onUpdated:", visPosChange, plotFirstVisual, plotSecondVisual, currentLeftTouchX, currentRightTouchX,
                             initialScale)
@@ -563,10 +563,10 @@ Rectangle{
                 //console.log("*** In onUpdated: touchPoints.length = ", touchPoints.length)
                 //root.listProperty(touchPoints[0])
                 //root.listProperty(touch1)
-//                currentLeftTouchX           = Math.min(touchPoints[0].x, touchPoints[1].x)
-//                currentRightTouchX          = Math.max(touchPoints[0].x, touchPoints[1].x)
-                plotRangeControl.first.value  = Math.round(plotRangeControl.from +  (plotRangeControl.to -  plotRangeControl.from )  * plotFirstVisual)
-                plotRangeControl.second.value = Math.round(plotRangeControl.from +  (plotRangeControl.to -  plotRangeControl.from )  * plotSecondVisual)
+//                currentLeftTouchX             = Math.min(touchPoints[0].x, touchPoints[1].x)
+//                currentRightTouchX            = Math.max(touchPoints[0].x, touchPoints[1].x)
+                plotRangeControl.first.value    = Math.round(plotRangeControl.from +  (plotRangeControl.to -  plotRangeControl.from )  * initialFirstVisualPosition)
+                plotRangeControl.second.value   = Math.round(plotRangeControl.from +  (plotRangeControl.to -  plotRangeControl.from )  * initialSecondVisualPosition)
 
             }
             onReleased:{
