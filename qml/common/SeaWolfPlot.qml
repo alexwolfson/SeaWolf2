@@ -36,8 +36,10 @@ Rectangle{
     property LineSeries    currentDiscomfortSeries
     property ScatterSeries currentContractionSeries
     property ChartView     currentChartView
-    property CategoryAxis  currentStepAxisX
-    property CategoryAxis  currentEventAxisX
+    //property CategoryAxis  currentStepAxisX
+    property alias currentStepAxisX:  chartView.plotAxisX
+    //property CategoryAxis  currentEventAxisX
+    property alias currentEventAxisX: chartView.eventAxisX
     property ValueAxis     currentAxisY
     property real discomfortValue: 0.0 //discomfortSlider.from + (discomfortSlider.to - discomfortSlider.from) * discomfortSlider.visualPosition
     //property int           currentStepEventEnum
@@ -67,34 +69,103 @@ Rectangle{
                                       //family: 'Encode Sans',
                                       //weight: Font.Black,
                                       italic: true,
-                                      //pixelSize: dp(10)
-                                      pointSize: dp(10)
+                                      pixelSize: dp(10)
+                                      //pointSize: 20 //dp(10)
                                   })
     property bool canCreateSeriesFlag: true
     property var additionalXLabels: []
     property int additionalXLabelsNb: 8
-    function updateAdditionalXLabels(){
-        var lblTm
-        var lbl
-        // Remove old labels first
-        for (lblTm = 0; lblTm < additionalXLabels.length; lblTm++ ){
-            currentPlotAxisX.remove(additionalXLabels[lblTm])
-        }
-
-        // Calculate new additionalXLabels and update Axis
-        additionalXLabels = []
-//        var neededLabelNb = Math.max(0, additionalXLabelsNb - currentPlotAxisX.count)
-        var neededLabelNb = additionalXLabelsNb
-        var interval = (currentPlotAxisX.max - currentPlotAxisX.min)/(neededLabelNb - 1)
-        console.log("updateAdditionalXLabels interval = ", interval)
-        for (lblTm = currentPlotAxisX.min; lblTm <= currentPlotAxisX.max; lblTm += interval){
-            lbl = makeLabel((lblTm))
-            additionalXLabels.push(lbl)
-            currentPlotAxisX.append(lbl, lblTm)
-        }
-
+    function getLblTm(lbl){
+        var tm = lbl.split("/")[1]
+        console.log("getLblTm", tm)
+        return parseInt(tm, 10)
     }
 
+    function updateAdditionalXLabels(){
+        //        var neededLabelNb = Math.max(0, additionalXLabelsNb - currentPlotAxisX.count)
+        var i
+        var neededLabelNb = additionalXLabelsNb
+        var interval = Math.floor((currentStepAxisX.max - currentStepAxisX.min)/(neededLabelNb - 1))
+        console.log("**** updateAdditionalXLabels interval = ", interval,
+                    "currentStepAxisX.min = ",  currentStepAxisX.min,
+                    "currentStepAxisX.max = ",  currentStepAxisX.max,
+                    "additionalXLabels.length = ", additionalXLabels.length,
+                    "currentStepAxisX.categoriesLabels.length = ", currentStepAxisX.categoriesLabels.length)
+        if (interval === 0){
+            return
+        }
+
+        var lblTm
+        var lbl
+        // Save old labels first then clean the labels
+        var oldLabels = currentStepAxisX.categoriesLabels
+        // var oldTmList = []
+        // var additionalTmList = []
+        var cnt = currentStepAxisX.count
+        for (i = 0; i < cnt; i++){
+            currentStepAxisX.remove(currentStepAxisX.categoriesLabels[0])
+        }
+        // remove additionalXLabels from saved Labels
+        for (i = 0; i < additionalXLabels.length && i < oldLabels.length; i++ ){
+            console.log("**** removing ", additionalXLabels[i])
+            oldLabels.remove(additionalXLabels[i])
+            // lbl = additionalXLabels[i].split("/")
+
+            // additionalTmList.push()
+        }
+
+        // Calculate new additionalXLabels
+        additionalXLabels = []
+        for (lblTm = Math.floor(currentStepAxisX.min); lblTm < currentStepAxisX.max; lblTm += interval){
+            lbl = (lblTm - getCurrentStepStartTm(lblTm)).toString() + "/" + (lblTm + demoModePulseTm).toString()
+            additionalXLabels.push(lbl)
+            // currentStepAxisX.append(lbl, lblTm)
+            console.log("Added ", lbl, "at [", lblTm, "]")
+        }
+        // Update Axis
+        var savedDone       = false
+        var savedIndex      = 0
+        var additionalDone  = false
+        var additionalIndex = 0
+        var tmOld           = 10000
+        var tmAdditional    = 10000
+        //AW TODO seems too complicated - it just to merge 2 lists
+        while (! (savedDone && additionalDone) &&
+               ((savedIndex < oldLabels.length) || (additionalIndex < additionalXLabels.length))){
+            if (savedIndex < oldLabels.length){
+                tmOld = getLblTm(oldLabels[savedIndex])
+            }
+            else{
+                savedDone = true
+                tmOld     = 10000
+            }
+
+            if (additionalIndex < additionalXLabels.length){
+                tmAdditional = getLblTm(additionalXLabels[additionalIndex])
+            }
+            else{
+                additionalDone = true
+                tmAdditional   = 10000
+            }
+
+            if (tmOld < tmAdditional){
+                currentStepAxisX.append(oldLabels[savedIndex], tmOld)
+                savedIndex++
+            }else{
+                currentStepAxisX.append(additionalXLabels[additionalIndex], tmAdditional)
+                additionalIndex++
+            }
+
+
+        }
+
+        for (lblTm = Math.floor(currentStepAxisX.min); lblTm < currentStepAxisX.max; lblTm += interval){
+            lbl = (lblTm - getCurrentStepStartTm(lblTm)).toString() + "/" + (lblTm + demoModePulseTm).toString()
+            additionalXLabels.push(lbl)
+            // currentStepAxisX.append(lbl, lblTm)
+            console.log("Added ", lbl, "at [", lblTm, "]")
+        }
+    }
     function demoHrm(){
         demoModePulseTm = 0 //1000
         console.log("demoModePulseTm = ", demoModePulseTm)
@@ -123,6 +194,29 @@ Rectangle{
         }
     }
 
+    function getCurrentStepStartTm(tm){
+        console.log("currentSession.event.length = ", currentSession.event.length)
+        if (currentSession.event.length === 0){
+            return 0
+        }
+
+        var evt   = currentSession.event[0]
+        var evtTm = evt[1]
+        var nextEvt
+        for (var i = 1; (i < currentSession.event.length) && (currentSession.event[i][1] < currentStepAxisX.max); i++ ){
+            nextEvt = currentSession.event[i]
+            if (isNewSeriesEvent(nextEvt[0])){
+                if ((nextEvt[1] >= tm) ){
+                    return evtTm
+                }
+                evtTm = nextEvt[1]
+
+            }
+        }
+            //
+        return evtTm
+    }
+
     function resetShow(){
         sessionDuration = 0
         currentChartView.removeAllSeries()
@@ -147,15 +241,16 @@ Rectangle{
 
     function init(){
         resetShow()
-        currentSession.event=[]
-        currentSession.pulse=[]
+        currentSession.event      = []
+        currentSession.pulse      = []
         currentSession.discomfort = []
-        sessionDuration    = 0
-        lastPressEventNb   = -1
-        currentStepEventEnum    = -1
-        currentStepEventStartTm = -1
-        currentStepEventStopTm  = -1
-        lastStepEventToShowNb = -1
+        additionalXLabels         = []
+        sessionDuration           =  0
+        lastPressEventNb          = -1
+        currentStepEventEnum      = -1
+        currentStepEventStartTm   = -1
+        currentStepEventStopTm    = -1
+        lastStepEventToShowNb     = -1
         currentSession.when = Qt.formatDateTime(new Date(), "yyyy-MM-dd-hh-mm-ss");
         lastPressEventNb = -1;
         currentStepEventEnum  = -1;
@@ -505,10 +600,10 @@ Rectangle{
         Component.onCompleted:{
             console.log("In SeaWolfPlotComponent.onCompleted")
             currentChartView  = chartView
-            currentStepAxisX  = plotAxisX
+            //currentStepAxisX  = plotAxisX
             currentAxisY      = plotAxisY
-            currentEventAxisX = eventAxisX
-            currentEventAxisX.labelsPosition = CategoryAxis.AxisLabelsPositionOnValue
+            //currentEventAxisX = eventAxisX
+            //currentEventAxisX.labelsPosition = CategoryAxis.AxisLabelsPositionOnValue
             currentDiscomfortSeries  = discomfortSeries
             currentContractionSeries = contractionSeries
         }
@@ -542,8 +637,7 @@ Rectangle{
             }
 
             onPressed:{
-                console.log("*** On Pressed touch numbet = ", touchPoints.length)
-//                if(touchPoints.length < 2){
+                //console.log("*** On Pressed touch numbet = ", touchPoints.length)
                if(getPressedNumber(touch1, touch2) < 2){
                     initialScale = (plotRangeControl.second.visualPosition - plotRangeControl.first.visualPosition)/parent.width
                     //minimumTouchPoints = 1
@@ -566,8 +660,7 @@ Rectangle{
             onUpdated:{
                 var plotFirstVisual
                 var plotSecondVisual
-                console.log("*** On Update touch numbet = ", touchPoints.length)
-//                if(touchPoints.length < 2){
+                //console.log("*** On Update touch number = ", touchPoints.length)
                 if(getPressedNumber(touch1, touch2) < 2){
                     var visPosChange  = (touchPoints[0].x - touchPoints[0].previousX) * initialScale
                     initialFirstVisualPosition   = initialFirstVisualPosition - visPosChange
@@ -578,14 +671,8 @@ Rectangle{
                     initialFirstVisualPosition  = ( -currentLeftTouchX + initialLeftTouchX) * initialScale
                     initialSecondVisualPosition = initialSecondVisualPosition + (-currentRightTouchX + initialRightTouchX) * initialScale
                 }
-                console.log("***In onUpdated:", visPosChange, plotFirstVisual, plotSecondVisual, currentLeftTouchX, currentRightTouchX,
-                            initialScale)
-
-                //console.log("*** In onUpdated: touchPoints.length = ", touchPoints.length)
-                //root.listProperty(touchPoints[0])
-                //root.listProperty(touch1)
-//                currentLeftTouchX             = Math.min(touchPoints[0].x, touchPoints[1].x)
-//                currentRightTouchX            = Math.max(touchPoints[0].x, touchPoints[1].x)
+                //console.log("***In onUpdated:", visPosChange, plotFirstVisual, plotSecondVisual, currentLeftTouchX, currentRightTouchX,
+                //            initialScale)
                 plotRangeControl.first.value    = Math.round(plotRangeControl.from +  (plotRangeControl.to -  plotRangeControl.from )  * initialFirstVisualPosition)
                 plotRangeControl.second.value   = Math.round(plotRangeControl.from +  (plotRangeControl.to -  plotRangeControl.from )  * initialSecondVisualPosition)
 
@@ -611,11 +698,15 @@ Rectangle{
             currentStepAxisX.min  = first.value;
             currentEventAxisX.min = first.value
             needAdditionalXLabels = true;
+            //updateAdditionalXLabels();
+           console.log("first.needAdditionalXLabels = ", needAdditionalXLabels)
         }
         second.onValueChanged: {
             currentStepAxisX.max  = second.value;
             currentEventAxisX.max = second.value
             needAdditionalXLabels = true;
+            //updateAdditionalXLabels();
+            console.log("second.needAdditionalXLabels = ", needAdditionalXLabels)
         }
         //For some reason the visual position change requires a manual value setup. A bug or wrong usage?
         first.onVisualPositionChanged:  { var v1 = Math.round(from +  (to -  from )  * first.visualPosition);  first.value =  v1;

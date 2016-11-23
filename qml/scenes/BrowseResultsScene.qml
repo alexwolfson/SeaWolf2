@@ -19,13 +19,7 @@ SceneBase{
                 FolderListModel {
                     id: folderModel
                     showHidden :true
-                    folder:qfa.getAccessiblePath("sessions")
-//                    folder: if (Qt.platform.os === "android"){
-//                                return "file:///mnt/sdcard"
-//                            } else {
-//                                return "file://~"
-//                            }
-
+                    folder: { "file://" + qfa.getAccessiblePath("sessions")}
                     showDotAndDotDot:true
                 }
                 Component {
