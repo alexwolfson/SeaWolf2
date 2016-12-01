@@ -43,101 +43,145 @@ Rectangle{
     property ValueAxis     currentAxisY
     property real discomfortValue: 0.0 //discomfortSlider.from + (discomfortSlider.to - discomfortSlider.from) * discomfortSlider.visualPosition
     //property int           currentStepEventEnum
-    property real  minHr:10
-    property real  maxHr:150
-    property int   sessionDuration:0
-    property int   lastPressEventNb:-1
-    property int   currentStepEventNb:-1
-    property int   currentStepEventEnum:-1
-    property int   currentStepEventStartTm: -1
+    property real  minHr:                   10
+    property real  maxHr:                   150
+    property int   sessionDuration:         0
+    property int   lastPressEventNb:       -1
+    property int   currentStepEventNb:     -1
+    property int   currentStepEventEnum:   -1
+    property int   currentStepEventStartTm:-1
     property int   currentStepEventStopTm: -1
-    property int   lastPulseOnPlotTm:-1
-    property int   lastStepEventToShowNb: -1
-    property int   lastStepEventOnPlotTm: -1
-    property int   lastStepEventTm: 0
-    property string lastStepEventNm: "brth"
-    property alias plotRangeControl: plotRangeControl
+    property int   lastPulseOnPlotTm:      -1
+    property int   lastStepEventToShowNb:  -1
+    property int   lastStepEventOnPlotTm:  -1
+    property int   lastStepEventTm:         0
+    property string lastStepEventNm:       "brth"
+    property alias plotRangeControl:        plotRangeControl
     // maximal number of steps on plot
-    property int  maxStepsOnPlot:1000
-    property int  firstStepEventToPlotNb:-1
-    property string lastStepXLabel: ""
-    property int   xToShow: 0  //TODO: for switching to showing
-    property int   demoModePulseTm:0
-    property bool  showAbsoluteTm:true //TODO: for switching to showing
+    property int  maxStepsOnPlot:           1000
+    property int  firstStepEventToPlotNb:  -1
+    property string lastStepXLabel:         ""
+    property int   xToShow:                 0  //TODO: for switching to showing
+    property int   demoModePulseTm:         0
+    property bool  showAbsoluteTm:          true //TODO: for switching to showing
     //  the relative to the step time
     property font  lblsFnt:Qt.font({
                                       //family: 'Encode Sans',
                                       //weight: Font.Black,
                                       italic: true,
-                                      pixelSize: dp(10)
-                                      //pointSize: 20 //dp(10)
+                                      //pixelSize: dp(10)
+                                      pointSize: 10 //dp(10)
                                   })
-    property bool canCreateSeriesFlag: true
-    property var additionalXLabels: []
-    property int additionalXLabelsNb: 8
+    property bool canCreateSeriesFlag:      true
+    property var additionalXLabels:         []
+    property int totalXLabelsNb:       8
+    property var stepXLabels:               []
+
     function getLblTm(lbl){
-        var tm = lbl.split("/")[1]
-        console.log("getLblTm", tm)
+         var tm = lbl.split("/")[1]
+        //console.log("getLblTm", tm)
         return parseInt(tm, 10)
     }
-
-    function updateAdditionalXLabels(){
-        //        var neededLabelNb = Math.max(0, additionalXLabelsNb - currentPlotAxisX.count)
+    function restoreStepXLabels(){
+        // clean currentStepAxisX labels
+        var cnt = currentStepAxisX.count
         var i
-        var neededLabelNb = additionalXLabelsNb
-        var interval = Math.floor((currentStepAxisX.max - currentStepAxisX.min)/(neededLabelNb - 1))
+        for (i = 0; i < cnt; i++){
+            //stepXLabels.push(currentStepAxisX.categoriesLabels[0])
+            currentStepAxisX.remove(currentStepAxisX.categoriesLabels[0])
+        }
+        for (i = 0; i < stepXLabels.length; i++){
+            var lbl = stepXLabels[i]
+            var tm = getLblTm(lbl)
+            if ((tm >= 0) && (tm < currentSession.pulse.length)){
+                currentStepAxisX.append(lbl, tm)
+            }
+        }
+    }
+    // This function adds additionalXLabels to the existing step labels
+    //    this is done to support additional grid
+    function updateAdditionalXLabels(){
+        //        var neededLabelNb = Math.max(0, totalXLabelsNb - currentPlotAxisX.count)
+        var i
+
+        var lblTm
+        var lbl
+        //calculate indexes of labels that needs to be shown
+
+        var savedDone       = false
+        var stepXLabelsIndexStart = 0
+        var stepXLabelsIndexStop  = 0
+        var stepXLabelsIndex      = 0
+        var additionalDone  = false
+        var additionalIndex = 0
+        var tmStepXLabel           = 10000
+        var tmAdditional    = 10000
+        // find the first index that is in the Axis X range
+        for (stepXLabelsIndexStart = 0; stepXLabelsIndexStart < stepXLabels.length; stepXLabelsIndexStart++){
+            if(getLblTm(stepXLabels[stepXLabelsIndexStart]) >= currentStepAxisX.min){
+                break
+            }
+        }
+        // find the last index that is in the Axis X range
+        for (stepXLabelsIndexStop = stepXLabelsIndexStart; stepXLabelsIndexStop < stepXLabels.length; stepXLabelsIndexStop++){
+            if(getLblTm(stepXLabels[stepXLabelsIndexStop]) >= currentStepAxisX.max){
+                stepXLabelsIndexStop--
+                break
+            }
+        }
+
+        var nbOfShownStepLabels = stepXLabelsIndexStop - stepXLabelsIndexStart + 1
+        var neededLabelNb = nbOfShownStepLabels >= neededLabelNb ? 0: totalXLabelsNb - nbOfShownStepLabels
+        var cnt
+        if (neededLabelNb <= 0){
+            restoreStepXLabels()
+            return
+        }
+        var interval = Math.floor((currentStepAxisX.max - currentStepAxisX.min)/(neededLabelNb + 1))
+        if (interval === 0){
+            restoreStepXLabels()
+            return
+        }
+
         console.log("**** updateAdditionalXLabels interval = ", interval,
                     "currentStepAxisX.min = ",  currentStepAxisX.min,
                     "currentStepAxisX.max = ",  currentStepAxisX.max,
                     "additionalXLabels.length = ", additionalXLabels.length,
                     "currentStepAxisX.categoriesLabels.length = ", currentStepAxisX.categoriesLabels.length)
-        if (interval === 0){
-            return
-        }
-
-        var lblTm
-        var lbl
-        // Save old labels first then clean the labels
-        var oldLabels = currentStepAxisX.categoriesLabels
-        // var oldTmList = []
-        // var additionalTmList = []
-        var cnt = currentStepAxisX.count
-        for (i = 0; i < cnt; i++){
-            currentStepAxisX.remove(currentStepAxisX.categoriesLabels[0])
-        }
-        // remove additionalXLabels from saved Labels
-        for (i = 0; i < additionalXLabels.length && i < oldLabels.length; i++ ){
-            console.log("**** removing ", additionalXLabels[i])
-            oldLabels.remove(additionalXLabels[i])
-            // lbl = additionalXLabels[i].split("/")
-
-            // additionalTmList.push()
-        }
-
         // Calculate new additionalXLabels
         additionalXLabels = []
-        for (lblTm = Math.floor(currentStepAxisX.min); lblTm < currentStepAxisX.max; lblTm += interval){
+        for (lblTm = Math.floor(currentStepAxisX.min); lblTm <= currentStepAxisX.max; lblTm += interval){
             lbl = (lblTm - getCurrentStepStartTm(lblTm)).toString() + "/" + (lblTm + demoModePulseTm).toString()
             additionalXLabels.push(lbl)
             // currentStepAxisX.append(lbl, lblTm)
-            console.log("Added ", lbl, "at [", lblTm, "]")
+            console.log("AdditionaXLabels: Added ", lbl, "at [", lblTm, "]")
         }
+
+        // clean currentStepAxisX labels
+        cnt = currentStepAxisX.count
+        for (i = 0; i < cnt; i++){
+            //stepXLabels.push(currentStepAxisX.categoriesLabels[0])
+            currentStepAxisX.remove(currentStepAxisX.categoriesLabels[0])
+        }
+
         // Update Axis
-        var savedDone       = false
-        var savedIndex      = 0
-        var additionalDone  = false
-        var additionalIndex = 0
-        var tmOld           = 10000
-        var tmAdditional    = 10000
         //AW TODO seems too complicated - it just to merge 2 lists
-        while (! (savedDone && additionalDone) &&
-               ((savedIndex < oldLabels.length) || (additionalIndex < additionalXLabels.length))){
-            if (savedIndex < oldLabels.length){
-                tmOld = getLblTm(oldLabels[savedIndex])
+        stepXLabelsIndex = stepXLabelsIndexStart
+        additionalIndex  = 0
+        while (! (savedDone && additionalDone)      &&
+               (//stepXLabels are still in the range
+               ((getLblTm(stepXLabels[stepXLabelsIndex]) >= currentStepAxisX.min) &&
+                   (getLblTm(stepXLabels[stepXLabelsIndex]) <= currentStepAxisX.max)) ||               //additionalXLabels are still in the range
+               ((getLblTm(additionalXLabels[additionalIndex]) >= currentStepAxisX.min) &&
+                   (getLblTm(additionalXLabels[additionalIndex]) <= currentStepAxisX.max))
+               ) &&
+               ((stepXLabelsIndex < stepXLabels.length) || (additionalIndex < additionalXLabels.length))){
+            if (stepXLabelsIndex < stepXLabels.length){
+                tmStepXLabel = getLblTm(stepXLabels[stepXLabelsIndex])
             }
             else{
                 savedDone = true
-                tmOld     = 10000
+                tmStepXLabel     = 10000
             }
 
             if (additionalIndex < additionalXLabels.length){
@@ -148,23 +192,26 @@ Rectangle{
                 tmAdditional   = 10000
             }
 
-            if (tmOld < tmAdditional){
-                currentStepAxisX.append(oldLabels[savedIndex], tmOld)
-                savedIndex++
-            }else{
+            if (tmStepXLabel < tmAdditional){
+                currentStepAxisX.append(stepXLabels[stepXLabelsIndex], tmStepXLabel)
+                stepXLabelsIndex++
+            }else if (tmStepXLabel > tmAdditional) {
                 currentStepAxisX.append(additionalXLabels[additionalIndex], tmAdditional)
                 additionalIndex++
+            }else{
+                 //(tmStepXLabel == tmAdditional) {
+                currentStepAxisX.append(additionalXLabels[additionalIndex], tmAdditional)
+                additionalIndex++
+                stepXLabelsIndex++
             }
-
-
         }
 
-        for (lblTm = Math.floor(currentStepAxisX.min); lblTm < currentStepAxisX.max; lblTm += interval){
-            lbl = (lblTm - getCurrentStepStartTm(lblTm)).toString() + "/" + (lblTm + demoModePulseTm).toString()
-            additionalXLabels.push(lbl)
-            // currentStepAxisX.append(lbl, lblTm)
-            console.log("Added ", lbl, "at [", lblTm, "]")
-        }
+//        for (lblTm = Math.floor(currentStepAxisX.min); lblTm < currentStepAxisX.max; lblTm += interval){
+//            lbl = (lblTm - getCurrentStepStartTm(lblTm)).toString() + "/" + (lblTm + demoModePulseTm).toString()
+//            additionalXLabels.push(lbl)
+//            // currentStepAxisX.append(lbl, lblTm)
+//            console.log("Added ", lbl, "at [", lblTm, "]")
+//        }
     }
     function demoHrm(){
         demoModePulseTm = 0 //1000
@@ -245,6 +292,7 @@ Rectangle{
         currentSession.pulse      = []
         currentSession.discomfort = []
         additionalXLabels         = []
+        stepXLabels               = []
         sessionDuration           =  0
         lastPressEventNb          = -1
         currentStepEventEnum      = -1
@@ -364,8 +412,12 @@ Rectangle{
         // fixing range slider handle position to the max range for the first time
         // or to prevent stocking all the values in the end
         // first time is recognized by the second.value === 0)
+        var oldFirstValue = plotRangeControl.first.value
         var oldSecondValue = plotRangeControl.second.value
-        if ((oldSecondValue === 0) || (oldSecondValue > plotRangeControl.to)) {
+        if ((oldFirstValue <= 0) || (oldFirstValue > plotRangeControl.to)) {
+            plotRangeControl.first.value = plotRangeControl.from
+        }
+        if ((oldSecondValue <= 0) || (oldSecondValue > plotRangeControl.to)) {
             plotRangeControl.second.value = plotRangeControl.to
         }
 //        console.log(" second.value = ", plotRangeControl.to, "plotRangeControl.second.visualPosition = ", plotRangeControl.second.visualPosition)
@@ -373,6 +425,17 @@ Rectangle{
         plotRangeControl.second.visualPositionChanged()
         currentChartView.update()
 //        console.log(" second.value = ", plotRangeControl.to, "plotRangeControl.second.visualPosition = ", plotRangeControl.second.visualPosition)
+    }
+
+    function saveStepXLabels(){
+        // save currentStepAxisX labels
+        stepXLabels = []
+        var cnt = currentStepAxisX.count
+        var i
+        for (i = 0; i < cnt; i++){
+            stepXLabels.push(currentStepAxisX.categoriesLabels[i])
+        }
+
     }
 
     function showSessionGraph(p_session){
@@ -422,8 +485,11 @@ Rectangle{
             }
 
         }
+        saveStepXLabels()
         rangeSliderUpdate()
+        updateAdditionalXLabels()
         currentChartView.title = p_session.sessionName + " " + p_session.when
+        chartView.update()
 
     }
 
@@ -476,8 +542,9 @@ Rectangle{
             currentStepAxisX.remove(lastStepXLabel)
             console.log("removing [", lastStepXLabel, "] tm = ", tm)
         }else{
+            stepXLabels.push(lastStepXLabel)
             //currentStepAxisX.append(lastStepXLabel, tm-1)
-            //console.log("addingg [", lastStepXLabel, "]")
+            console.log("addingg to stepXLabels[", lastStepXLabel, "]")
         }
 
         lastStepXLabel = makeLabel(tm) //(tm + demoModePulseTm).toString()
@@ -698,15 +765,13 @@ Rectangle{
             currentStepAxisX.min  = first.value;
             currentEventAxisX.min = first.value
             needAdditionalXLabels = true;
-            //updateAdditionalXLabels();
-           console.log("first.needAdditionalXLabels = ", needAdditionalXLabels)
+           console.log("In first needAdditionalXLabels = ", needAdditionalXLabels)
         }
         second.onValueChanged: {
             currentStepAxisX.max  = second.value;
             currentEventAxisX.max = second.value
             needAdditionalXLabels = true;
-            //updateAdditionalXLabels();
-            console.log("second.needAdditionalXLabels = ", needAdditionalXLabels)
+            console.log("In second needAdditionalXLabels = ", needAdditionalXLabels)
         }
         //For some reason the visual position change requires a manual value setup. A bug or wrong usage?
         first.onVisualPositionChanged:  { var v1 = Math.round(from +  (to -  from )  * first.visualPosition);  first.value =  v1;
@@ -718,8 +783,8 @@ Rectangle{
         onNeedAdditionalXLabelsChanged: {
             if (needAdditionalXLabels){
                 console.log ("*** needAdditionalXLabels");
-                updateAdditionalXLabels();
                 needAdditionalXLabels = false
+                updateAdditionalXLabels();
             }
         }
         first.handle: Rectangle {
