@@ -200,7 +200,7 @@ Rectangle{
                 additionalIndex++
             }else{
                  //(tmStepXLabel == tmAdditional) {
-                currentStepAxisX.append(additionalXLabels[additionalIndex], tmAdditional)
+                currentStepAxisX.append(additionalXLabels[stepXLabelsIndex], tmStepXLabel)
                 additionalIndex++
                 stepXLabelsIndex++
             }
@@ -476,7 +476,7 @@ Rectangle{
                 }
                 lastStepEventTm = tmStop
             }else{
-                var tmEvent = p_session.event[eventNb][1]
+                var tmEvent = p_session.event[eventNb][1] + 1
 
                 currentContractionSeries.append(tmEvent, p_session.pulse[tmEvent])
                 var lastEventXLabel = makeLabel(tmEvent) //(tm + demoModePulseTm).toString()
