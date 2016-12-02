@@ -68,6 +68,7 @@ Rectangle{
     property font  lblsFnt:Qt.font({
                                       //family: 'Encode Sans',
                                       //weight: Font.Black,
+                                      bold: true,
                                       italic: true,
                                       //pixelSize: dp(10)
                                       pointSize: 10 //dp(10)
@@ -658,7 +659,7 @@ Rectangle{
             color: "red"
             borderColor: "black"
             markerShape: ScatterSeries.MarkerShapeCircle
-            markerSize: dp(8            )
+            markerSize: dp(8)
             axisXTop: eventAxisX
             axisY:plotAxisY
 //            XYPoint { x: 25;  y: 25 }
