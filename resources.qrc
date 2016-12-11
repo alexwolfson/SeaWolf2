@@ -85,5 +85,6 @@
         <file>qml/common/SeaWolfPlot.qml</file>
         <file>qml/scenes/ConfigPreferencesScene.qml</file>
         <file>qml/common/SeaWolfFiles.qml</file>
+        <file>assets/img/bubble.png</file>
     </qresource>
 </RCC>

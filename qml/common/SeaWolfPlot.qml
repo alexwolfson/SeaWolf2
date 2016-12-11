@@ -79,6 +79,10 @@ Rectangle{
     property var stepXLabels:               []
 
     function getLblTm(lbl){
+         if (lbl === undefined){
+             return 0
+         }
+
          var tm = lbl.split("/")[1]
         //console.log("getLblTm", tm)
         return parseInt(tm, 10)
@@ -118,8 +122,11 @@ Rectangle{
         var tmStepXLabel           = 10000
         var tmAdditional    = 10000
         // find the first index that is in the Axis X range
+        var foundStepXStart = false
+        var foundStepXStop  = false
         for (stepXLabelsIndexStart = 0; stepXLabelsIndexStart < stepXLabels.length; stepXLabelsIndexStart++){
             if(getLblTm(stepXLabels[stepXLabelsIndexStart]) >= currentStepAxisX.min){
+                foundStepXStart = true
                 break
             }
         }
@@ -127,11 +134,15 @@ Rectangle{
         for (stepXLabelsIndexStop = stepXLabelsIndexStart; stepXLabelsIndexStop < stepXLabels.length; stepXLabelsIndexStop++){
             if(getLblTm(stepXLabels[stepXLabelsIndexStop]) >= currentStepAxisX.max){
                 stepXLabelsIndexStop--
+                foundStepXStop = true
                 break
             }
         }
 
-        var nbOfShownStepLabels = stepXLabelsIndexStop - stepXLabelsIndexStart + 1
+        var nbOfShownStepLabels = 0
+        if (foundStepXStart && foundStepXStop){
+          nbOfShownStepLabels = stepXLabelsIndexStop - stepXLabelsIndexStart + 1
+        }
         var neededLabelNb = nbOfShownStepLabels >= neededLabelNb ? 0: totalXLabelsNb - nbOfShownStepLabels
         var cnt
         if (neededLabelNb <= 0){
@@ -167,7 +178,12 @@ Rectangle{
 
         // Update Axis
         //AW TODO seems too complicated - it just to merge 2 lists
-        stepXLabelsIndex = stepXLabelsIndexStart
+        if (foundStepXStart && foundStepXStop){
+            stepXLabelsIndex = stepXLabelsIndexStart
+        }else{
+            stepXLabelsIndex = 0
+        }
+
         additionalIndex  = 0
         while (! (savedDone && additionalDone)      &&
                (//stepXLabels are still in the range
@@ -555,6 +571,7 @@ Rectangle{
         //update if series creation is finished
         if (canCreateSeriesFlag){
             //console.log("tm = ", tm, "lastStepXLabel = ", lastStepXLabel, "currentStepAxisX.min =", currentStepAxisX.min, "currentStepAxisX.max =", currentStepAxisX.max)
+            //updateAdditionalXLabels()
             currentChartView.update()
             //console.log("Plot Updated")
         }
@@ -579,6 +596,7 @@ Rectangle{
             console.log ("in onSeriesAdded lastStepEventNm:", lastStepEventNm, "lastStepEventTm = ", lastStepEventTm, "pulse = ", currentSession.pulse[lastStepEventTm -1],
                          "myEventsNm2Enum[lastStepEventNm]", myEventsNm2Enum[lastStepEventNm])
             series.color = runColors[run.nextStepName]
+            series.width = dp(5)
             //console.log ("in onSeriesAdded series.color:", series.color)
             //addPointToHrPlot(lastStepEventTm, currentSession.pulse[lastStepEventTm - 1])
             //currentStepHrSeries.append(lastStepEventTm, currentSession.pulse[lastStepEventTm - 1])
@@ -700,7 +718,7 @@ Rectangle{
                 if (tp2.pressed){
                     count++
                 }
-                console.log("pressedNumber = ", count)
+                //console.log("pressedNumber = ", count)
                 return count
             }
 
@@ -836,9 +854,10 @@ Rectangle{
         anchors.top: chartView.top
         anchors.bottom: chartView.bottom
         anchors.margins: {
-            top:   Math.max(chartView.margins.top, (plotRangeControl.second.handle.height))
+            top:   Math.max(2 * chartView.margins.top, (4 * plotRangeControl.second.handle.height))
             //right: -discomfortSliderHandle.width/2;
-            bottom:   Math.max(chartView.margins.bottom, (plotRangeControl.second.handle.height))
+            //bottom: 100 //2 * chartView.margins.bottom
+            bottom:   Math.max(2 * chartView.margins.bottom, (4 * plotRangeControl.second.handle.height))
             right:    discomfortSlider.width
         }
         value: 0.0
@@ -887,8 +906,11 @@ Rectangle{
                 anchors.fill: parent
                 anchors.margins: dp(2)
                 color:"white"
-                text: qsTr("Slide:Discomfort Level,   Click:Contraction")
+                text: qsTr("Slide -> Discomfort Level, Click -> Contraction")
                 verticalAlignment: Text.AlignVCenter
+                fontSizeMode: Text.HorizontalFit
+                minimumPixelSize: parent.width -2*anchors.margins;
+                //font.pixelSize: dp(72)
                 font.bold: true
                 rotation: -90
                 horizontalAlignment: Text.AlignHCenter

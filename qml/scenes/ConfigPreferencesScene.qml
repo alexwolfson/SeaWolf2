@@ -83,6 +83,7 @@ SceneBase {
 
             //Label { text: qsTr("sessionName") }
             SeaWolfInput{ type:"str";   lbl: qsTr("userName");    sfv:"";        onResult: {userName=res}}
+            SeaWolfInput{ id: backgroundMusic;  type:"switch";lbl: qsTr("backgroundMusic");         onResult: {music=swYesNo}}
             SeaWolfInput{ id: gaugeSliders;  type:"switch";lbl: qsTr("gaugeOrSliders");         onResult: {useGauge=swYesNo}}
             SeaWolfInput{ id: timer10;  type:"switch";lbl: qsTr("tenSecTimer");         onResult: {tenSecSignal=swYesNo}}
             SeaWolfInput{ id: timer30;  type:"switch";lbl: qsTr("thirtySecTimer");      onResult: {thirtySecSignal=swYesNo}}

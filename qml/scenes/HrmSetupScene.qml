@@ -114,7 +114,7 @@ SceneBase {
                             //buttonHeight: 0.1*parent.height
                             //anchors.left: parent.left
                             //anchors.bottom: parent.bottom
-                            text: "Scan Again"
+                            text: "Scan for HRM"
                             visible:true
                             //onButtonClick: backButtonPressed()
                             onClicked: {

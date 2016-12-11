@@ -24,6 +24,7 @@ SceneBase {
     property  string sessionType:"WALK"
     property string sessionName
     property int numberOfCycles
+    property bool additionalBreath:true
     // had trouble with multidimension arrays in javascript function, so stated to use 1 dimension
     function get2DimIndex(dim0, dim1){
         return 3 * dim0 + dim1
@@ -96,7 +97,13 @@ SceneBase {
     function generateWalkSession (){
         var mySession = []
         sessionType = "WALK"
-
+        if (additionalBreath){
+            // we are adding to the beginning of the array so the previous time is always in element 2 (if starting from 0)
+            mySession.unshift( {"time": 0,   "typeName": "back"});
+            mySession.unshift( {"time": 0,   "typeName": "walk"});
+            mySession.unshift( {"time": 0,   "typeName": "hold"});
+            mySession.unshift( {"time": 120, "typeName": "brth"});
+        }
         for (var i = 0; i < numberOfCycles; i++){
             // we are adding to the beginning of the array so the previous time is always in element 2 (if starting from 0)
             mySession.unshift( {"time": walkTime,   "typeName": "back"});
@@ -215,6 +222,7 @@ SceneBase {
             //SeaWolfInput{ type:"int";   lbl: qsTr("numberOfCycles"); ifv:"6";       onResult: {numberOfCycles=parseInt(res)}}
             SeaWolfInput{ type:"spinBox";   lbl: qsTr("numberOfCycles"); sbv:6; sbfrom:1; sbto: 10; sbstep: 1;  onResult: {numberOfCycles=intRes}}
             SeaWolfInput{ id: rLast; type:"switch";lbl: qsTr("repeatLast");         onResult: {repeatLast=swYesNo}}
+            SeaWolfInput{ id: addBreath; type:"switch";lbl: qsTr("additional120SecBreath");         onResult: {additionalBreath=swYesNo}}
             SeaWolfInput{ type:"spinBox";   lbl: qsTr("minBreathTime"); sbv:15; sbfrom:0; sbto: 180; sbstep: 5;  onResult: {minBreathTime=intRes}}
             SeaWolfInput{ id:breathDecrementEdit; type:"spinBox";   lbl: qsTr("breathDecrement"); sbv:15; sbfrom:0; sbto: 60; sbstep: 5;  onResult: {holdIncrement=intRes}}
             SeaWolfInput{ type:"spinBox";   lbl: qsTr("maxHoldTime"); sbv:120; sbfrom:30; sbto: 600; sbstep: 5;  onResult: {maxHoldTime=intRes}}

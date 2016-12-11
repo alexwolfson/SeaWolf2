@@ -105,11 +105,11 @@ ApplicationWindow {
 //                anchors.fill: parent
 //            }
 
-        TabButton { id: prefTab; text: qsTr("Pref")}
         TabButton { id: confTab; text: qsTr("Conf")}
         TabButton { id: runTab; text: qsTr("Run")}
         TabButton { id: hrmTab; text: qsTr("HRM")}
         TabButton { id: browseResTab; text: qsTr("Browse")}
+        TabButton { id: prefTab; text: qsTr("Pref")}
         TabButton { id: aboutTab; text: qsTr("About")}
         TabButton { id: finishTab; text: qsTr("Finish")}
     }
@@ -117,11 +117,11 @@ ApplicationWindow {
         id:stackLayout
         width: parent.width
         currentIndex: tabView.currentIndex
-        ConfigPreferencesScene{ id: pref }
         ConfigSeriesScene{ id:conf; }
         RunSessionScene{ id:run;    }
         HrmSetupScene{  id:hrm;     }
         BrowseResultsScene{  id:browseRes; }
+        ConfigPreferencesScene{ id: pref }
         AboutScene{  id:about;      }
         SceneBase {
             z:100
@@ -138,10 +138,10 @@ ApplicationWindow {
                 MenuButton{
                     z:100
                     id:quitButton
-                    width:parent.width/3
-                    height: parent.height/3
-                    border.width: dp(4)
-                    border.color: "black"
+                    width:parent.width/4
+                    height: width
+                    //border.width: dp(4)
+                    //border.color: "black"
                     text: qsTr("Quit")
                     anchors.centerIn: parent
                     onClicked: {
