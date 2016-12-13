@@ -34,7 +34,13 @@ SceneBase {
     function generateO2Session (){
         var mySession = []
         sessionType = "O2"
-
+        if (additionalBreath){
+            // we are adding to the beginning of the array so the previous time is always in element 2 (if starting from 0)
+            mySession.unshift( {"time": 0,   "typeName": "back"});
+            mySession.unshift( {"time": 0,   "typeName": "walk"});
+            mySession.unshift( {"time": 0,   "typeName": "hold"});
+            mySession.unshift( {"time": 120, "typeName": "brth"});
+        }
         var cycles4Calculation = repeatLast ? numberOfCycles - 2 : numberOfCycles - 1;
         mySession.unshift( {"time" : 0, "typeName" :"back"});
         mySession.unshift( {"time" : 0, "typeName" :"walk"});
@@ -68,6 +74,13 @@ SceneBase {
         var mySession = []
         sessionType = "CO2"
 
+        if (additionalBreath){
+            // we are adding to the beginning of the array so the previous time is always in element 2 (if starting from 0)
+            mySession.unshift( {"time": 0,   "typeName": "back"});
+            mySession.unshift( {"time": 0,   "typeName": "walk"});
+            mySession.unshift( {"time": 0,   "typeName": "hold"});
+            mySession.unshift( {"time": 120, "typeName": "brth"});
+        }
         var cycles4Calculation = repeatLast ? numberOfCycles - 2 : numberOfCycles - 1;
         mySession.unshift( {"time" : 0, "typeName" :"back"});
         mySession.unshift( {"time" : 0, "typeName" :"walk"});

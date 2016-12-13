@@ -49,6 +49,12 @@ SceneBase {
                 leftMargin: dp(20)
                 topMargin: dp(20)
             }
+            Text{
+                color: "darkred"
+                text: qsTr("THIS PAGE IS NOT IMPLEMENTED")
+                font.pixelSize: dp(40)
+            }
+
             RowLayout {
                 id: buttonsRow
                 //                anchors.bottom: parent.bottom
@@ -57,18 +63,18 @@ SceneBase {
                 spacing: dp(3)
 
                 MenuButton {
-                    text: "Choose User"
+                    text: qsTr("Choose User")
                     onClicked: {
                     }
                 }
 
                 MenuButton {
-                    text: "New User"
+                    text: qsTr("New User")
                     onClicked: {
                     }
                 }
                 MenuButton {
-                    text: "Select"
+                    text: qsTr("Select")
                     onClicked: {
                         //AWDEBUG
                         root.listPropertiesByName("ConfigSeriesScene attached properites list", configPreferencesScene, ["userName", "music", "oneMinSignal", "thirtySecSignal",

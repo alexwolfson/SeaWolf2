@@ -331,7 +331,7 @@ Rectangle{
         currentStepHrSeries = currentChartView.createSeries(ChartView.SeriesTypeLine, "0", currentStepAxisX, currentAxisY)
         currentStepHrSeries.width = dp(5)
         currentDiscomfortSeries    = currentChartView.createSeries(ChartView.SeriesTypeLine, "0", currentStepAxisX, discomfortAxisY)
-        currentDiscomfortSeries.color = "red"
+        currentDiscomfortSeries.color = "darkred"
         currentDiscomfortSeries.width = dp(5)
         currentDiscomfortSeries.axisYRight = discomfortAxisY;
     }

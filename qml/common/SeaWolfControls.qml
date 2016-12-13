@@ -30,6 +30,10 @@ CircularGauge {
     maximumValue: gaugeModel.get(0).time
 
     function startVoiceTimers(){
+        sixtyTimer.interval= maximumValue * 1000 - 60000
+        if (sixtyTimer.interval > 0){
+            sixtyTimer.start()
+        }
         thirtyTimer.interval= maximumValue * 1000 - 30000
         if (thirtyTimer.interval > 0){
             thirtyTimer.start()
@@ -42,6 +46,7 @@ CircularGauge {
     function stopVoiceTimers(){
             thirtyTimer.stop()
             tenTimer.stop()
+            sixtyTimer.stop()
     }
 
     onModelIndexChanged:{
@@ -103,7 +108,8 @@ CircularGauge {
             Image {
                 id:heartImage
                 property real pulseFactor: 1.0
-                source:"../../assets/img/blue_heart.png"
+                source: "../../assets/img/bubble.png"
+                //source:"../../assets/img/blue_heart.png"
                 //source: "images/knob.png"
                 anchors.centerIn: parent
                 scale: {
@@ -179,6 +185,11 @@ CircularGauge {
         }
     }
     SoundEffect {
+        id: sixtysnd
+        volume: 1.0
+        source: "../../assets/sounds/1min.wav"
+    }
+    SoundEffect {
         id: thirtysnd
         volume: 1.0
         source: "../../assets/sounds/30sec.wav"
@@ -208,6 +219,13 @@ CircularGauge {
             }
         }
     ]
+    Timer{
+        id: sixtyTimer
+        interval:60000
+        onTriggered:{
+            sixtysnd.play()
+        }
+    }
     Timer{
         id: thirtyTimer
         interval:30000

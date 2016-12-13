@@ -439,10 +439,11 @@ SceneBase {
                 Text {
                     id: hrValue
                     z:100
-                    font.pixelSize: dp(45); font.bold: true
+                    font.pixelSize: dp(60); //font.bold: true
                     anchors.centerIn: parent
                     style: Text.Raised;
-                    color: "white" //"#3870BA"
+                    //color: "#3870BA"
+                    color: "black"
                     text: heartRate.hr
                     onTextChanged: {
                         //              if (heartRate.hr > 0 && updatei != null && heartRate.numDevices() > 0) {
