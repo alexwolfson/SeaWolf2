@@ -80,7 +80,8 @@ Item {
             border.width: dp(1)
         }
         //}
-        onEditingFinished: {res=text; result()}
+        //onEditingFinished: {res=text; result()}
+        onTextChanged: {res=text; result()}
     }
     Switch {
         id:swtch

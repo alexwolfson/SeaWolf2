@@ -19,6 +19,7 @@ SceneBase {
     signal setupSessionSignal(var sessionName, var selectedSession)
     onSetupSessionSignal: {runSetupSession(sessionName,selectedSession)}
     signal timeLeft(var tm)
+    signal sessionTimeUpdate(var tm)
     onTimeLeft: {currentStepLeft.text = tm}
     function enableWalkControl(){currentWalkControl.enabled=true}
     //anchors.fill: parent
@@ -230,6 +231,7 @@ SceneBase {
                 // Is some sort of race condition is possible here?
                 // May be call markEvent from here instead of from the gauges state change?
                 sessionTime++
+                sessionTimeUpdate(sessionTime)
                 // update heart rate information
                 var hrValue = Math.round(heartRate.hr)
                 hrPlot.currentSession.pulse.push(hrValue)

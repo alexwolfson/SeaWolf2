@@ -237,7 +237,7 @@ SceneBase {
             SeaWolfInput{ id: rLast; type:"switch";lbl: qsTr("repeatLast");         onResult: {repeatLast=swYesNo}}
             SeaWolfInput{ id: addBreath; type:"switch";lbl: qsTr("additional120SecBreath");         onResult: {additionalBreath=swYesNo}}
             SeaWolfInput{ type:"spinBox";   lbl: qsTr("minBreathTime"); sbv:15; sbfrom:0; sbto: 180; sbstep: 5;  onResult: {minBreathTime=intRes}}
-            SeaWolfInput{ id:breathDecrementEdit; type:"spinBox";   lbl: qsTr("breathDecrement"); sbv:15; sbfrom:0; sbto: 60; sbstep: 5;  onResult: {holdIncrement=intRes}}
+            SeaWolfInput{ id:breathDecrementEdit; type:"spinBox";   lbl: qsTr("breathDecrement"); sbv:15; sbfrom:0; sbto: 60; sbstep: 5;  onResult: {breathDecrement=intRes}}
             SeaWolfInput{ type:"spinBox";   lbl: qsTr("maxHoldTime"); sbv:120; sbfrom:30; sbto: 600; sbstep: 5;  onResult: {maxHoldTime=intRes}}
             SeaWolfInput{ id:holdIncrementEdit; type:"spinBox";   lbl: qsTr("holdIncrement"); sbv:15; sbfrom:0; sbto: 60; sbstep: 5;  onResult: {holdIncrement=intRes}}
             SeaWolfInput{ id:walkTimeEdit; type:"spinBox";   lbl: qsTr("walkTime"); sbv:120; sbfrom:0; sbto: 600; sbstep: 5;  onResult: {walkTime=intRes}}

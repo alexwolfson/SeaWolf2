@@ -78,6 +78,10 @@ Rectangle{
     property int totalXLabelsNb:       8
     property var stepXLabels:               []
 
+    function sessionCurrentTimeUpdateSlot(sessionTime){
+        //TODO: update current time
+    }
+
     function getLblTm(lbl){
          if (lbl === undefined){
              return 0
@@ -265,9 +269,9 @@ Rectangle{
         }
 
         var evt   = currentSession.event[0]
-        var evtTm = evt[1]
+        var evtTm = 0
         var nextEvt
-        for (var i = 1; (i < currentSession.event.length) && (currentSession.event[i][1] < currentStepAxisX.max); i++ ){
+        for (var i = 0; (i < currentSession.event.length) && (currentSession.event[i][1] < currentStepAxisX.max); i++ ){
             nextEvt = currentSession.event[i]
             if (isNewSeriesEvent(nextEvt[0])){
                 if ((nextEvt[1] >= tm) ){
@@ -276,6 +280,9 @@ Rectangle{
                 evtTm = nextEvt[1]
 
             }
+        }
+        if (tm < evtTm){
+           console.log("Event tm > tm", evtTm, tm)
         }
             //
         return evtTm
@@ -321,6 +328,7 @@ Rectangle{
         currentStepEventEnum  = -1;
         maxStepsOnPlot        = 1000;
         firstStepEventToPlotNb   = -1;
+        currentChartView.title = currentSession.sessionName + " " + currentSession.when
     }
 
     //creates new series graph

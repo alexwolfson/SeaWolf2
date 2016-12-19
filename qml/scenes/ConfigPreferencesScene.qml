@@ -8,8 +8,6 @@ import "../common"
 SceneBase {
     id: configPreferencesScene
     //===================================================
-    // signal indicating that current session is selected
-    signal sessionSelected(var sessionName, var selectedSession)
 
     property string userName
     property  bool music

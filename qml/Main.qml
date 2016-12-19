@@ -93,6 +93,7 @@ ApplicationWindow {
             conf.sessionSelected.connect(run.currentHrPlot.plotSetupSession)
             hrm.startHrmDemo.connect(run.currentHrPlot.demoHrm)
             hrm.startHrmSearch.connect(run.currentHrPlot.realHrm)
+            run.sessionTimeUpdate.connect(run.currentHrPlot.sessionTimeUpdateSlot)
         }
         //style: TabViewStyle {
             //frameOverlap: dp(0)
