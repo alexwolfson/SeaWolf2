@@ -64,15 +64,15 @@ CircularGauge {
         function toPixels(percentage) {
             return percentage * outerRadius;
         }
-//        needle: Rectangle {
-//            id: gaugeNeedle
-//            property color needleColor: color
-//            y: outerRadius * 0.15
-//            implicitWidth: outerRadius * 0.03
-//            implicitHeight: outerRadius * 0.9
-//            antialiasing: true
-//            color: gauge.needleColor
-//        }
+        needle: Rectangle {
+            id: gaugeNeedle
+            property color needleColor: color
+            y: outerRadius * 0.15
+            implicitWidth: outerRadius * 0.03
+            implicitHeight: outerRadius * 0.9
+            antialiasing: true
+            color: gauge.needleColor
+        }
 //        needle: Canvas {
 //            implicitWidth: needleBaseWidth
 //            implicitHeight: needleLength
@@ -140,7 +140,7 @@ CircularGauge {
                         id: cptwo
                         source: "../../assets/img/star.png"
                         colorVariation: 0.4
-                        color: "#000000FF"
+                        color: "#000000EF"
                     }
 
                     Emitter {

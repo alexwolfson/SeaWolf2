@@ -78,7 +78,7 @@ Rectangle{
     property int totalXLabelsNb:       8
     property var stepXLabels:               []
 
-    function sessionCurrentTimeUpdateSlot(sessionTime){
+    function sessionTimeUpdateSlot(sessionTime){
         //TODO: update current time
     }
 
@@ -409,7 +409,7 @@ Rectangle{
         //open will add path before fileName
         console.log("fileName=", fileName, "Open=" , qfa.open(path + fileName));
         var sessionString = JSON.stringify(currentSession);
-        console.log("Wrote = ", qfa.write(sessionString));
+        //console.log("Wrote = ", qfa.write(sessionString));
         //var qstr = qfa.read();
         //console.log("read = ", qstr);
         qfa.close();
@@ -782,6 +782,8 @@ Rectangle{
         anchors.left:   chartView.left
         anchors.right:  chartView.right
         anchors.bottom: chartView.bottom
+        anchors.leftMargin: chartView.margins.left
+        anchors.rightMargin: chartView.margins.right
         from: 0
         to:   0 //undefined === currentSession.pulse.length? 50 : currentSession.pulse.length
         stepSize: 1
@@ -860,19 +862,21 @@ Rectangle{
         //anchors.left:   chartView.left
         anchors.right:  chartView.right
         anchors.top: chartView.top
-        anchors.bottom: chartView.bottom
+        //anchors.bottom: chartView.bottom
         anchors.margins: {
-            top:   Math.max(2 * chartView.margins.top, (4 * plotRangeControl.second.handle.height))
-            //right: -discomfortSliderHandle.width/2;
-            //bottom: 100 //2 * chartView.margins.bottom
-            bottom:   Math.max(2 * chartView.margins.bottom, (4 * plotRangeControl.second.handle.height))
-            right:    discomfortSlider.width
+            //left:   Math.max(2 * chartView.margins.top, (4 * plotRangeControl.second.handle.height))
+            right:  discomfortSliderHandle.width/2;
+            //top:    2 * plotRangeControl.second.handle.height
+            //bottom: 2 * plotRangeControl.second.handle.height
+            //right: 100//Math.max(2 * chartView.margins.bottom, (4 * plotRangeControl.second.handle.height))
+            //bottom:    discomfortSliderHandle.width
         }
         value: 0.0
         from:0
         to:10
         //stepSize: 0.1
         implicitWidth: dp(40)
+        implicitHeight: chartView.height - 3 *plotRangeControl.second.handle.height
         orientation:Qt.Vertical
         onPositionChanged:  { var v1 = from +  (to -  from )  * position;  value =  v1; discomfortValue = v1;
                                                  //console.log(" In discomfortSlider: from, to, value, position = " , from, to, value, position)

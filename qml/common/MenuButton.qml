@@ -40,7 +40,7 @@ Item {
     Text {
         id: buttonText
         anchors.centerIn: parent
-        font.pixelSize: dp (44)
+        font.pixelSize: dp (40)
         elide: Text.ElideMiddle
         //color: "#F0EBED"
         //color: "#3870BA"

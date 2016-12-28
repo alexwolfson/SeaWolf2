@@ -81,7 +81,7 @@ Item {
         }
         //}
         //onEditingFinished: {res=text; result()}
-        onTextChanged: {res=text; result()}
+       onTextChanged: {res=text; result()}
     }
     Switch {
         id:swtch

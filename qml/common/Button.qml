@@ -41,7 +41,7 @@
 import QtQuick 2.7
 
 Rectangle {
-    id:button
+    id:button1
     //color: "#3870BA"
 
     property real buttonWidth: 300
