@@ -17,7 +17,6 @@
 
 int main(int argc, char *argv[])
 {
-
     QApplication app(argc, argv);
 //    QScreen *qs = QGuiApplication::primaryScreen();
 //    QRect rec = qs->geometry();

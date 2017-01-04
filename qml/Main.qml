@@ -157,7 +157,7 @@ ApplicationWindow {
                anchors.horizontalCenter: parent.horizontalCenter
                //anchors.bottom: parent.bottom
                width: dp(150)
-               height:width
+               height:dp(150)
            }
         }
     }

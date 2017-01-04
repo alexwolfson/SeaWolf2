@@ -172,7 +172,7 @@ SceneBase {
                                     return hrPlot.runColors[currentModel.get(index).typeName];
                                 }
                                 color: index == -1 ? "grey" : "white" //{ if (index == -1) return "grey"; isCurrent? "white": "black"}
-                                border.width: isCurrent? dp(8): dp(6)
+                                border.width: isCurrent? dp(2): dp(6)
                                 function whatToShow() {
 
                                     var wts = /*isCurrent ? Math.round(time - runGauge[index % runGauge.length].value) :*/ time

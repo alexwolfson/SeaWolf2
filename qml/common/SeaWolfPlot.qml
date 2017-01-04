@@ -940,15 +940,212 @@ Rectangle{
 
         handle: Rectangle {
             id:discomfortSliderHandle
+            Image {
+                source: "../../assets/img/bubble.png"
+                anchors.centerIn: parent
+                width:parent.width
+                height:parent.height
+            }
+
             y: discomfortSlider.bottomPadding + discomfortSlider.visualPosition * (discomfortSlider.availableHeight - height)
             x: discomfortSlider.leftPadding + discomfortSlider.availableWidth / 2 - width / 2
             implicitWidth: dp(120)
             implicitHeight: dp(120)
             radius: dp(60)
             opacity: discomfortSlider.pressed ? 0.6 : 0.8
-            color: "orange"
+            //color: "orange"
             border.color: "#bdbebf"
         }
    }
+    function changeRay() {
+        var posOfPlotArea = chartView.mapToItem(null, chartView.plotArea.x, chartView.plotArea.y)
+        var posOfPlotAreaInDetailSliderStart = detailSlider.mapFromItem(chartView, posOfPlotArea.x, posOfPlotArea.y)
+        var posOfPlotAreaIndetailSliderStop  = detailSlider.mapFromItem(chartView, posOfPlotArea.x + chartView.plotArea.width, chartView.plotArea.y)
+        detailSliderRay.y = posOfPlotAreaInDetailSliderStart.y
+        detailSliderRay.height = Math.abs(posOfPlotAreaInDetailSliderStart.y) //- chartView.margins.top
+//        console.log("X=", chartView.x, posOfChartView.x, posOfPlotArea.x, posOfChartViewIndetailSlider.x, posOfPlotAreaIndetailSlider.x,
+//                    "Y=", chartView.y, posOfChartView.y, posOfPlotArea.y, posOfChartViewIndetailSlider.y, posOfPlotAreaIndetailSlider.y)
+
+        var vPlotX = (posOfPlotAreaIndetailSliderStop.x - posOfPlotAreaInDetailSliderStart.x)  / (detailSlider.to - detailSlider.from) *
+                detailSlider.value + posOfPlotAreaInDetailSliderStart.x
+        detailSliderRay.x =  vPlotX
+    }
+//    function changeRay() {
+//        var posOfChartView = chartView.mapToItem(null, chartView.x, chartView.y)
+//        //var posOfChartView = box.mapToItem(blueSquare, redSquare.x, redSquare.y)
+//        var posOfChartViewIndetailSlider = detailSlider.mapFromItem(chartView, posOfChartView.x, posOfChartView.y)
+//        //detailSliderRay.x = posOfChartViewIndetailSlider.x + chartView.margins.left
+//        detailSliderRay.y = posOfChartViewIndetailSlider.y - chartView.margins.top
+//        detailSliderRay.height = Math.abs(posOfChartViewIndetailSlider.y) //- chartView.margins.top
+//        console.log("X=", chartView.x, posOfChartView.x, posOfChartViewIndetailSlider.x,
+//                    "Y=", chartView.y, posOfChartView.y, posOfChartViewIndetailSlider.y)
+
+//        //var seriesValueInChart = Qt.point(Math.floor(currentStepAxisX.min), currentSession.discomfort[Math.floor(currentStepAxisX.min)])
+//        //var seriesValueInChart = Qt.point((currentStepAxisX.min), currentSession.discomfort[Math.floor(currentStepAxisX.min)])
+//        var seriesValueInChart = Qt.point(detailSlider.value, currentSession.discomfort[Math.floor(detailSlider.value)])
+//        console.log("seriesValueInChart=", seriesValueInChart.x, seriesValueInChart.y)
+//        var seriesPointPosInChart = chartView.mapToValue(seriesValueInChart, currentDiscomfortSeries)
+//        console.log("seriesPointPosInChart=", seriesPointPosInChart.x, seriesPointPosInChart.y)
+//        //var seriesPointPosInDetailSlider = detailSlider.mapFromItem(chartView, seriesPointPosInChart.x, seriesPointPosInChart.y)
+//        var seriesPointPosInDetailSlider = detailSlider.mapToItem(null, seriesPointPosInChart.x + posOfChartView.x, seriesPointPosInChart.y + posOfChartView.y)
+//        console.log("seriesPointPosInDetailSlider=", seriesPointPosInDetailSlider.x, seriesPointPosInDetailSlider.y)
+//        console.log("cahertView.width=", chartView.width, "chartView.margins.left=", chartView.margins.left, "chartView.margins.right", chartView.margins.right)
+//        var vPlotX = (chartView.width - chartView.margins.left - chartView.margins.right)  / (detailSlider.to - detailSlider.from) *
+//            detailSlider.value //+ plotPointToDetailSlider(0,0).x
+//          //var vX = mapFromItem(chartView.plotArea, vPlotX, 0).x
+//          //return vX
+//         console.log("vPlotX = ", vPlotX)
+//         detailSliderRay.x =  seriesPointPosInDetailSlider.x
+//    }
+//    function plotPointToDetailSlider(xplot,yplot) {
+//        var posInChartView = chartView.mapToItem(null, chartView.x, chartView.y)
+//        //var posInChartView = box.mapToItem(blueSquare, redSquare.x, redSquare.y)
+//        var posIndetailSlider = detailSlider.mapFromItem(chartView, posInChartView.x+xplot, posInChartView.y+yplot)
+//        var pt = Qt.point(posIndetailSlider.x - chartView.margins.left, posIndetailSlider.y - chartView.margins.top)
+//        console.log("pt=", pt.x, pt.y)
+//    }
+
+    Slider {
+        id: detailSlider
+        anchors.left:   chartView.left
+        anchors.right:  chartView.right
+        //anchors.top: chartView.top
+        anchors.bottom: chartView.bottom
+        anchors.margins: {
+            left: chartView.margins.left
+            right: chartView.margins.right
+            //left:   Math.max(2 * chartView.margins.top, (4 * plotRangeControl.second.handle.height))
+            //right:  detailSliderHandle.width/2;
+            //top:    2 * plotRangeControl.second.handle.height
+            //bottom: 2 * plotRangeControl.second.handle.height
+            //right: 100//Math.max(2 * chartView.margins.bottom, (4 * plotRangeControl.second.handle.height))
+            //bottom:    detailSliderHandle.width
+        }
+        value: 0
+        from:currentStepAxisX.min
+        to:currentStepAxisX.max
+        stepSize: 1
+        implicitHeight: dp(40)
+        implicitWidth: chartView.width// - 3 *plotRangeControl.second.handle.height
+        orientation:Qt.Horizontal
+        onPositionChanged:  { var v1 = from +  (to -  from )  * position;  value =  v1;
+                                                 //console.log(" In detailSlider: from, to, value, position = " , from, to, value, position)
+                    }
+        background:Rectangle {
+            height: parent.height
+            width: parent.width
+            //color: "#21be2b"
+            opacity:1.0
+            radius: dp(8)
+            gradient: Gradient {
+                GradientStop {
+                    position: 1.00;
+                    color: "blue";
+                }
+                GradientStop {
+                    position: 0.00;
+                    color: "red";
+                }
+            }
+            Text{
+                anchors.fill: parent
+                anchors.margins: dp(2)
+                color:"white"
+                text: qsTr("Slide -> show details, Click -> TODO")
+                verticalAlignment: Text.AlignVCenter
+                fontSizeMode: Text.HorizontalFit
+                minimumPixelSize: parent.width -2*anchors.margins;
+                //font.pixelSize: dp(72)
+                font.bold: true
+                rotation: 0
+                horizontalAlignment: Text.AlignHCenter
+                //anchors.verticalCenter: parent.verticalCenter
+            }
+        }
+        onValueChanged: changeRay()
+
+        handle: Rectangle {
+            Image {
+                source: "../../assets/img/bubble.png"
+                anchors.centerIn: parent
+                width:parent.width
+                height:parent.height
+            }
+            id:detailSliderHandle
+            x: detailSlider.leftPadding + detailSlider.visualPosition * (detailSlider.availableWidth - width)
+            y: detailSlider.topPadding + detailSlider.availableHeight / 2 - height / 2
+            implicitWidth: dp(120)
+            implicitHeight: dp(120)
+            radius: dp(60)
+            opacity: detailSlider.pressed ? 0.6 : 0.8
+            //color: "orange"
+            //border.color: "#bdbebf"
+            ColumnLayout{
+                Text{
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    //anchors.margins: dp(2)
+                    color:"black"
+                    text: {var tm = Math.round(detailSlider.value); return((tm - getCurrentStepStartTm(tm)).toString() + "/" + (tm + demoModePulseTm).toString())}
+                    //verticalAlignment: Text.AlignVCenter
+                    fontSizeMode: Text.HorizontalFit
+                    minimumPixelSize: parent.width -2*anchors.margins;
+                    //font.pixelSize: dp(72)
+                    font.bold: true
+                    rotation: 0
+                    horizontalAlignment: Text.AlignHCenter
+                    //anchors.verticalCenter: parent.verticalCenter
+                }
+                Text{
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    //anchors.margins: dp(2)
+                    color:"black"
+                    text:currentSession.pulse[Math.round(detailSlider.value)].toString()
+                    //verticalAlignment: Text.AlignVCenter
+                    fontSizeMode: Text.HorizontalFit
+                    minimumPixelSize: parent.width -2*anchors.margins;
+                    //font.pixelSize: dp(72)
+                    font.bold: true
+                    rotation: 0
+                    horizontalAlignment: Text.AlignHCenter
+                    //anchors.verticalCenter: parent.verticalCenter
+                }
+                Text{
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    //anchors.margins: dp(2)
+                    color:"black"
+                    text:Math.round(currentSession.discomfort[Math.round(detailSlider.value)]).toString()
+                    //verticalAlignment: Text.AlignVCenter
+                    fontSizeMode: Text.HorizontalFit
+                    minimumPixelSize: parent.width -2*anchors.margins;
+                    //font.pixelSize: dp(72)
+                    font.bold: true
+                    rotation: 0
+                    horizontalAlignment: Text.AlignHCenter
+                    //anchors.verticalCenter: parent.verticalCenter
+                }
+            }
+        }
+        Rectangle{
+            id:detailSliderRay
+            x:0
+            y: 0
+            implicitWidth: dp(6)
+            implicitHeight: chartView.height
+            radius: dp(2)
+            color: "white"
+            border.width: 1
+            border.color: "black"
+
+        }
+   }
+   Component.onCompleted: {
+       //var point = detailSlider.mapFromItem(null, chartView.plotArea.x, chartView.plotArea.y)
+       var point = detailSlider.mapToItem(chartView, 0.0, 0.0)
+       //var myPoint = mapFromItem(null, point.x, point.y)
+       console.log("point = ", point.x, point.y)
+       detailSliderRay.y = point.y
+       detailSliderRay.height = Math.abs(point.y)
+   }
+
 } //End Of Plot
 
