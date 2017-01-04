@@ -804,11 +804,13 @@ Rectangle{
         }
         //For some reason the visual position change requires a manual value setup. A bug or wrong usage?
         first.onVisualPositionChanged:  { var v1 = Math.round(from +  (to -  from )  * first.visualPosition);  first.value =  v1;
+            changeRay()
             //                             console.log(" In rangeSlider: first.from, to, value, visualPosition = " , from, to, first.value, first.visualPosition)
-            }
+        }
         second.onVisualPositionChanged: { var v1 = Math.round(from + (to - from ) * second.visualPosition); second.value = v1;
             //                             console.log(" In rangeSlider: second.from, to, value, visualPoition = " , from, to, second.value, second.visualPosition)
-            }
+            changeRay()
+        }
         onNeedAdditionalXLabelsChanged: {
             if (needAdditionalXLabels){
                 console.log ("*** needAdditionalXLabels");
@@ -958,16 +960,17 @@ Rectangle{
         }
    }
     function changeRay() {
+        var posOfChartView = chartView.mapToItem(null, chartView.x, chartView.y)
         var posOfPlotArea = chartView.mapToItem(null, chartView.plotArea.x, chartView.plotArea.y)
-        var posOfPlotAreaInDetailSliderStart = detailSlider.mapFromItem(chartView, posOfPlotArea.x, posOfPlotArea.y)
-        var posOfPlotAreaIndetailSliderStop  = detailSlider.mapFromItem(chartView, posOfPlotArea.x + chartView.plotArea.width, chartView.plotArea.y)
+        var posOfPlotAreaInDetailSliderStart = detailSlider.mapFromItem(null, posOfPlotArea.x, posOfPlotArea.y)
+        var posOfPlotAreaIndetailSliderStop  = detailSlider.mapFromItem(null, posOfPlotArea.x + chartView.plotArea.width, chartView.plotArea.y)
         detailSliderRay.y = posOfPlotAreaInDetailSliderStart.y
-        detailSliderRay.height = Math.abs(posOfPlotAreaInDetailSliderStart.y) //- chartView.margins.top
-//        console.log("X=", chartView.x, posOfChartView.x, posOfPlotArea.x, posOfChartViewIndetailSlider.x, posOfPlotAreaIndetailSlider.x,
-//                    "Y=", chartView.y, posOfChartView.y, posOfPlotArea.y, posOfChartViewIndetailSlider.y, posOfPlotAreaIndetailSlider.y)
+        detailSliderRay.height = Math.abs(chartView.plotArea.height) //- chartView.margins.top
+//        console.log("X=", chartView.x, posOfChartView.x, posOfPlotArea.x, posOfChartViewInDetailSlider.x, posOfPlotAreaIndetailSlider.x,
+//                    "Y=", chartView.y, posOfChartView.y, posOfPlotArea.y, posOfChartViewInDetailSlider.y, posOfPlotAreaIndetailSlider.y)
 
         var vPlotX = (posOfPlotAreaIndetailSliderStop.x - posOfPlotAreaInDetailSliderStart.x)  / (detailSlider.to - detailSlider.from) *
-                detailSlider.value + posOfPlotAreaInDetailSliderStart.x
+                (detailSlider.value - detailSlider.from) + posOfPlotAreaInDetailSliderStart.x
         detailSliderRay.x =  vPlotX
     }
 //    function changeRay() {
