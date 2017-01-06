@@ -66,13 +66,13 @@ Rectangle{
     property bool  showAbsoluteTm:          true //TODO: for switching to showing
     //  the relative to the step time
     property font  lblsFnt:Qt.font({
-                                      //family: 'Encode Sans',
-                                      //weight: Font.Black,
-                                      bold: true,
-                                      italic: true,
-                                      //pixelSize: dp(10)
-                                      pointSize: 10 //dp(10)
-                                  })
+                                       //family: 'Encode Sans',
+                                       //weight: Font.Black,
+                                       bold: true,
+                                       italic: true,
+                                       //pixelSize: dp(10)
+                                       pointSize: 10 //dp(10)
+                                   })
     property bool canCreateSeriesFlag:      true
     property var additionalXLabels:         []
     property int totalXLabelsNb:       8
@@ -83,11 +83,11 @@ Rectangle{
     }
 
     function getLblTm(lbl){
-         if (lbl === undefined){
-             return 0
-         }
+        if (lbl === undefined){
+            return 0
+        }
 
-         var tm = lbl.split("/")[1]
+        var tm = lbl.split("/")[1]
         //console.log("getLblTm", tm)
         return parseInt(tm, 10)
     }
@@ -145,9 +145,9 @@ Rectangle{
 
         var nbOfShownStepLabels = 0
         if (foundStepXStart && foundStepXStop){
-          nbOfShownStepLabels = stepXLabelsIndexStop - stepXLabelsIndexStart + 1
+            nbOfShownStepLabels = stepXLabelsIndexStop - stepXLabelsIndexStart + 1
         }
-        var neededLabelNb = nbOfShownStepLabels >= neededLabelNb ? 0: totalXLabelsNb - nbOfShownStepLabels
+        var neededLabelNb = nbOfShownStepLabels >= totalXLabelsNb ? 0: totalXLabelsNb - nbOfShownStepLabels
         var cnt
         if (neededLabelNb <= 0){
             restoreStepXLabels()
@@ -191,11 +191,11 @@ Rectangle{
         additionalIndex  = 0
         while (! (savedDone && additionalDone)      &&
                (//stepXLabels are still in the range
-               ((getLblTm(stepXLabels[stepXLabelsIndex]) >= currentStepAxisX.min) &&
-                   (getLblTm(stepXLabels[stepXLabelsIndex]) <= currentStepAxisX.max)) ||               //additionalXLabels are still in the range
-               ((getLblTm(additionalXLabels[additionalIndex]) >= currentStepAxisX.min) &&
-                   (getLblTm(additionalXLabels[additionalIndex]) <= currentStepAxisX.max))
-               ) &&
+                ((getLblTm(stepXLabels[stepXLabelsIndex]) >= currentStepAxisX.min) &&
+                 (getLblTm(stepXLabels[stepXLabelsIndex]) <= currentStepAxisX.max)) ||               //additionalXLabels are still in the range
+                ((getLblTm(additionalXLabels[additionalIndex]) >= currentStepAxisX.min) &&
+                 (getLblTm(additionalXLabels[additionalIndex]) <= currentStepAxisX.max))
+                ) &&
                ((stepXLabelsIndex < stepXLabels.length) || (additionalIndex < additionalXLabels.length))){
             if (stepXLabelsIndex < stepXLabels.length){
                 tmStepXLabel = getLblTm(stepXLabels[stepXLabelsIndex])
@@ -220,19 +220,19 @@ Rectangle{
                 currentStepAxisX.append(additionalXLabels[additionalIndex], tmAdditional)
                 additionalIndex++
             }else{
-                 //(tmStepXLabel == tmAdditional) {
+                //(tmStepXLabel == tmAdditional) {
                 currentStepAxisX.append(additionalXLabels[stepXLabelsIndex], tmStepXLabel)
                 additionalIndex++
                 stepXLabelsIndex++
             }
         }
 
-//        for (lblTm = Math.floor(currentStepAxisX.min); lblTm < currentStepAxisX.max; lblTm += interval){
-//            lbl = (lblTm - getCurrentStepStartTm(lblTm)).toString() + "/" + (lblTm + demoModePulseTm).toString()
-//            additionalXLabels.push(lbl)
-//            // currentStepAxisX.append(lbl, lblTm)
-//            console.log("Added ", lbl, "at [", lblTm, "]")
-//        }
+        //        for (lblTm = Math.floor(currentStepAxisX.min); lblTm < currentStepAxisX.max; lblTm += interval){
+        //            lbl = (lblTm - getCurrentStepStartTm(lblTm)).toString() + "/" + (lblTm + demoModePulseTm).toString()
+        //            additionalXLabels.push(lbl)
+        //            // currentStepAxisX.append(lbl, lblTm)
+        //            console.log("Added ", lbl, "at [", lblTm, "]")
+        //        }
     }
     function demoHrm(){
         demoModePulseTm = 0 //1000
@@ -282,9 +282,9 @@ Rectangle{
             }
         }
         if (tm < evtTm){
-           console.log("Event tm > tm", evtTm, tm)
+            console.log("Event tm > tm", evtTm, tm)
         }
-            //
+        //
         return evtTm
     }
 
@@ -366,7 +366,7 @@ Rectangle{
         console.log(" *** " + msg + ": print end " + " ***")
     }
     function makeLabel(tm){
-       return (tm - lastStepEventTm).toString() + "/" + (tm + demoModePulseTm).toString()
+        return (tm - lastStepEventTm).toString() + "/" + (tm + demoModePulseTm).toString()
     }
 
     function getSesssionHRMin(session){
@@ -445,11 +445,11 @@ Rectangle{
         if ((oldSecondValue <= 0) || (oldSecondValue > plotRangeControl.to)) {
             plotRangeControl.second.value = plotRangeControl.to
         }
-//        console.log(" second.value = ", plotRangeControl.to, "plotRangeControl.second.visualPosition = ", plotRangeControl.second.visualPosition)
+        //        console.log(" second.value = ", plotRangeControl.to, "plotRangeControl.second.visualPosition = ", plotRangeControl.second.visualPosition)
         plotRangeControl.first.visualPositionChanged()
         plotRangeControl.second.visualPositionChanged()
         currentChartView.update()
-//        console.log(" second.value = ", plotRangeControl.to, "plotRangeControl.second.visualPosition = ", plotRangeControl.second.visualPosition)
+        //        console.log(" second.value = ", plotRangeControl.to, "plotRangeControl.second.visualPosition = ", plotRangeControl.second.visualPosition)
     }
 
     function saveStepXLabels(){
@@ -492,8 +492,8 @@ Rectangle{
                 //run.nextStepName is used in onSeriesAdded
                 // TODO: consolidate and make SeaWolfPlot self sofficient?
                 run.nextStepName = myEventsEnum2Nm[p_session.event[eventNb][0]]
-               //markEvent(myEventsEnum2Nm[p_session.event[eventNb][0]], tmStop)
-               currentStepHrSeries = currentChartView.createSeries(ChartView.SeriesTypeLine, tmStop.toString(), currentStepAxisX, currentAxisY)
+                //markEvent(myEventsEnum2Nm[p_session.event[eventNb][0]], tmStop)
+                currentStepHrSeries = currentChartView.createSeries(ChartView.SeriesTypeLine, tmStop.toString(), currentStepAxisX, currentAxisY)
                 for (var tm = tmStart; tm <= tmStop; tm ++){
                     //TODO review why + 1 is needed, change here and in addPoint to plot?
                     addPointToHrPlot(tm + 1, p_session.pulse[tm])
@@ -656,7 +656,7 @@ Rectangle{
             max: 10
             gridLineColor:"grey"
             tickCount:10
-         }
+        }
 
         LineSeries {
             id: hrSeries
@@ -665,8 +665,8 @@ Rectangle{
             width: dp(5)
             axisX:plotAxisX
             axisY:plotAxisY
-//            XYPoint { x: 0;  y: 0 }
-//            XYPoint { x: 50; y: 50 }
+            //            XYPoint { x: 0;  y: 0 }
+            //            XYPoint { x: 50; y: 50 }
         }
         LineSeries {
             id: discomfortSeries
@@ -675,8 +675,8 @@ Rectangle{
             width: dp(5)
             axisX:plotAxisX
             axisYRight:discomfortAxisY
-//            XYPoint { x: 0;  y: 0 }
-//            XYPoint { x: 50; y: 50 }
+            //            XYPoint { x: 0;  y: 0 }
+            //            XYPoint { x: 50; y: 50 }
         }
         ScatterSeries {
             id: contractionSeries
@@ -688,8 +688,8 @@ Rectangle{
             markerSize: dp(8)
             axisXTop: eventAxisX
             axisY:plotAxisY
-//            XYPoint { x: 25;  y: 25 }
-//            XYPoint { x: 50; y: 50 }
+            //            XYPoint { x: 25;  y: 25 }
+            //            XYPoint { x: 50; y: 50 }
         }
         Component.onCompleted:{
             console.log("In SeaWolfPlotComponent.onCompleted")
@@ -732,7 +732,7 @@ Rectangle{
 
             onPressed:{
                 //console.log("*** On Pressed touch numbet = ", touchPoints.length)
-               if(getPressedNumber(touch1, touch2) < 2){
+                if(getPressedNumber(touch1, touch2) < 2){
                     initialScale = (plotRangeControl.second.visualPosition - plotRangeControl.first.visualPosition)/parent.width
                     //minimumTouchPoints = 1
                     //maximumTouchPoints = 1
@@ -794,7 +794,7 @@ Rectangle{
             currentStepAxisX.min  = first.value;
             currentEventAxisX.min = first.value
             needAdditionalXLabels = true;
-           console.log("In first needAdditionalXLabels = ", needAdditionalXLabels)
+            console.log("In first needAdditionalXLabels = ", needAdditionalXLabels)
         }
         second.onValueChanged: {
             currentStepAxisX.max  = second.value;
@@ -881,8 +881,8 @@ Rectangle{
         implicitHeight: chartView.height - 3 *plotRangeControl.second.handle.height
         orientation:Qt.Vertical
         onPositionChanged:  { var v1 = from +  (to -  from )  * position;  value =  v1; discomfortValue = v1;
-                                                 //console.log(" In discomfortSlider: from, to, value, position = " , from, to, value, position)
-                    }
+            //console.log(" In discomfortSlider: from, to, value, position = " , from, to, value, position)
+        }
         onPressedChanged: {
             if(pressed){
                 if (timer.running) {
@@ -930,14 +930,14 @@ Rectangle{
                 horizontalAlignment: Text.AlignHCenter
                 //anchors.verticalCenter: parent.verticalCenter
             }
-//            MouseArea {
-//                id: mouseArea
-////                drag.target:discomfortSliderHandle
-////                drag.axis: Drag.YAxis
-//                anchors.fill: parent
-//                hoverEnabled: true
-//                onClicked: markEvent("contraction", run.sessionTime)
-//            }
+            //            MouseArea {
+            //                id: mouseArea
+            ////                drag.target:discomfortSliderHandle
+            ////                drag.axis: Drag.YAxis
+            //                anchors.fill: parent
+            //                hoverEnabled: true
+            //                onClicked: markEvent("contraction", run.sessionTime)
+            //            }
         }
 
         handle: Rectangle {
@@ -958,7 +958,7 @@ Rectangle{
             //color: "orange"
             border.color: "#bdbebf"
         }
-   }
+    }
     function changeRay() {
         var posOfChartView = chartView.mapToItem(null, chartView.x, chartView.y)
         var posOfPlotArea = chartView.mapToItem(null, chartView.plotArea.x, chartView.plotArea.y)
@@ -966,47 +966,13 @@ Rectangle{
         var posOfPlotAreaIndetailSliderStop  = detailSlider.mapFromItem(null, posOfPlotArea.x + chartView.plotArea.width, chartView.plotArea.y)
         detailSliderRay.y = posOfPlotAreaInDetailSliderStart.y
         detailSliderRay.height = Math.abs(chartView.plotArea.height) //- chartView.margins.top
-//        console.log("X=", chartView.x, posOfChartView.x, posOfPlotArea.x, posOfChartViewInDetailSlider.x, posOfPlotAreaIndetailSlider.x,
-//                    "Y=", chartView.y, posOfChartView.y, posOfPlotArea.y, posOfChartViewInDetailSlider.y, posOfPlotAreaIndetailSlider.y)
+        //        console.log("X=", chartView.x, posOfChartView.x, posOfPlotArea.x, posOfChartViewInDetailSlider.x, posOfPlotAreaIndetailSlider.x,
+        //                    "Y=", chartView.y, posOfChartView.y, posOfPlotArea.y, posOfChartViewInDetailSlider.y, posOfPlotAreaIndetailSlider.y)
 
         var vPlotX = (posOfPlotAreaIndetailSliderStop.x - posOfPlotAreaInDetailSliderStart.x)  / (detailSlider.to - detailSlider.from) *
                 (detailSlider.value - detailSlider.from) + posOfPlotAreaInDetailSliderStart.x
         detailSliderRay.x =  vPlotX
     }
-//    function changeRay() {
-//        var posOfChartView = chartView.mapToItem(null, chartView.x, chartView.y)
-//        //var posOfChartView = box.mapToItem(blueSquare, redSquare.x, redSquare.y)
-//        var posOfChartViewIndetailSlider = detailSlider.mapFromItem(chartView, posOfChartView.x, posOfChartView.y)
-//        //detailSliderRay.x = posOfChartViewIndetailSlider.x + chartView.margins.left
-//        detailSliderRay.y = posOfChartViewIndetailSlider.y - chartView.margins.top
-//        detailSliderRay.height = Math.abs(posOfChartViewIndetailSlider.y) //- chartView.margins.top
-//        console.log("X=", chartView.x, posOfChartView.x, posOfChartViewIndetailSlider.x,
-//                    "Y=", chartView.y, posOfChartView.y, posOfChartViewIndetailSlider.y)
-
-//        //var seriesValueInChart = Qt.point(Math.floor(currentStepAxisX.min), currentSession.discomfort[Math.floor(currentStepAxisX.min)])
-//        //var seriesValueInChart = Qt.point((currentStepAxisX.min), currentSession.discomfort[Math.floor(currentStepAxisX.min)])
-//        var seriesValueInChart = Qt.point(detailSlider.value, currentSession.discomfort[Math.floor(detailSlider.value)])
-//        console.log("seriesValueInChart=", seriesValueInChart.x, seriesValueInChart.y)
-//        var seriesPointPosInChart = chartView.mapToValue(seriesValueInChart, currentDiscomfortSeries)
-//        console.log("seriesPointPosInChart=", seriesPointPosInChart.x, seriesPointPosInChart.y)
-//        //var seriesPointPosInDetailSlider = detailSlider.mapFromItem(chartView, seriesPointPosInChart.x, seriesPointPosInChart.y)
-//        var seriesPointPosInDetailSlider = detailSlider.mapToItem(null, seriesPointPosInChart.x + posOfChartView.x, seriesPointPosInChart.y + posOfChartView.y)
-//        console.log("seriesPointPosInDetailSlider=", seriesPointPosInDetailSlider.x, seriesPointPosInDetailSlider.y)
-//        console.log("cahertView.width=", chartView.width, "chartView.margins.left=", chartView.margins.left, "chartView.margins.right", chartView.margins.right)
-//        var vPlotX = (chartView.width - chartView.margins.left - chartView.margins.right)  / (detailSlider.to - detailSlider.from) *
-//            detailSlider.value //+ plotPointToDetailSlider(0,0).x
-//          //var vX = mapFromItem(chartView.plotArea, vPlotX, 0).x
-//          //return vX
-//         console.log("vPlotX = ", vPlotX)
-//         detailSliderRay.x =  seriesPointPosInDetailSlider.x
-//    }
-//    function plotPointToDetailSlider(xplot,yplot) {
-//        var posInChartView = chartView.mapToItem(null, chartView.x, chartView.y)
-//        //var posInChartView = box.mapToItem(blueSquare, redSquare.x, redSquare.y)
-//        var posIndetailSlider = detailSlider.mapFromItem(chartView, posInChartView.x+xplot, posInChartView.y+yplot)
-//        var pt = Qt.point(posIndetailSlider.x - chartView.margins.left, posIndetailSlider.y - chartView.margins.top)
-//        console.log("pt=", pt.x, pt.y)
-//    }
 
     Slider {
         id: detailSlider
@@ -1032,8 +998,8 @@ Rectangle{
         implicitWidth: chartView.width// - 3 *plotRangeControl.second.handle.height
         orientation:Qt.Horizontal
         onPositionChanged:  { var v1 = from +  (to -  from )  * position;  value =  v1;
-                                                 //console.log(" In detailSlider: from, to, value, position = " , from, to, value, position)
-                    }
+            //console.log(" In detailSlider: from, to, value, position = " , from, to, value, position)
+        }
         background:Rectangle {
             height: parent.height
             width: parent.width
@@ -1083,49 +1049,26 @@ Rectangle{
             opacity: detailSlider.pressed ? 0.6 : 0.8
             //color: "orange"
             //border.color: "#bdbebf"
-            ColumnLayout{
-                Text{
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    //anchors.margins: dp(2)
-                    color:"black"
-                    text: {var tm = Math.round(detailSlider.value); return((tm - getCurrentStepStartTm(tm)).toString() + "/" + (tm + demoModePulseTm).toString())}
-                    //verticalAlignment: Text.AlignVCenter
-                    fontSizeMode: Text.HorizontalFit
-                    minimumPixelSize: parent.width -2*anchors.margins;
-                    //font.pixelSize: dp(72)
-                    font.bold: true
-                    rotation: 0
-                    horizontalAlignment: Text.AlignHCenter
-                    //anchors.verticalCenter: parent.verticalCenter
+            Text{
+                Layout.alignment: Qt.AlignCenter
+                anchors.horizontalCenter: parent.horizontalCenter
+                //anchors.margins: dp(2)
+                color:"black"
+                text: {var tm = Math.round(detailSlider.value);
+                       var txt = "\n" + (tm - getCurrentStepStartTm(tm)).toString() +
+                           "/" + (tm + demoModePulseTm).toString() + "\n" +
+                           currentSession.pulse[Math.round(detailSlider.value)].toString() + "\n" +
+                           Math.round(currentSession.discomfort[Math.round(detailSlider.value)]).toString();
+                    return txt
                 }
-                Text{
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    //anchors.margins: dp(2)
-                    color:"black"
-                    text:currentSession.pulse[Math.round(detailSlider.value)].toString()
-                    //verticalAlignment: Text.AlignVCenter
-                    fontSizeMode: Text.HorizontalFit
-                    minimumPixelSize: parent.width -2*anchors.margins;
-                    //font.pixelSize: dp(72)
-                    font.bold: true
-                    rotation: 0
-                    horizontalAlignment: Text.AlignHCenter
-                    //anchors.verticalCenter: parent.verticalCenter
-                }
-                Text{
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    //anchors.margins: dp(2)
-                    color:"black"
-                    text:Math.round(currentSession.discomfort[Math.round(detailSlider.value)]).toString()
-                    //verticalAlignment: Text.AlignVCenter
-                    fontSizeMode: Text.HorizontalFit
-                    minimumPixelSize: parent.width -2*anchors.margins;
-                    //font.pixelSize: dp(72)
-                    font.bold: true
-                    rotation: 0
-                    horizontalAlignment: Text.AlignHCenter
-                    //anchors.verticalCenter: parent.verticalCenter
-                }
+            //verticalAlignment: Text.AlignVCenter
+                fontSizeMode: Text.HorizontalFit
+                minimumPixelSize: Math.min(parent.width -2*anchors.margins, parent.height);
+                //font.pixelSize: dp(72)
+                font.bold: true
+                rotation: 0
+                horizontalAlignment: Text.AlignHCenter
+                //anchors.verticalCenter: parent.verticalCenter
             }
         }
         Rectangle{
@@ -1140,7 +1083,7 @@ Rectangle{
             border.color: "black"
 
         }
-   }
+    }
    Component.onCompleted: {
        //var point = detailSlider.mapFromItem(null, chartView.plotArea.x, chartView.plotArea.y)
        var point = detailSlider.mapToItem(chartView, 0.0, 0.0)
