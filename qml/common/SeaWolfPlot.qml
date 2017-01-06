@@ -1051,21 +1051,25 @@ Rectangle{
             //border.color: "#bdbebf"
             Text{
                 Layout.alignment: Qt.AlignCenter
-                anchors.horizontalCenter: parent.horizontalCenter
+                topPadding: 0
+                bottomPadding: 0
+                anchors.fill: parent
+                //anchors.horizontalCenter: parent.horizontalCenter
                 //anchors.margins: dp(2)
                 color:"black"
                 text: {var tm = Math.round(detailSlider.value);
-                       var txt = "\n" + (tm - getCurrentStepStartTm(tm)).toString() +
+                       var txt = (tm - getCurrentStepStartTm(tm)).toString() +
                            "/" + (tm + demoModePulseTm).toString() + "\n" +
                            currentSession.pulse[Math.round(detailSlider.value)].toString() + "\n" +
                            Math.round(currentSession.discomfort[Math.round(detailSlider.value)]).toString();
                     return txt
                 }
             //verticalAlignment: Text.AlignVCenter
-                fontSizeMode: Text.HorizontalFit
-                minimumPixelSize: Math.min(parent.width -2*anchors.margins, parent.height);
+                fontSizeMode: Text.Fit
+                minimumPixelSize: parent.height/4;
                 //font.pixelSize: dp(72)
                 font.bold: true
+                verticalAlignment: Text.AlignVCenter
                 rotation: 0
                 horizontalAlignment: Text.AlignHCenter
                 //anchors.verticalCenter: parent.verticalCenter
