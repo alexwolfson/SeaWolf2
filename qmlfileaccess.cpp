@@ -51,6 +51,21 @@ QString QMLFileAccess::getAccessiblePath(const QString myDir){
     path += "/";
     return path;
 }
+QString QMLFileAccess::getExportablePath(){
+    //Using DownloadLocation seems odd, but it works
+    QString path = QStandardPaths::writableLocation(QStandardPaths::DownloadLocation);
+    QDir dir(path);
+    if (!dir.exists())
+    dir.mkpath(path);
+    if (!path.isEmpty() && !path.endsWith("/"))
+    path += "/";
+    return path;
+
+}
+bool QMLFileAccess::copyFile(QString from, QString to){
+    return QFile::copy(from, to);
+}
+
 QString QMLFileAccess::urlToLocalFile(QString url){
     QUrl uf(url);
    return uf.toLocalFile();

@@ -29,6 +29,9 @@ public:
     Q_INVOKABLE QString urlToLocalFile(QString url);
     //! \param myDir subdirectory of the Accessible path. It will be created
     Q_INVOKABLE virtual QString getAccessiblePath(const QString myDir);
+    //! get path that can be used by external app, like attaching to Email
+    Q_INVOKABLE virtual QString getExportablePath();
+    Q_INVOKABLE bool copyFile(QString from, QString to);
     Q_INVOKABLE bool removeFile(const QString fileName);
 signals:
 

@@ -405,11 +405,11 @@ Rectangle{
     function saveSession() {
         var path=qfa.getAccessiblePath("sessions");
         console.log("Path = ", path);
-        var fileName = currentSession.sessionName + "-" + currentSession.when;
+        var fileName = currentSession.sessionName + "-" + currentSession.when + ".json";
         //open will add path before fileName
         console.log("fileName=", fileName, "Open=" , qfa.open(path + fileName));
         var sessionString = JSON.stringify(currentSession);
-        //console.log("Wrote = ", qfa.write(sessionString));
+        console.log("Wrote = ", qfa.write(sessionString));
         //var qstr = qfa.read();
         //console.log("read = ", qstr);
         qfa.close();
@@ -978,8 +978,8 @@ Rectangle{
         id: detailSlider
         anchors.left:   chartView.left
         anchors.right:  chartView.right
-        //anchors.top: chartView.top
-        anchors.bottom: chartView.bottom
+        anchors.top: chartView.top
+        //anchors.bottom: chartView.bottom
         anchors.margins: {
             left: chartView.margins.left
             right: chartView.margins.right

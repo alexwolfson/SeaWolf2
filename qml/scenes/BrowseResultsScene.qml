@@ -1,6 +1,8 @@
 import QtQuick 2.7
 import Qt.labs.folderlistmodel 2.1
 import QtQuick.Layouts 1.3
+import QtQuick.Dialogs 1.2
+
 import "../common"
 SceneBase{
     id:browseScene
@@ -11,6 +13,15 @@ SceneBase{
             id:browseColumn
             spacing: dp(10)
             //padding: dp(10)
+//            MessageDialog {
+//                id: messageDialog
+//                title: "May I have your attention please"
+//                text: "There are no session files in the " + qfa.getExportablePath() + "directory \n Switch to browse mode?"
+//                onAccepted: {
+//                    browseMode = true
+//                }
+//                Component.onCompleted: visible = true
+//            }
             ListView {
                 //anchors.rightMargin: dp(20)
                 id: folderListView
@@ -19,8 +30,19 @@ SceneBase{
                 FolderListModel {
                     id: folderModel
                     showHidden :true
-                    folder: { "file://" + qfa.getAccessiblePath("sessions")}
+                    folder:  "file://" +  qfa.getAccessiblePath("sessions")
+//                    {
+//                        var f = "file://" +  browseMode ? qfa.getAccessiblePath("sessions"): qfa.getExportablePath()
+//                        console.log("folder = ", f)
+//                        return f
+//                    }
                     showDotAndDotDot:true
+                    nameFilters: ["*.json"]
+//                    onFolderChanged: {
+//                        if ((folderModel.count == 0) && (browseMode == false)){
+//                            messageDialog.open()
+//                        }
+//                    }
                 }
                 Component {
                     id: fileDelegate
@@ -35,10 +57,10 @@ SceneBase{
                             font.pixelSize: dp(30)
                             color:folderModel.isFolder(index)? "red":"black"
 
-//                            onTextChanged: {
-//                                console.log("fileindex=", index, "name=", fileName, "isFolder=",
-//                                            folderModel.isFolder(index))
-//                            }
+                            //                            onTextChanged: {
+                            //                                console.log("fileindex=", index, "name=", fileName, "isFolder=",
+                            //                                            folderModel.isFolder(index))
+                            //                            }
                         }
                         MouseArea{
                             anchors.fill: parent
@@ -48,6 +70,9 @@ SceneBase{
                                            chosenFileIndex = index
                                            chosenFile = fileName
                                            hrPlot.restoreSession(qfa.urlToLocalFile(folderModel.folder + "/" + fileName))
+                                           if (!browseMode){
+                                               browseMode = true
+                                           }
 
                                        }
                             onPressed: { fileRect.border.color = "red"; fileRect.color = "lightblue"}
@@ -71,13 +96,47 @@ SceneBase{
                 //padding: dp(20)
                 //anchors.bottom: browseScene.bottom
                 //anchors.topMargin: folderListView.height
-                MenuButton{
-                    id: show
-                    text: qsTr("Show Session")
+                //                MenuButton{
+                //                    id: show
+                //                    text: qsTr("Email Session")
+                //                    onClicked: {
+                //                        console.log("chosen=", chosenFile)
+                //                    }
+                //                    enabled:true
+                //                }
+                MenuButton {
+                    id:browseSession
+                    text: qsTr("Browse")
                     onClicked: {
-                        console.log("chosen=", chosenFile)
+                        folderModel.folder = "file://" +  qfa.getAccessiblePath("sessions")
                     }
-                    enabled:true
+                    enabled: true
+                }
+                MenuButton {
+                    id:emailSession
+                    text: qsTr("Email Session")
+                    onClicked: {
+                        // ALl this mess is needed for Android, because it prevents access to almost any loaction
+                        //var attachURL = folderModel.folder + "/" + chosenFile
+                        var localFile = qfa.urlToLocalFile(folderModel.folder + "/" + chosenFile)
+                        var exportablePath = qfa.getExportablePath();
+                        var attachURL = exportablePath + chosenFile;
+                        var cpRes = qfa.copyFile(localFile, attachURL);
+                        Qt.openUrlExternally("mailto:alexwolfson@gmail.com" +
+                                             "?subject=FreedivingSession" +
+                                             "&attach=" + attachURL +
+                                             "&body=This is a session, that I want you to look at")
+                        console.log("cpRes=", cpRes, "Attachment=", attachURL)
+                    }
+                    enabled: true
+                }
+                MenuButton {
+                    id:importSession
+                    text: qsTr("Import Session")
+                    onClicked: {
+                        folderModel.folder = "file://" +  qfa.getExportablePath()
+                    }
+                    enabled: true
                 }
                 MenuButton{
                     id: rm
@@ -91,4 +150,5 @@ SceneBase{
             }
         }
     }
+
 }
