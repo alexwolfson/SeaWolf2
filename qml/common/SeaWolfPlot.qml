@@ -92,6 +92,7 @@ Rectangle{
         return parseInt(tm, 10)
     }
     function restoreStepXLabels(){
+        saveStepXLabels()
         // clean currentStepAxisX labels
         var cnt = currentStepAxisX.count
         var i
@@ -102,7 +103,7 @@ Rectangle{
         for (i = 0; i < stepXLabels.length; i++){
             var lbl = stepXLabels[i]
             var tm = getLblTm(lbl)
-            if ((tm >= 0) && (tm < currentSession.pulse.length)){
+            if ((tm >= 0) && (tm <= currentSession.pulse.length)){
                 currentStepAxisX.append(lbl, tm)
             }
         }
@@ -128,6 +129,8 @@ Rectangle{
         // find the first index that is in the Axis X range
         var foundStepXStart = false
         var foundStepXStop  = false
+        saveStepXLabels()
+
         for (stepXLabelsIndexStart = 0; stepXLabelsIndexStart < stepXLabels.length; stepXLabelsIndexStart++){
             if(getLblTm(stepXLabels[stepXLabelsIndexStart]) >= currentStepAxisX.min){
                 foundStepXStart = true
@@ -138,11 +141,12 @@ Rectangle{
         for (stepXLabelsIndexStop = stepXLabelsIndexStart; stepXLabelsIndexStop < stepXLabels.length; stepXLabelsIndexStop++){
             if(getLblTm(stepXLabels[stepXLabelsIndexStop]) >= currentStepAxisX.max){
                 stepXLabelsIndexStop--
-                foundStepXStop = true
                 break
             }
         }
-
+        if (stepXLabelsIndex >=0){
+            foundStepXStop = true
+        }
         var nbOfShownStepLabels = 0
         if (foundStepXStart && foundStepXStop){
             nbOfShownStepLabels = stepXLabelsIndexStop - stepXLabelsIndexStart + 1
@@ -162,11 +166,12 @@ Rectangle{
         console.log("**** updateAdditionalXLabels interval = ", interval,
                     "currentStepAxisX.min = ",  currentStepAxisX.min,
                     "currentStepAxisX.max = ",  currentStepAxisX.max,
+                    "nbOfShownStepLabels=", nbOfShownStepLabels,
                     "additionalXLabels.length = ", additionalXLabels.length,
                     "currentStepAxisX.categoriesLabels.length = ", currentStepAxisX.categoriesLabels.length)
         // Calculate new additionalXLabels
         additionalXLabels = []
-        for (lblTm = Math.floor(currentStepAxisX.min); lblTm <= currentStepAxisX.max; lblTm += interval){
+        for (lblTm = Math.floor(currentStepAxisX.min) + interval; lblTm <= currentStepAxisX.max -interval; lblTm += interval){
             lbl = (lblTm - getCurrentStepStartTm(lblTm)).toString() + "/" + (lblTm + demoModePulseTm).toString()
             additionalXLabels.push(lbl)
             // currentStepAxisX.append(lbl, lblTm)
@@ -263,7 +268,7 @@ Rectangle{
     }
 
     function getCurrentStepStartTm(tm){
-        console.log("currentSession.event.length = ", currentSession.event.length)
+        //console.log("currentSession.event.length = ", currentSession.event.length)
         if (currentSession.event.length === 0){
             return 0
         }
@@ -455,12 +460,24 @@ Rectangle{
     function saveStepXLabels(){
         // save currentStepAxisX labels
         stepXLabels = []
-        var cnt = currentStepAxisX.count
-        var i
-        for (i = 0; i < cnt; i++){
-            stepXLabels.push(currentStepAxisX.categoriesLabels[i])
+        var tmStart = 0
+        var tmStop  = 0
+        var eventNb
+        var eventName
+        var lbl
+        for (eventNb = 0; eventNb < currentSession.event.length; eventNb++){
+            eventName = myEventsEnum2Nm[currentSession.event[eventNb][0]]
+            // for step events only
+            if (! (runColors[eventName] === undefined)){
+                tmStart = tmStop
+                tmStop = currentSession.event[eventNb][1]
+                //run.nextStepName is used in onSeriesAdded
+                // TODO: consolidate and make SeaWolfPlot self sofficient?
+                // TODO review why +1 is needed !
+                lbl = (tmStop - tmStart + 1).toString() + "/" + (tmStop + 1 + demoModePulseTm).toString()
+                stepXLabels.push(lbl)
+            }
         }
-
     }
 
     function showSessionGraph(p_session){
@@ -654,6 +671,7 @@ Rectangle{
             //labelsFont: Qt.font({pixelSize : sp(10)})
             min: 0
             max: 10
+            gridVisible: false
             gridLineColor:"grey"
             tickCount:10
         }
@@ -794,13 +812,13 @@ Rectangle{
             currentStepAxisX.min  = first.value;
             currentEventAxisX.min = first.value
             needAdditionalXLabels = true;
-            console.log("In first needAdditionalXLabels = ", needAdditionalXLabels)
+            //console.log("In first needAdditionalXLabels = ", needAdditionalXLabels)
         }
         second.onValueChanged: {
             currentStepAxisX.max  = second.value;
             currentEventAxisX.max = second.value
             needAdditionalXLabels = true;
-            console.log("In second needAdditionalXLabels = ", needAdditionalXLabels)
+            //console.log("In second needAdditionalXLabels = ", needAdditionalXLabels)
         }
         //For some reason the visual position change requires a manual value setup. A bug or wrong usage?
         first.onVisualPositionChanged:  { var v1 = Math.round(from +  (to -  from )  * first.visualPosition);  first.value =  v1;
@@ -813,7 +831,7 @@ Rectangle{
         }
         onNeedAdditionalXLabelsChanged: {
             if (needAdditionalXLabels){
-                console.log ("*** needAdditionalXLabels");
+                //console.log ("*** needAdditionalXLabels");
                 needAdditionalXLabels = false
                 updateAdditionalXLabels();
             }
