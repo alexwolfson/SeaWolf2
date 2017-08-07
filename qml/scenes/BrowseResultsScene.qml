@@ -70,10 +70,6 @@ SceneBase{
                                            chosenFileIndex = index
                                            chosenFile = fileName
                                            hrPlot.restoreSession(qfa.urlToLocalFile(folderModel.folder + "/" + fileName))
-                                           if (!browseMode){
-                                               browseMode = true
-                                           }
-
                                        }
                             onPressed: { fileRect.border.color = "red"; fileRect.color = "lightblue"}
                             onReleased:{ fileRect.border.color = "black"; fileRect.color = "white"}
@@ -126,7 +122,7 @@ SceneBase{
                                              "?subject=FreedivingSession" +
                                              "&attach=" + attachURL +
                                              "&body=This is a session, that I want you to look at")
-                        console.log("cpRes=", cpRes, "Attachment=", attachURL)
+                        console.log("localFile=", localFile, "cpRes=", cpRes, "Attachment=", attachURL)
                     }
                     enabled: true
                 }

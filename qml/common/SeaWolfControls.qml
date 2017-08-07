@@ -299,6 +299,8 @@ CircularGauge {
 //                        console.log("gaugeName=", gaugeName, "eventNb=", eventNb)
 //                        hrPlot.currentSession.event.push([eventNb, maximumValue])
                     //}
+                    var backEventsNb = -1
+                    var currentBackEventInd
                     // hrPlot.setupCurrentSeries()
                     startVoiceTimers()
                     enterStateSndEffect.play()
@@ -310,6 +312,17 @@ CircularGauge {
                     gaugeModel.get(modelIndex).isCurrent = false
                     // update all gauges if we are about to run the "breath"gauge
                     var bContinue = true
+                    if ("back" == gauge.gaugeName){
+                        // save number of double steps
+                        // Hrdcoded 4 as a number of steps - need to refactor
+                        backEventsNb = Math.floor(gauge.modelIndex  / 4)
+                        currentBackEventInd = hrPlot.currentSession.event.length - 1
+                        console.log("gauge.modelIndex=", backEventsNb) //, stepsAr[runSessionScene.currentGauge.modelIndex%4])
+                        console.log(runSessionScene.stepsAr[backEventsNb] )
+                        console.log(hrPlot.currentSession.event[currentBackEventInd] )
+                        hrPlot.currentSession.event[currentBackEventInd].push( runSessionScene.stepsAr[backEventsNb])
+                    }
+
                     if (isLastInCycle()){
                         loadNextCycleVal([gauge])
                         var prevNextModelIndex = nextGauge.modelIndex
@@ -336,6 +349,7 @@ CircularGauge {
                         //if (("hold" == runSessionScene.currentGauge.gaugeName) && ("walk" == nextGauge.gaugeName) ){
                             runSessionScene.enableWalkControl()
                         //}
+                        //Special treatment for Walk and Back steps, because they reuse the same gauge
                         if ("walk" == runSessionScene.currentGauge.gaugeName){
                             runSessionScene.currentGauge.visible = false
                             runSessionScene.runGauge[backIndx].visible = true
@@ -343,11 +357,16 @@ CircularGauge {
                         if ("back" == runSessionScene.currentGauge.gaugeName){
                             runSessionScene.currentGauge.visible = false
                             runSessionScene.runGauge[walkIndx].visible = true
+                            // save number of double steps
+                            // Hardcoded 4 as a number of steps - need to refactor!
+                            backEventsNb = Math.floor(runSessionScene.currentGauge.modelIndex  / 4)
+                            console.log("runSessionScene.currentGauge.modelIndex=", runSessionScene.currentGauge.modelIndex / 4) //, stepsAr[runSessionScene.currentGauge.modelIndex%4])
+                           hrPlot.currentSession.event[backEventsNb][2] =  hrPlot.stepsAr[backEventsNb]
                         }
 
                         //seting up next gauge as current if it's time is not 0
-                        nextGauge.state = "stateRun"
                         runSessionScene.currentGauge = nextGauge
+                        nextGauge.state = "stateRun"
                         //hrPlot.currentStepEventEnum = hrPlot.myEventsNm2Enum[currentGauge.gaugeName]
                         //hrPlocurrentStepEventStartTmTm = sessionTime
                         //emit signal
@@ -356,7 +375,7 @@ CircularGauge {
                         run.nextStepName = nextGauge.gaugeName
                     }
                     else {
-                        // The session is over markl the last event
+                        // The session is over mark the last event
                         hrPlot.markEvent(gaugeName, run.sessionTime + 1)
                         sessionIsOver(nextGauge)
                         // show the session results

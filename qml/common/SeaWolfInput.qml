@@ -4,7 +4,7 @@ import QtQuick.Controls 2.0
 
 Item {
     id: input
-    width: dp(720)
+    width: parent.width //dp(720)
     height: dp(60)
     property alias lbl: lbl.text
     property string type: "str" //"str","int","switch", spinBox
@@ -24,11 +24,14 @@ Item {
     signal result()
     Label {
         id:lbl
+        verticalAlignment: Text.AlignVCenter
         width: parent.width/2
+        height: parent.height
         text: "Label"
     }
     TextField {
         id:intField
+        width: parent.width/2 - 2 * anchors.leftMargin//dp(300)
         enabled: type=="int"
         visible: type=="int"
         anchors.left:lbl.right
@@ -38,14 +41,14 @@ Item {
         validator: IntValidator{}
         horizontalAlignment: TextInput.AlignHCenter
         inputMethodHints: Qt.ImhDigitsOnly
-
+        implicitWidth: parent.width/2
         //style: TextFieldStyle {
         color: "black"
         background: Rectangle {
             radius: dp(20)
             color: "#F0EBEB"
-            implicitWidth: dp(120)
-            implicitHeight: dp(60)
+            //implicitWidth: dp(120)
+            //implicitHeight: dp(60)
             border.color: "#000000"
             border.width: dp(1)
         }
@@ -61,6 +64,7 @@ Item {
 
     TextField {
         id:strField
+        width: parent.width/2 - 2 * anchors.leftMargin//dp(300)
         enabled: type=="str"
         visible: type=="str"
         anchors.left:lbl.right
@@ -74,7 +78,7 @@ Item {
         background: Rectangle {
             radius: dp(20)
             color: "#F0EBEB"
-            implicitWidth: dp(400)
+            //implicitWidth: dp(400)
             implicitHeight: dp(60)
             border.color: "#000000"
             border.width: dp(1)
@@ -106,16 +110,16 @@ Item {
         anchors.leftMargin: dp(10)
         enabled: type=="spinBox"
         visible: type=="spinBox"
-        width: dp(240)
+        width: parent.width/4 //dp(240)
         height: dp(60)
-        from: sbfrom
-        to:   sbto
-        value:sbv
-        stepSize: sbstep
+        from: 0  //sbfrom
+        to:   10 //sbto
+        value: 5 //sbv
+        stepSize: 1 //sbstep
         background: Rectangle {
             radius: dp(20)
             color: "#F0EBEB"
-            implicitWidth: dp(240)
+            //implicitWidth: dp(240)
             implicitHeight: dp(60)
             border.color: "#000000"
             border.width: dp(1)
@@ -152,7 +156,7 @@ Item {
         anchors.leftMargin: dp(10)
         enabled: type=="spinBox"
         visible: type=="spinBox"
-        width: dp(300)
+        width: parent.width/4 - 2 * anchors.leftMargin//dp(300)
         height: dp(60)
         from: sbfrom
         to:   sbto
@@ -160,9 +164,10 @@ Item {
         value:    sbv
         //snapMode: Slider.SnapAlways
         background: Rectangle {
+            id: bkgd
             radius: dp(20)
             color: "#F0EBEB"
-            implicitWidth: dp(240)
+            //implicitWidth: dp(240)
             implicitHeight: dp(60)
             border.color: "#000000"
             border.width: dp(1)

@@ -8,6 +8,8 @@ import QtMultimedia 5.6
 //import QtQml 2.2
 import QtCharts 2.1
 import MyStuff 1.0
+import QtQuick 2.2
+import QtQuick.Dialogs 1.1
 // Events have Nb - number in currentSession.event, Enum Enum representation of type ("brth":0, "hold": 1),
 //     Tm - time when it happened
 Rectangle{
@@ -175,7 +177,7 @@ Rectangle{
             lbl = (lblTm - getCurrentStepStartTm(lblTm)).toString() + "/" + (lblTm + demoModePulseTm).toString()
             additionalXLabels.push(lbl)
             // currentStepAxisX.append(lbl, lblTm)
-            console.log("AdditionaXLabels: Added ", lbl, "at [", lblTm, "]")
+            //console.log("AdditionaXLabels: Added ", lbl, "at [", lblTm, "]")
         }
 
         // clean currentStepAxisX labels
@@ -406,21 +408,38 @@ Rectangle{
         }
         currentSession.sessionName = sessionName
     }
+    MessageDialog {
+        id:saveSessionDialog
+        title: "Save Session?"
+        icon: StandardIcon.Question
+        text: ""
+        standardButtons: StandardButton.Yes  | StandardButton.No
+        //Component.onCompleted: visible = true
+        onYes: console.log("saving session")
+        onNo: console.log("didn't save")
+        onRejected: console.log("aborted")
+    }
 
     function saveSession() {
         var path=qfa.getAccessiblePath("sessions");
         console.log("Path = ", path);
         var fileName = currentSession.sessionName + "-" + currentSession.when + ".json";
-        //open will add path before fileName
-        console.log("fileName=", fileName, "Open=" , qfa.open(path + fileName));
-        var sessionString = JSON.stringify(currentSession);
-        console.log("Wrote = ", qfa.write(sessionString));
-        //var qstr = qfa.read();
-        //console.log("read = ", qstr);
-        qfa.close();
-        //var data = runSessionScene.currentSessionhttps://community.wd.com/t/automatic-backup/147334/5
-        //io.text = JSON.stringify(data, null, 4)
-        //io.write()
+        saveSessionDialog.text = fileName
+        saveSessionDialog.open()
+        if (saveSessionDialog.clickedButton !== StandardButton.Yes) {
+
+            //open will add path before fileName
+            console.log("fileName=", fileName, "Open=" , qfa.open(path + fileName));
+            var sessionString = JSON.stringify(currentSession);
+            console.log("Wrote = ", qfa.write(sessionString));
+            //var qstr = qfa.read();
+            //console.log("read = ", qstr);
+            qfa.close();
+            //var data = runSessionScene.currentSessionhttps://community.wd.com/t/automatic-backup/147334/5
+            //io.text = JSON.stringify(data, null, 4)
+            //io.write()
+
+        }
     }
 
     function restoreSession(filePath) {
@@ -490,7 +509,7 @@ Rectangle{
         var eventName = ""
         // var currentHrSeries
         //  the relative to the step time
-
+        var backEventCnt = 0
         currentAxisY.min = (hrMin - 1);
         currentAxisY.max = (hrMax + 1);
 
@@ -500,6 +519,7 @@ Rectangle{
         console.log("In showSessionGraph: p_session.event.length", p_session.event.length)
         run.nextStepName = "brth"
         lastStepEventTm=0
+
         for (eventNb = 0; eventNb < p_session.event.length; eventNb++){
             eventName = myEventsEnum2Nm[p_session.event[eventNb][0]]
             // for step events only
@@ -517,6 +537,13 @@ Rectangle{
                     currentDiscomfortSeries.append(tm, p_session.discomfort[tm])
                 }
                 lastStepEventTm = tmStop
+                if (eventName == "back"){
+                    //show the number of steps
+                    if (!(undefined == p_session.event[eventNb][2])){
+                        runSessionScene.stepsAr[backEventCnt] = p_session.event[eventNb][2]
+                        backEventCnt++
+                    }
+                }
             }else{
                 var tmEvent = p_session.event[eventNb][1] + 1
 
@@ -578,20 +605,20 @@ Rectangle{
         // currentStepAxisX.min and max are set by the range slider
         //testing that the last X label was't end of step label
 
-        console.log( " In addPointToHrPlot: tm = ", tm,  "lastStepEventTm = ", lastStepEventTm,
-                    "currentStepAxisX.min =", currentStepAxisX.min, "currentStepAxisX.max = ", currentStepAxisX.max)
+        //console.log( " In addPointToHrPlot: tm = ", tm,  "lastStepEventTm = ", lastStepEventTm,
+        //            "currentStepAxisX.min =", currentStepAxisX.min, "currentStepAxisX.max = ", currentStepAxisX.max)
         if ( (tm - 1 ) !== lastStepEventTm ){
             currentStepAxisX.remove(lastStepXLabel)
-            console.log("removing [", lastStepXLabel, "] tm = ", tm)
+            //console.log("removing [", lastStepXLabel, "] tm = ", tm)
         }else{
             stepXLabels.push(lastStepXLabel)
             //currentStepAxisX.append(lastStepXLabel, tm-1)
-            console.log("addingg to stepXLabels[", lastStepXLabel, "]")
+            //console.log("adding to stepXLabels[", lastStepXLabel, "]")
         }
 
         lastStepXLabel = makeLabel(tm) //(tm + demoModePulseTm).toString()
         currentStepAxisX.append(lastStepXLabel, tm)
-        console.log("addingg [", lastStepXLabel, "]")
+        //console.log("adding [", lastStepXLabel, "]")
 
         //update if series creation is finished
         if (canCreateSeriesFlag){
@@ -1069,20 +1096,20 @@ Rectangle{
             //border.color: "#bdbebf"
             Text{
                 Layout.alignment: Qt.AlignCenter
-                topPadding: 0
-                bottomPadding: 0
+                //topPadding: 0
+                //bottomPadding: 0
                 anchors.fill: parent
                 //anchors.horizontalCenter: parent.horizontalCenter
                 //anchors.margins: dp(2)
                 color:"black"
                 text: {var tm = Math.round(detailSlider.value);
-                       var txt = (tm - getCurrentStepStartTm(tm)).toString() +
-                           "/" + (tm + demoModePulseTm).toString() + "\n" +
-                           currentSession.pulse[Math.round(detailSlider.value)].toString() + "\n" +
-                           Math.round(currentSession.discomfort[Math.round(detailSlider.value)]).toString();
+                    var txt = (tm - getCurrentStepStartTm(tm)).toString() +
+                            "/" + (tm + demoModePulseTm).toString() + "\n" +
+                            currentSession.pulse[Math.round(detailSlider.value)].toString() + "\n" +
+                            Math.round(currentSession.discomfort[Math.round(detailSlider.value)]).toString();
                     return txt
                 }
-            //verticalAlignment: Text.AlignVCenter
+                //verticalAlignment: Text.AlignVCenter
                 fontSizeMode: Text.Fit
                 minimumPixelSize: parent.height/4;
                 //font.pixelSize: dp(72)
@@ -1106,14 +1133,14 @@ Rectangle{
 
         }
     }
-   Component.onCompleted: {
-       //var point = detailSlider.mapFromItem(null, chartView.plotArea.x, chartView.plotArea.y)
-       var point = detailSlider.mapToItem(chartView, 0.0, 0.0)
-       //var myPoint = mapFromItem(null, point.x, point.y)
-       console.log("point = ", point.x, point.y)
-       detailSliderRay.y = point.y
-       detailSliderRay.height = Math.abs(point.y)
-   }
+    Component.onCompleted: {
+        //var point = detailSlider.mapFromItem(null, chartView.plotArea.x, chartView.plotArea.y)
+        var point = detailSlider.mapToItem(chartView, 0.0, 0.0)
+        //var myPoint = mapFromItem(null, point.x, point.y)
+        console.log("point = ", point.x, point.y)
+        detailSliderRay.y = point.y
+        detailSliderRay.height = Math.abs(point.y)
+    }
 
 } //End Of Plot
 

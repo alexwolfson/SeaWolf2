@@ -24,7 +24,7 @@ SceneBase {
     function enableWalkControl(){currentWalkControl.enabled=true}
     //anchors.fill: parent
     //anchors.top: runSessionScene.gameWindowAnchorItem.top
-    //property alias walkControl: walkControl
+    //property alias finishStep: finishStep
     property int brthIndx: 0
     property int holdIndx: 1
     property int walkIndx: 2
@@ -58,6 +58,7 @@ SceneBase {
     //    function gotMarkSignal(name){
     //        triggerMark = name
     //    }
+    property var stepsAr:[0,1,2,3]
 
 
     function getSessionTime(){
@@ -247,11 +248,12 @@ SceneBase {
                 }
             }
         }
+
         Item{
             id: sessionPlot
-            Layout.preferredWidth:runSessionScene.width
-            Layout.preferredHeight:runSessionScene.height / 2
-
+            Layout.preferredWidth:runSessionScene.width - dp(8)
+            Layout.preferredHeight:runSessionScene.height / 2 - stepsIds.height
+            anchors.horizontalCenter: parent.horizontalCenter
 
             SeaWolfPlot{
                 id:hrPlot
@@ -259,6 +261,17 @@ SceneBase {
                 width:  parent.width
             }
         }
+        Row{
+            visible: gaugeWalk.maximumValue !== 0
+            id: stepsIds
+            Layout.preferredWidth: runSessionScene.width
+            Layout.preferredHeight: SeaWolfInput.height
+            SeaWolfInput{ id: walkSteps1; width:stepsIds.width / 4; type:"int"; lbl: qsTr("Stps1:"); ifv:stepsAr[0]; onResult: {stepsAr[0]=intRes}}
+            SeaWolfInput{ id: walkSteps2; width:stepsIds.width / 4; type:"int"; lbl: qsTr("Stps2:"); ifv:stepsAr[1]; onResult: {stepsAr[1]=intRes}}
+            SeaWolfInput{ id: walkSteps3; width:stepsIds.width / 4; type:"int"; lbl: qsTr("Stps3:"); ifv:stepsAr[2]; onResult: {stepsAr[2]=intRes}}
+            SeaWolfInput{ id: walkSteps4; width:stepsIds.width / 4; type:"int"; lbl: qsTr("Stps4:"); ifv:stepsAr[3]; onResult: {stepsAr[3]=intRes}}
+        }
+
         RowLayout{
 
             ColumnLayout{
@@ -297,9 +310,9 @@ SceneBase {
                         gaugeWalk.value = 0
                         gaugeBack.state = "initial"
                         gaugeBack.value = 0
-                        walkControl.enabled = true
-                        walkControl.text= qsTr("Finish Step")
-                        button2.enabled = true;
+                        finishStep.enabled = true
+                        finishStep.text= qsTr("Finish Step")
+                        stopButton.enabled = true;
                         nextStepName = "brth"
                         hrPlot.init()
                         hrPlot.timerUpdate(0, Math.round(heartRate.hr))
@@ -309,35 +322,8 @@ SceneBase {
 
                     }
                 }
-
                 MenuButton {
-                    id: button2
-                    z:100
-                    text: qsTr("Stop")
-                    onClicked: {
-                        //timerBrth.sessionIsOver(timerBrth)
-                        //fileDialog.open()
-                        gaugeBrth.maximumValue = currentModel.get(brthIndx).time
-                        gaugeHold.maximumValue = currentModel.get(holdIndx).time
-                        gaugeWalk.maximumValue = currentModel.get(walkIndx).time
-                        gaugeBack.maximumValue = currentModel.get(backIndx).time
-                        gaugeBrth.state = "initial"
-                        gaugeBrth.value = 0
-                        gaugeHold.state = "initial"
-                        gaugeHold.value = 0
-                        gaugeWalk.state = "initial"
-                        gaugeWalk.value = 0
-                        gaugeBack.state = "initial"
-                        gaugeBack.value = 0
-                        //currentModel.get(currentModel.index).isCurrent = false
-                        //currentModel.index = 0
-
-                        walkControl.enabled = true
-                        //button2.enabled = false
-                    }
-                }
-                MenuButton {
-                    id: walkControl
+                    id: finishStep
                     z:100
                     text: qsTr("Finish Step")
                     enabled: true
@@ -403,6 +389,7 @@ SceneBase {
                 SeaWolfControls {
                     id:gaugeWalk
                     z:95
+                    visible: gaugeWalk.maximumValue === 0 ? false : true
                     gaugeName: "walk"
                     enterStateSndEffect: walkSnd
                     //gridView: sessionView
@@ -412,7 +399,7 @@ SceneBase {
                     anchors.centerIn: parent
                     gaugeModel: currentModel
                     nextGauge: gaugeBack
-                    //gaugeWalkControl: container.walkControl
+                    //gaugeWalkControl: container.finishStep
                     width:height
                     height:parent.height
                 }
@@ -433,7 +420,7 @@ SceneBase {
                     anchors.centerIn: parent
                     gaugeModel: currentModel
                     nextGauge: gaugeBrth
-                    //gaugeWalkControl: container.walkControl
+                    //gaugeWalkControl: container.finishStep
                     width:height
                     height:parent.height
                     visible: false
@@ -464,29 +451,64 @@ SceneBase {
 
             } // End of gauges
 
-            Rectangle{
-                id:col2
-                color: "transparent"
-                //border.color: "black"
-                Layout.preferredHeight: runSessionScene.height / 3
-                Layout.preferredWidth: runSessionScene.width/4 - dp(20)
-                Layout.alignment: Qt.AlignRight
-                Image {
-                   id: seaWolfButton
-                   source: "../../assets/img/SeaWolf.png"
-                   anchors.horizontalCenter: parent.horizontalCenter
-                   anchors.bottom: parent.bottom
-                   width: parent.width
-                   height:width
-               }
+            ColumnLayout{
+                MenuButton {
+                    id: stopButton
+                    z:100
+                    text: qsTr("Stop")
+                    onClicked: {
+                        //timerBrth.sessionIsOver(timerBrth)
+                        //fileDialog.open()
+                        oneTimer.stop()
+                        currentGauge.stopVoiceTimers();
+                        currentGauge.state = "initial";
+                        gaugeBrth.maximumValue = currentModel.get(brthIndx).time
+                        gaugeHold.maximumValue = currentModel.get(holdIndx).time
+                        gaugeWalk.maximumValue = currentModel.get(walkIndx).time
+                        gaugeBack.maximumValue = currentModel.get(backIndx).time
+                        gaugeBrth.state = "initial"
+                        gaugeBrth.value = 0
+                        gaugeHold.state = "initial"
+                        gaugeHold.value = 0
+                        gaugeWalk.state = "initial"
+                        gaugeWalk.value = 0
+                        gaugeBack.state = "initial"
+                        gaugeBack.value = 0
+                        //currentModel.get(currentModel.index).isCurrent = false
+                        //currentModel.index = 0
+
+                        finishStep.enabled = true
+                        //stopButton.enabled = false
+                        hrPlot.saveSession()
+                        sessionTime = 0;
+                        currentGauge.sessionIsOver(gaugeBrth)
+                    }
+                }
+                Rectangle{
+                    id:col2
+                    color: "transparent"
+                    //border.color: "black"
+                    Layout.preferredHeight: runSessionScene.height / 3
+                    Layout.preferredWidth: runSessionScene.width/4 - dp(20)
+                    Layout.alignment: Qt.AlignRight
+                    Image {
+                        id: seaWolfButton
+                        source: "../../assets/img/SeaWolf.png"
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        anchors.bottom: parent.bottom
+                        width: parent.width
+                        height:width
+                    }
+                }
 
                 Component.onCompleted:{
-                    currentWalkControl = walkControl
+                    currentWalkControl = finishStep
                     currentGauge       = gaugeBrth
                     currentHrPlot      = hrPlot
                 }
 
             }
+
         }
     }
- }
+}

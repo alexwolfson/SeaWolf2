@@ -112,24 +112,24 @@ SceneBase {
     function generateWalkSession (){
         var mySession = []
         sessionType = "WALK"
-        if (additionalBreath){
-            // we are adding to the beginning of the array so the previous time is always in element 2 (if starting from 0)
-            mySession.unshift( {"time": 0,   "typeName": "back"});
-            mySession.unshift( {"time": 0,   "typeName": "walk"});
-            mySession.unshift( {"time": 0,   "typeName": "hold"});
-            mySession.unshift( {"time": 60,  "typeName": "brth"});
-        }
         // we are adding to the beginning of the array so the previous time is always in element 2 (if starting from 0)
         for (var i = 0; i < breathTime.length; i++){
             if (breathTime[i] === 0){
                 break;
             }else{
-                mySession.unshift( {"time": walkTime,     "typeName": "back"});
-                mySession.unshift( {"time": walkTime,     "typeName": "walk"});
-                mySession.unshift( {"time": holdTime[i],  "typeName": "hold"});
-                mySession.unshift( {"time": breathTime[i],"typeName": "brth"});
+                mySession.push( {"time": breathTime[i],"typeName": "brth"});
+                mySession.push( {"time": holdTime[i],  "typeName": "hold"});
+                mySession.push( {"time": walkTime,     "typeName": "walk"});
+                mySession.push( {"time": walkTime,     "typeName": "back"});
             }
         }
+        if (additionalBreath){
+            // we are adding to the beginning of the array so the previous time is always in element 2 (if starting from 0)
+            mySession.push( {"time": 60,  "typeName": "brth"});
+            mySession.push( {"time": 0,   "typeName": "hold"});
+            mySession.push( {"time": 0,   "typeName": "walk"});
+            mySession.push( {"time": 0,   "typeName": "back"});
+}
         return mySession
     }
 
@@ -274,6 +274,7 @@ SceneBase {
 
             //Label { text: qsTr("sessionName") }
             SeaWolfInput{ id:sessionNameId; type:"str";   lbl: qsTr("sessionName");    sfv:"";        onResult: {sessionName=res}}
+            //SeaWolfInput{ id: walkSteps2; width: 100; type:"int";     lbl: qsTr("Stps2:"); ifv: "25"; onResult: {breathTime[1]=intRes}}
             SeaWolfInput{ id:numberOfCyclesId; type:"spinBox";   lbl: qsTr("numberOfCycles"); sbv:6; sbfrom:1; sbto: 10; sbstep: 1;  onResult: {numberOfCycles=intRes}}
             SeaWolfInput{ id: repeatLastId;    type:"switch";lbl: qsTr("repeatLast");         onResult: {repeatLast=swYesNo}}
             SeaWolfInput{ id: additionalBreathId;     type:"switch";lbl: qsTr("additional60SecRecord");         onResult: {additionalBreath=swYesNo}}
