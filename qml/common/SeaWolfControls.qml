@@ -250,7 +250,7 @@ CircularGauge {
     }
     //trick to pass by reference
     function loadNextCycleVal(gauge){
-        console.log("gaugeModel.count=", gaugeModel.count, "gauge[0].modelIndex",gauge[0].modelIndex)
+        //console.log("gaugeModel.count=", gaugeModel.count, "gauge[0].modelIndex",gauge[0].modelIndex)
         if ((gauge[0].modelIndex + typesDim < gaugeModel.count))
         {
             gauge[0].modelIndex += typesDim;
@@ -359,9 +359,7 @@ CircularGauge {
                             runSessionScene.runGauge[walkIndx].visible = true
                             // save number of double steps
                             // Hardcoded 4 as a number of steps - need to refactor!
-                            backEventsNb = Math.floor(runSessionScene.currentGauge.modelIndex  / 4)
-                            console.log("runSessionScene.currentGauge.modelIndex=", runSessionScene.currentGauge.modelIndex / 4) //, stepsAr[runSessionScene.currentGauge.modelIndex%4])
-                           hrPlot.currentSession.event[backEventsNb][2] =  hrPlot.stepsAr[backEventsNb]
+                            hrPlot.saveSteps()
                         }
 
                         //seting up next gauge as current if it's time is not 0

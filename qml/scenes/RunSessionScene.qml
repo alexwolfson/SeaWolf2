@@ -1,7 +1,7 @@
 import QtQuick 2.7
-import QtQuick.Controls 2.0
+import QtQuick.Controls 2.2
 import QtQuick.Controls.Styles 1.4
-import QtQuick.Dialogs 1.2
+//import QtQuick.Dialogs 1.2
 import QtQuick.Extras 1.4
 import QtQuick.Layouts 1.3
 import QtMultimedia 5.6
@@ -58,9 +58,22 @@ SceneBase {
     //    function gotMarkSignal(name){
     //        triggerMark = name
     //    }
-    property var stepsAr:[0,1,2,3]
+    property var stepsAr:[0,0,0,0]
+    function getStepIdsText(){
+        return "<pre>" +
+                "Distance in steps 1:<b>" + stepsAr[0] +
+                            "  </b>2:<b>" + stepsAr[1] +
+                            "  </b>3:<b>" + stepsAr[2] +
+                            "  </b>4:<b>" + stepsAr[3] +
+                "</pre>";
+    }
 
-
+    function updateBackSteps(stNb){
+        var backStepNb=Math.floor(currentGauge.modelIndex  / 4) - 1
+        stepsAr[backStepNb] = stNb
+        hrPlot.currentSession.event[backStepNb][2] = stNb
+        stepsIdsText.text = getStepIdsText()
+    }
     function getSessionTime(){
         return sessionTime
     }
@@ -266,10 +279,15 @@ SceneBase {
             id: stepsIds
             Layout.preferredWidth: runSessionScene.width
             Layout.preferredHeight: SeaWolfInput.height
-            SeaWolfInput{ id: walkSteps1; width:stepsIds.width / 4; type:"int"; lbl: qsTr("Stps1:"); ifv:stepsAr[0]; onResult: {stepsAr[0]=intRes}}
-            SeaWolfInput{ id: walkSteps2; width:stepsIds.width / 4; type:"int"; lbl: qsTr("Stps2:"); ifv:stepsAr[1]; onResult: {stepsAr[1]=intRes}}
-            SeaWolfInput{ id: walkSteps3; width:stepsIds.width / 4; type:"int"; lbl: qsTr("Stps3:"); ifv:stepsAr[2]; onResult: {stepsAr[2]=intRes}}
-            SeaWolfInput{ id: walkSteps4; width:stepsIds.width / 4; type:"int"; lbl: qsTr("Stps4:"); ifv:stepsAr[3]; onResult: {stepsAr[3]=intRes}}
+            Text{
+                id: stepsIdsText
+                text: getStepIdsText()
+                font.pixelSize: dp(40)
+            }
+//            SeaWolfInput{ id: walkSteps1; width:stepsIds.width / 5; type:"int"; lbl: qsTr("1:"); ifv:""; onResult: {stepsAr[0]=intRes}}
+//            SeaWolfInput{ id: walkSteps2; width:stepsIds.width / 5; type:"int"; lbl: qsTr("2:"); ifv:""; onResult: {stepsAr[1]=intRes}}
+//            SeaWolfInput{ id: walkSteps3; width:stepsIds.width / 5; type:"int"; lbl: qsTr("3:"); ifv:""; onResult: {stepsAr[2]=intRes}}
+//            SeaWolfInput{ id: walkSteps4; width:stepsIds.width / 5; type:"int"; lbl: qsTr("4:"); ifv:""; onResult: {stepsAr[3]=intRes}}
         }
 
         RowLayout{
@@ -284,7 +302,7 @@ SceneBase {
                 //anchors.horizontalCenter: parent.horizontalCenter
                 MenuButton {
                     id: button1
-                    z: 100
+                    z: 95
                     text: qsTr("Start")
                     enabled: true
                     clip: true
@@ -324,7 +342,7 @@ SceneBase {
                 }
                 MenuButton {
                     id: finishStep
-                    z:100
+                    z:95
                     text: qsTr("Finish Step")
                     enabled: true
                     onClicked: {
@@ -454,7 +472,7 @@ SceneBase {
             ColumnLayout{
                 MenuButton {
                     id: stopButton
-                    z:100
+                    z:95
                     text: qsTr("Stop")
                     onClicked: {
                         //timerBrth.sessionIsOver(timerBrth)

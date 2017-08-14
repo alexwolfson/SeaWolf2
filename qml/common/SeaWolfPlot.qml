@@ -1,15 +1,13 @@
 import QtQuick 2.7
-import QtQuick.Controls 2.0
-//import QtQuick.Controls.Styles 1.4
-//import QtQuick.Dialogs 1.2
+import QtQuick.Controls 2.2
+import QtQuick.Dialogs 1.2
+//import Qt.labs.platform 1.0
 //import QtQuick.Extras 1.4
 import QtQuick.Layouts 1.3
 import QtMultimedia 5.6
 //import QtQml 2.2
 import QtCharts 2.1
 import MyStuff 1.0
-import QtQuick 2.2
-import QtQuick.Dialogs 1.1
 // Events have Nb - number in currentSession.event, Enum Enum representation of type ("brth":0, "hold": 1),
 //     Tm - time when it happened
 Rectangle{
@@ -165,12 +163,12 @@ Rectangle{
             return
         }
 
-        console.log("**** updateAdditionalXLabels interval = ", interval,
-                    "currentStepAxisX.min = ",  currentStepAxisX.min,
-                    "currentStepAxisX.max = ",  currentStepAxisX.max,
-                    "nbOfShownStepLabels=", nbOfShownStepLabels,
-                    "additionalXLabels.length = ", additionalXLabels.length,
-                    "currentStepAxisX.categoriesLabels.length = ", currentStepAxisX.categoriesLabels.length)
+//        console.log("**** updateAdditionalXLabels interval = ", interval,
+//                    "currentStepAxisX.min = ",  currentStepAxisX.min,
+//                    "currentStepAxisX.max = ",  currentStepAxisX.max,
+//                    "nbOfShownStepLabels=", nbOfShownStepLabels,
+//                    "additionalXLabels.length = ", additionalXLabels.length,
+//                    "currentStepAxisX.categoriesLabels.length = ", currentStepAxisX.categoriesLabels.length)
         // Calculate new additionalXLabels
         additionalXLabels = []
         for (lblTm = Math.floor(currentStepAxisX.min) + interval; lblTm <= currentStepAxisX.max -interval; lblTm += interval){
@@ -408,23 +406,50 @@ Rectangle{
         }
         currentSession.sessionName = sessionName
     }
-    MessageDialog {
-        id:saveSessionDialog
-        title: "Save Session?"
-        icon: StandardIcon.Question
-        text: ""
-        standardButtons: StandardButton.Yes  | StandardButton.No
+    Dialog {
+        id:saveStepsDialog
+        signal saveStepsSignal(int stNb)
+        title: "Save Steps"
+        property int backStepNb: 0
+        standardButtons: StandardButton.Ok
+        Tumbler {
+            id: steps
+            model: 100
+            anchors.horizontalCenter: parent.horizontalCenter
+        }
+        onAccepted: {
+            console.log("runSessionScene.currentGauge.modelIndex=", backStepNb)
+            saveStepsDialog.saveStepsSignal.connect(runSessionScene.updateBackSteps)
+            saveStepsSignal(steps.currentIndex)
+        }
         //Component.onCompleted: visible = true
-        onYes: console.log("saving session")
-        onNo: console.log("didn't save")
-        onRejected: console.log("aborted")
+    }
+    function saveSteps(){
+        saveStepsDialog.open()
     }
 
+    Dialog {
+        id:saveSessionDialog
+        title: "Save Session?"
+        //icon: StandardIcon.Question
+        modality: Qt.ApplicationModal
+        property alias sessionNm: sessionNm.text
+        standardButtons: StandardButton.Yes  | StandardButton.No
+        Text{
+            id: sessionNm
+            text: ""
+            font.bold: true
+        }
+        //Component.onCompleted: visible = true
+        //onYes: console.log("saving session")
+        //onNo: console.log("didn't save")
+        //onRejected: console.log("aborted")
+    }
     function saveSession() {
         var path=qfa.getAccessiblePath("sessions");
         console.log("Path = ", path);
         var fileName = currentSession.sessionName + "-" + currentSession.when + ".json";
-        saveSessionDialog.text = fileName
+        saveSessionDialog.sessionNm = fileName
         saveSessionDialog.open()
         if (saveSessionDialog.clickedButton !== StandardButton.Yes) {
 
@@ -568,7 +593,7 @@ Rectangle{
         currentSession.event.push([eventEnum, tm])
         var eventNb = currentSession.event.length - 1
         var pulse = currentSession.pulse[currentSession.event[eventNb][1]]
-        console.log("*** markEvent Enter: time = ", tm, "eventName = ", eventName, "lastStepEventNm = ", lastStepEventNm, "eventNb = ", currentSession.event.length -1 )
+        //console.log("*** markEvent Enter: time = ", tm, "eventName = ", eventName, "lastStepEventNm = ", lastStepEventNm, "eventNb = ", currentSession.event.length -1 )
         if (! (runColors[eventName] === undefined)){
             lastStepEventTm = tm
             lastStepEventNm = eventName
@@ -577,7 +602,7 @@ Rectangle{
             //adding the last point from the previous series as a first point of the new series
             // TODO review why +1 is needed !
             addPointToHrPlot(lastStepEventTm +1, pulse )
-            console.log("added tm = ", lastStepEventTm, " pulse = ", pulse)
+            //console.log("added tm = ", lastStepEventTm, " pulse = ", pulse)
             //currentHrSeries = currentChartView.createSeries(ChartView.SeriesTypeLine, "", currentStepAxisX, currentAxisY);
         }else{
             if (eventName === "contraction"){
@@ -587,7 +612,7 @@ Rectangle{
             }
         }
 
-        console.log("*** markEvent Exit: time = ", tm, "eventName = ", eventName, "lastStepEventNm = ", lastStepEventNm, "eventNb = ", currentSession.event.length -1 )
+        //console.log("*** markEvent Exit: time = ", tm, "eventName = ", eventName, "lastStepEventNm = ", lastStepEventNm, "eventNb = ", currentSession.event.length -1 )
     }
     function timerUpdate(tm, hrValue){
         hrPlot.addPointToHrPlot(tm, hrValue)
@@ -645,8 +670,8 @@ Rectangle{
 
         //Series is created we can work with it now
         onSeriesAdded:{
-            console.log ("in onSeriesAdded lastStepEventNm:", lastStepEventNm, "lastStepEventTm = ", lastStepEventTm, "pulse = ", currentSession.pulse[lastStepEventTm -1],
-                         "myEventsNm2Enum[lastStepEventNm]", myEventsNm2Enum[lastStepEventNm])
+            //console.log ("in onSeriesAdded lastStepEventNm:", lastStepEventNm, "lastStepEventTm = ", lastStepEventTm, "pulse = ", currentSession.pulse[lastStepEventTm -1],
+            //             "myEventsNm2Enum[lastStepEventNm]", myEventsNm2Enum[lastStepEventNm])
             series.color = runColors[run.nextStepName]
             series.width = dp(5)
             //console.log ("in onSeriesAdded series.color:", series.color)
