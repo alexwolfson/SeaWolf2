@@ -594,7 +594,7 @@ Rectangle{
                 if (eventName == "back"){
                     //show the number of steps
                     if (!(undefined === p_session.event[eventNb][2])){
-                        runSessionScene.stepsAr[backEventCnt] = p_session.event[eventNb][2]
+                        //runSessionScene.stepsAr[backEventCnt] = p_session.event[eventNb][2]
                         backEventCnt++
                     }
                 }
