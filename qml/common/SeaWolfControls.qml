@@ -265,7 +265,7 @@ CircularGauge {
         //}
     }
 
-    function sessionIsOver(nextGauge){
+    function cycleIsOver(nextGauge){
         loadIfNot0([nextGauge], 0)
         loadIfNot0([nextGauge.nextGauge], 1)
         //if we have 2 gauges only (no "walk") we need to prevent updating "hold" twice
@@ -293,12 +293,6 @@ CircularGauge {
             // the step is over - go to the next step
             onRunningChanged: {
                 if (running){
-                    // Add start event with it's duration
-                    //if (!gaugeName in ["walk", "back"] ){
-//                        var eventNb = hrPlot.myEventsNm2Enum[gaugeName];
-//                        console.log("gaugeName=", gaugeName, "eventNb=", eventNb)
-//                        hrPlot.currentSession.event.push([eventNb, maximumValue])
-                    //}
                     var backEventsNb = -1
                     var currentBackEventInd
                     // hrPlot.setupCurrentSeries()
@@ -312,18 +306,11 @@ CircularGauge {
                     gaugeModel.get(modelIndex).isCurrent = false
                     // update all gauges if we are about to run the "breath"gauge
                     var bContinue = true
-                    if ("back" == gauge.gaugeName){
-                        // save number of double steps
-                        // Hrdcoded 4 as a number of steps - need to refactor
-                        backEventsNb = Math.floor(gauge.modelIndex  / 4)
-                        currentBackEventInd = hrPlot.currentSession.event.length - 1
-                        console.log("gauge.modelIndex=", backEventsNb) //, stepsAr[runSessionScene.currentGauge.modelIndex%4])
-                        console.log(runSessionScene.stepsAr[backEventsNb] )
-                        console.log(hrPlot.currentSession.event[currentBackEventInd] )
-                        hrPlot.currentSession.event[currentBackEventInd].push( runSessionScene.stepsAr[backEventsNb])
-                    }
-
                     if (isLastInCycle()){
+                        if ("back" == runSessionScene.currentGauge.gaugeName){
+                          // save number of double steps
+                          hrPlot.saveSteps()
+                        }
                         loadNextCycleVal([gauge])
                         var prevNextModelIndex = nextGauge.modelIndex
                         //console.log("prevNextModelIndex=", prevNextModelIndex)
@@ -375,20 +362,20 @@ CircularGauge {
                     else {
                         // The session is over mark the last event
                         hrPlot.markEvent(gaugeName, run.sessionTime + 1)
-                        sessionIsOver(nextGauge)
+                        cycleIsOver(nextGauge)
                         // show the session results
-
+                        oneTimer.stop()
+                        sessionTime = 0;
                         //save the session results
                         //openDialog.open()
                         hrPlot.saveSession()
-                        oneTimer.stop()
-                        sessionTime = 0;
+                        if ("back" == runSessionScene.currentGauge.gaugeName){
+                            // save number of double steps
+                            // Hardcoded 4 as a number of steps - need to refactor!
+                            hrPlot.saveSteps()
+                        }
                         //pageLoader.source = "results.qml";
-
-
                     }
-                    // we are here as part of the transaction to running, so in case of next serie
-                    // we change all times!
                 }
             }
 
@@ -401,6 +388,7 @@ CircularGauge {
                 property: "value"
                 duration: 1000
             }
+
         }
     ]
     //Behavior on value { NumberAnimation { duration: gauge.valueChange * 1000 } }

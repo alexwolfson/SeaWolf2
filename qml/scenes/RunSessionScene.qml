@@ -58,7 +58,8 @@ SceneBase {
     //    function gotMarkSignal(name){
     //        triggerMark = name
     //    }
-    property var stepsAr:[0,0,0,0]
+    property var stepsArOrig:[0,0,0,0]
+    property var stepsAr
     function getStepIdsText(){
         return "<pre>" +
                 "Distance in steps 1:<b>" + stepsAr[0] +
@@ -69,9 +70,8 @@ SceneBase {
     }
 
     function updateBackSteps(stNb){
-        var backStepNb=Math.floor(currentGauge.modelIndex  / 4) - 1
-        stepsAr[backStepNb] = stNb
-        hrPlot.currentSession.event[backStepNb][2] = stNb
+        stepsAr[hrPlot.lastBackStepNb] = stNb
+        hrPlot.currentSession.event[hrPlot.lastBackEvebtNb][2] = stNb
         stepsIdsText.text = getStepIdsText()
     }
     function getSessionTime(){
@@ -284,10 +284,6 @@ SceneBase {
                 text: getStepIdsText()
                 font.pixelSize: dp(40)
             }
-//            SeaWolfInput{ id: walkSteps1; width:stepsIds.width / 5; type:"int"; lbl: qsTr("1:"); ifv:""; onResult: {stepsAr[0]=intRes}}
-//            SeaWolfInput{ id: walkSteps2; width:stepsIds.width / 5; type:"int"; lbl: qsTr("2:"); ifv:""; onResult: {stepsAr[1]=intRes}}
-//            SeaWolfInput{ id: walkSteps3; width:stepsIds.width / 5; type:"int"; lbl: qsTr("3:"); ifv:""; onResult: {stepsAr[2]=intRes}}
-//            SeaWolfInput{ id: walkSteps4; width:stepsIds.width / 5; type:"int"; lbl: qsTr("4:"); ifv:""; onResult: {stepsAr[3]=intRes}}
         }
 
         RowLayout{
@@ -301,7 +297,7 @@ SceneBase {
                 spacing:dp(8)
                 //anchors.horizontalCenter: parent.horizontalCenter
                 MenuButton {
-                    id: button1
+                    id: startButton
                     z: 95
                     text: qsTr("Start")
                     enabled: true
@@ -332,6 +328,13 @@ SceneBase {
                         finishStep.text= qsTr("Finish Step")
                         stopButton.enabled = true;
                         nextStepName = "brth"
+
+                        //update walk steps
+                        stepsAr = stepsArOrig
+                        stepsIdsText.text = getStepIdsText()
+                        //
+                        hrPlot.currentSession = hrPlot.currentSessionOrig
+                        hrPlot.lastBackStepNb = -1
                         hrPlot.init()
                         hrPlot.timerUpdate(0, Math.round(heartRate.hr))
                         oneTimer.start()
@@ -475,7 +478,7 @@ SceneBase {
                     z:95
                     text: qsTr("Stop")
                     onClicked: {
-                        //timerBrth.sessionIsOver(timerBrth)
+                        //timerBrth.cycleIsOver(timerBrth)
                         //fileDialog.open()
                         oneTimer.stop()
                         currentGauge.stopVoiceTimers();
@@ -499,7 +502,7 @@ SceneBase {
                         //stopButton.enabled = false
                         hrPlot.saveSession()
                         sessionTime = 0;
-                        currentGauge.sessionIsOver(gaugeBrth)
+                        currentGauge.cycleIsOver(gaugeBrth)
                     }
                 }
                 Rectangle{

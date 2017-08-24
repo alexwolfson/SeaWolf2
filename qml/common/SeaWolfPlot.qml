@@ -1,8 +1,9 @@
 import QtQuick 2.7
 import QtQuick.Controls 2.2
+import QtQuick.Controls.Styles 1.4
 import QtQuick.Dialogs 1.2
 //import Qt.labs.platform 1.0
-//import QtQuick.Extras 1.4
+import QtQuick.Extras 1.4
 import QtQuick.Layouts 1.3
 import QtMultimedia 5.6
 //import QtQml 2.2
@@ -23,7 +24,7 @@ Rectangle{
     property var myEventsEnum2Nm: invert(myEventsNm2Enum)
     property var runColors: {"brth" : "green", "hold" : "tomato", "walk" : "blue", "back" : "orange"}
     //property var eventsGraphProperty:{"Contraction":["red", "black", 6]}
-    property var currentSession: {
+    property var currentSessionOrig: {
         "sessionName":"TestSession",
                 "when":"ChangeMe", //Qt.formatDateTime(new Date(), "yyyy-MM-dd-hh-mm-ss"),
                 "eventNames":myEventsNm2Enum,
@@ -31,6 +32,7 @@ Rectangle{
                 "pulse":[],
                 "discomfort":[]
     }
+    property var currentSession
     //property LineSeries    currentHrSeries
     property LineSeries    currentStepHrSeries
     property LineSeries    currentDiscomfortSeries
@@ -77,7 +79,8 @@ Rectangle{
     property var additionalXLabels:         []
     property int totalXLabelsNb:       8
     property var stepXLabels:               []
-
+    property int lastBackEvebtNb
+    property int lastBackStepNb: -1
     function sessionTimeUpdateSlot(sessionTime){
         //TODO: update current time
     }
@@ -317,9 +320,7 @@ Rectangle{
 
     function init(){
         resetShow()
-        currentSession.event      = []
-        currentSession.pulse      = []
-        currentSession.discomfort = []
+        currentSession = currentSessionOrig
         additionalXLabels         = []
         stepXLabels               = []
         sessionDuration           =  0
@@ -330,6 +331,7 @@ Rectangle{
         lastStepEventToShowNb     = -1
         currentSession.when = Qt.formatDateTime(new Date(), "yyyy-MM-dd-hh-mm-ss");
         lastPressEventNb = -1;
+        //runSessionScene.stepsAr = runSessionScene.stepsArOrig
         currentStepEventEnum  = -1;
         maxStepsOnPlot        = 1000;
         firstStepEventToPlotNb   = -1;
@@ -412,15 +414,42 @@ Rectangle{
         title: "Save Steps"
         property int backStepNb: 0
         standardButtons: StandardButton.Ok
+        modality: Qt.ApplicationModal
         Tumbler {
             id: steps
-            model: 100
-            anchors.horizontalCenter: parent.horizontalCenter
+//            style: TumblerStyle {
+//                id: tumblerStyle
+//                delegate: Item {
+//                    implicitHeight: (tumbler.height - padding.top - padding.bottom) / tumblerStyle.visibleItemCount
+
+//                    Text {
+//                        id: label
+//                        text: styleData.value
+//                        color: styleData.current ? "#52E16D" : "#808285"
+//                        font.bold: true
+//                        opacity: 0.4 + Math.max(0, 1 - Math.abs(styleData.displacement)) * 0.6
+//                        anchors.centerIn: parent
+//                    }
+//                }
+//            }
+            TumblerColumn{
+               id: col100
+               model: 10
+            }
+            TumblerColumn{
+                id: col10
+                model: 10
+            }
+            TumblerColumn{
+                id:col1
+                model: 10
+            }
+               anchors.horizontalCenter: parent.horizontalCenter
+
         }
         onAccepted: {
-            console.log("runSessionScene.currentGauge.modelIndex=", backStepNb)
             saveStepsDialog.saveStepsSignal.connect(runSessionScene.updateBackSteps)
-            saveStepsSignal(steps.currentIndex)
+            saveStepsSignal(100 * col100.currentIndex + 10 * col10.currentIndex + col1.currentIndex)
         }
         //Component.onCompleted: visible = true
     }
@@ -432,7 +461,7 @@ Rectangle{
         id:saveSessionDialog
         title: "Save Session?"
         //icon: StandardIcon.Question
-        modality: Qt.ApplicationModal
+        modality: Qt.NonModal
         property alias sessionNm: sessionNm.text
         standardButtons: StandardButton.Yes  | StandardButton.No
         Text{
@@ -564,7 +593,7 @@ Rectangle{
                 lastStepEventTm = tmStop
                 if (eventName == "back"){
                     //show the number of steps
-                    if (!(undefined == p_session.event[eventNb][2])){
+                    if (!(undefined === p_session.event[eventNb][2])){
                         runSessionScene.stepsAr[backEventCnt] = p_session.event[eventNb][2]
                         backEventCnt++
                     }
@@ -593,6 +622,10 @@ Rectangle{
         currentSession.event.push([eventEnum, tm])
         var eventNb = currentSession.event.length - 1
         var pulse = currentSession.pulse[currentSession.event[eventNb][1]]
+        if ("back" === eventName){
+            lastBackEvebtNb = eventNb
+            lastBackStepNb  += 1
+        }
         //console.log("*** markEvent Enter: time = ", tm, "eventName = ", eventName, "lastStepEventNm = ", lastStepEventNm, "eventNb = ", currentSession.event.length -1 )
         if (! (runColors[eventName] === undefined)){
             lastStepEventTm = tm
@@ -847,6 +880,7 @@ Rectangle{
             }
         }
     }
+
     RangeSlider{
         id: plotRangeControl
         anchors.left:   chartView.left
@@ -1156,6 +1190,17 @@ Rectangle{
             border.width: 1
             border.color: "black"
 
+        }
+    }
+    Row{
+        visible: true //gaugeWalk.maximumValue !== 0
+        id: stepsIds
+        Layout.preferredWidth: runSessionScene.width
+        Layout.preferredHeight: SeaWolfInput.height
+        Text{
+            id: stepsIdsText
+            text: runSessionScene.getStepIdsText()
+            font.pixelSize: dp(40)
         }
     }
     Component.onCompleted: {

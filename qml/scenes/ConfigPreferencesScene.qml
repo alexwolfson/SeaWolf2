@@ -16,9 +16,6 @@ SceneBase {
     property  bool thirtySecSignal
     property  bool tenSecSignal
     property  var  language
-    property var stepsAr:[0,1,2,3]
-    //    property
-    //property alias numberOfCycles:nbOfCycles.result
     // had trouble with multidimension arrays in javascript function, so stated to use 1 dimension
     function get2DimIndex(dim0, dim1){
         return 3 * dim0 + dim1
@@ -86,16 +83,12 @@ SceneBase {
                 }
             }
 
-            //Label { text: qsTr("sessionName") }
-            //SeaWolfInput{ id: walkSteps2; width:stepsIds.width / 4; type:"int"; lbl: qsTr("Stps2:"); ifv:stepsAr[1]; onResult: {stepsAr[1]=intRes}}
             SeaWolfInput{ type:"str";   lbl: qsTr("userName");    sfv:"";        onResult: {userName=res}}
             SeaWolfInput{ id: backgroundMusic;  type:"switch";lbl: qsTr("backgroundMusic");         onResult: {music=swYesNo}}
             SeaWolfInput{ id: gaugeSliders;  type:"switch";lbl: qsTr("gaugeOrSliders");         onResult: {useGauge=swYesNo}}
             SeaWolfInput{ id: timer10;  type:"switch";lbl: qsTr("tenSecTimer");         onResult: {tenSecSignal=swYesNo}}
             SeaWolfInput{ id: timer30;  type:"switch";lbl: qsTr("thirtySecTimer");      onResult: {thirtySecSignal=swYesNo}}
             SeaWolfInput{ id: timer1min; type:"switch";lbl: qsTr("oneMinTimer");        onResult: {oneMinSignal=swYesNo}}
-            //SeaWolfInput{ type:"int";   lbl: qsTr("numberOfCycles"); ifv:"6";       onResult: {stepsAr[0]=intRes}}
-            //SeaWolfInput{ type:"spinBox";   lbl: qsTr("numberOfCycles"); sbv:6; sbfrom:1; sbto: 10; sbstep: 1;  onResult: {numberOfCycles=intRes}}
             Image {
                 source: "../../assets/img/SeaWolf.png"
                 //anchors.horizontalCenter: parent.horizontalCenter
