@@ -368,12 +368,12 @@ CircularGauge {
                         sessionTime = 0;
                         //save the session results
                         //openDialog.open()
-                        hrPlot.saveSession()
                         if ("back" == runSessionScene.currentGauge.gaugeName){
                             // save number of double steps
                             // Hardcoded 4 as a number of steps - need to refactor!
                             hrPlot.saveSteps()
                         }
+                        hrPlot.saveSession()
                         //pageLoader.source = "results.qml";
                     }
                 }

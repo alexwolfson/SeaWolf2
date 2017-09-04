@@ -456,6 +456,9 @@ Rectangle{
     function saveSteps(){
         saveStepsDialog.open()
     }
+    function saveSession(){
+        saveSessionDialog.open()
+    }
 
     Dialog {
         id:saveSessionDialog
@@ -470,30 +473,20 @@ Rectangle{
             font.bold: true
         }
         //Component.onCompleted: visible = true
-        //onYes: console.log("saving session")
+        onYes: saveSessionImpl()
         //onNo: console.log("didn't save")
         //onRejected: console.log("aborted")
     }
-    function saveSession() {
+    function saveSessionImpl() {
         var path=qfa.getAccessiblePath("sessions");
         console.log("Path = ", path);
         var fileName = currentSession.sessionName + "-" + currentSession.when + ".json";
         saveSessionDialog.sessionNm = fileName
-        saveSessionDialog.open()
-        if (saveSessionDialog.clickedButton !== StandardButton.Yes) {
-
-            //open will add path before fileName
-            console.log("fileName=", fileName, "Open=" , qfa.open(path + fileName));
-            var sessionString = JSON.stringify(currentSession);
-            console.log("Wrote = ", qfa.write(sessionString));
-            //var qstr = qfa.read();
-            //console.log("read = ", qstr);
-            qfa.close();
-            //var data = runSessionScene.currentSessionhttps://community.wd.com/t/automatic-backup/147334/5
-            //io.text = JSON.stringify(data, null, 4)
-            //io.write()
-
-        }
+        //open will add path before fileName
+        console.log("fileName=", fileName, "Open=" , qfa.open(path + fileName));
+        var sessionString = JSON.stringify(currentSession);
+        console.log("Wrote = ", qfa.write(sessionString));
+        qfa.close();
     }
 
     function restoreSession(filePath) {
@@ -555,6 +548,7 @@ Rectangle{
 
     function showSessionGraph(p_session){
         console.log("*** Enetered showSessionGraph ")
+        stepsIds.stepsIdsText.text = runSessionScene.getStepIdsText()
         var tmStart = 0
         var tmStop  = 0
         var eventNb = -1
@@ -1195,11 +1189,14 @@ Rectangle{
     Row{
         visible: true //gaugeWalk.maximumValue !== 0
         id: stepsIds
-        Layout.preferredWidth: runSessionScene.width
-        Layout.preferredHeight: SeaWolfInput.height
+        //anchors.top: detailSlider.bottom
+        //anchors.left:   chartView.left
+        //anchors.right:  chartView.right
+        Layout.preferredWidth: parent.width//runSessionScene.width
+        Layout.preferredHeight: dp(20)//SeaWolfInput.height
         Text{
             id: stepsIdsText
-            text: runSessionScene.getStepIdsText()
+            text: "StepText"
             font.pixelSize: dp(40)
         }
     }
@@ -1210,6 +1207,7 @@ Rectangle{
         console.log("point = ", point.x, point.y)
         detailSliderRay.y = point.y
         detailSliderRay.height = Math.abs(point.y)
+
     }
 
 } //End Of Plot
