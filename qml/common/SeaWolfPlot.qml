@@ -1147,6 +1147,34 @@ Rectangle{
             opacity: detailSlider.pressed ? 0.6 : 0.8
             //color: "orange"
             //border.color: "#bdbebf"
+        }
+        Rectangle{
+            id:detailSliderRay
+            x:0
+            y: 0
+            implicitWidth: dp(6)
+            implicitHeight: chartView.height
+            radius: dp(2)
+            color: "white"
+            border.width: 1
+            border.color: "black"
+
+        }
+        Rectangle{
+            id:detailSliderText
+            implicitWidth: dp(130)
+            implicitHeight:dp(130)
+            x:detailSliderRay.x - width/2
+            y:detailSliderRay.height + height/2
+            Image {
+                source: "../../assets/img/bubble_rect.png"
+                anchors.centerIn: parent
+                //width: dp(120); height: dp(120)
+                //fillMode: Image.PreserveAspectCrop
+                //clip: true
+                width:parent.width
+                height:parent.height
+            }
             Text{
                 Layout.alignment: Qt.AlignCenter
                 //topPadding: 0
@@ -1174,18 +1202,7 @@ Rectangle{
                 //anchors.verticalCenter: parent.verticalCenter
             }
         }
-        Rectangle{
-            id:detailSliderRay
-            x:0
-            y: 0
-            implicitWidth: dp(6)
-            implicitHeight: chartView.height
-            radius: dp(2)
-            color: "white"
-            border.width: 1
-            border.color: "black"
 
-        }
     }
     Row{
         visible: true //gaugeWalk.maximumValue !== 0

@@ -86,5 +86,6 @@
         <file>qml/scenes/ConfigPreferencesScene.qml</file>
         <file>qml/common/SeaWolfFiles.qml</file>
         <file>assets/img/bubble.png</file>
+        <file>assets/img/bubble_rect.png</file>
     </qresource>
 </RCC>
