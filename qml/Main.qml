@@ -62,6 +62,22 @@ ApplicationWindow {
         }
         return pix * scale_factor
     }
+    property int brthIndx: 0
+    property int holdIndx: 1
+    property int walkIndx: 2
+    property int backIndx: 3
+    property var stepsArOrig:[0,0,0,0]
+    property var stepsAr
+    function getStepIdsText(){
+        return "<pre>" +
+                "Distance in steps 1:<b>" + stepsAr[0] +
+                            "  </b>2:<b>" + stepsAr[1] +
+                            "  </b>3:<b>" + stepsAr[2] +
+                            "  </b>4:<b>" + stepsAr[3] +
+                "</pre>";
+    }
+    property string stepNbText: "StepsNb"
+    //property string stepNbText:"StepNb"
     //Is set, when RunSessionScene is loaded
     property int typesDim
     visible:true

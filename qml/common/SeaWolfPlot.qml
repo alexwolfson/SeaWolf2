@@ -297,6 +297,7 @@ Rectangle{
     }
 
     function resetShow(){
+        stepsAr = stepsArOrig
         sessionDuration = 0
         currentChartView.removeAllSeries()
         setupCurrentSeries()
@@ -331,7 +332,6 @@ Rectangle{
         lastStepEventToShowNb     = -1
         currentSession.when = Qt.formatDateTime(new Date(), "yyyy-MM-dd-hh-mm-ss");
         lastPressEventNb = -1;
-        //runSessionScene.stepsAr = runSessionScene.stepsArOrig
         currentStepEventEnum  = -1;
         maxStepsOnPlot        = 1000;
         firstStepEventToPlotNb   = -1;
@@ -497,7 +497,6 @@ Rectangle{
         console.log("read = ", qstr);
         currentSession = JSON.parse(qstr);
         qfa.close();
-
         showSessionGraph(currentSession)
         rangeSliderUpdate()
 
@@ -548,7 +547,6 @@ Rectangle{
 
     function showSessionGraph(p_session){
         console.log("*** Enetered showSessionGraph ")
-        stepsIds.stepsIdsText.text = runSessionScene.getStepIdsText()
         var tmStart = 0
         var tmStop  = 0
         var eventNb = -1
@@ -560,6 +558,7 @@ Rectangle{
         var backEventCnt = 0
         currentAxisY.min = (hrMin - 1);
         currentAxisY.max = (hrMax + 1);
+        stepsAr=stepsArOrig
 
         //TODO does it make sence to synchronyze with ending steps in SeaWolfControls ? Mutex?
         // Is some sort of race condition is possible here?
@@ -588,7 +587,7 @@ Rectangle{
                 if (eventName == "back"){
                     //show the number of steps
                     if (!(undefined === p_session.event[eventNb][2])){
-                        //runSessionScene.stepsAr[backEventCnt] = p_session.event[eventNb][2]
+                        stepsAr[backEventCnt] = p_session.event[eventNb][2]
                         backEventCnt++
                     }
                 }
@@ -602,6 +601,7 @@ Rectangle{
             }
 
         }
+        stepNbText = getStepIdsText()
         saveStepXLabels()
         rangeSliderUpdate()
         updateAdditionalXLabels()
@@ -1156,10 +1156,11 @@ Rectangle{
                 //anchors.margins: dp(2)
                 color:"black"
                 text: {var tm = Math.round(detailSlider.value);
+                    var sessionTm = Math.round(detailSlider.value)
                     var txt = (tm - getCurrentStepStartTm(tm)).toString() +
                             "/" + (tm + demoModePulseTm).toString() + "\n" +
-                            currentSession.pulse[Math.round(detailSlider.value)].toString() + "\n" +
-                            Math.round(currentSession.discomfort[Math.round(detailSlider.value)]).toString();
+                            currentSession.pulse[sessionTm].toString() + "\n" +
+                            Math.round(currentSession.discomfort[sessionTm]).toString();
                     return txt
                 }
                 //verticalAlignment: Text.AlignVCenter
@@ -1196,7 +1197,7 @@ Rectangle{
         Layout.preferredHeight: dp(20)//SeaWolfInput.height
         Text{
             id: stepsIdsText
-            text: "StepText"
+            text: stepNbText
             font.pixelSize: dp(40)
         }
     }

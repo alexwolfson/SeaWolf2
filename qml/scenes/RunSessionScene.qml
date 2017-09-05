@@ -25,10 +25,6 @@ SceneBase {
     //anchors.fill: parent
     //anchors.top: runSessionScene.gameWindowAnchorItem.top
     //property alias finishStep: finishStep
-    property int brthIndx: 0
-    property int holdIndx: 1
-    property int walkIndx: 2
-    property int backIndx: 3
     property SeaWolfControls currentGauge
     property var runGauge
     //property alias hrPoints: hrSeries
@@ -58,16 +54,6 @@ SceneBase {
     //    function gotMarkSignal(name){
     //        triggerMark = name
     //    }
-    property var stepsArOrig:[0,0,0,0]
-    property var stepsAr
-    function getStepIdsText(){
-        return "<pre>" +
-                "Distance in steps 1:<b>" + stepsAr[0] +
-                            "  </b>2:<b>" + stepsAr[1] +
-                            "  </b>3:<b>" + stepsAr[2] +
-                            "  </b>4:<b>" + stepsAr[3] +
-                "</pre>";
-    }
 
     function updateBackSteps(stNb){
         stepsAr[hrPlot.lastBackStepNb] = stNb
