@@ -62,21 +62,32 @@ ApplicationWindow {
         }
         return pix * scale_factor
     }
+    function invert (obj) {
+        var new_obj = {};
+        for (var prop in obj) {
+            if(obj.hasOwnProperty(prop)) {
+                new_obj[obj[prop]] = prop;
+            }
+        }
+        return new_obj;
+    }
+
     property int brthIndx: 0
     property int holdIndx: 1
     property int walkIndx: 2
     property int backIndx: 3
-    property var stepsArOrig:[0,0,0,0]
-    property var stepsAr
-    function getStepIdsText(){
-        return "<pre>" +
-                "Distance in steps 1:<b>" + stepsAr[0] +
-                            "  </b>2:<b>" + stepsAr[1] +
-                            "  </b>3:<b>" + stepsAr[2] +
-                            "  </b>4:<b>" + stepsAr[3] +
-                "</pre>";
-    }
-    property string stepNbText: "StepsNb"
+    property var myEventsNm2Enum:{"brth":0 , "hold":1, "walk":2, "back":3, "EndOfMeditativeZone":4, "EndOfComfortZone":5, "Contraction":6, "EndOfWalk":7 }
+    property var myEventsEnum2Nm: invert(myEventsNm2Enum)
+    property var currentSessionOrig: {
+                               "sessionName":"TestSession",
+                                       "when":"ChangeMe", //Qt.formatDateTime(new Date(), "yyyy-MM-dd-hh-mm-ss"),
+                                       "eventNames":myEventsNm2Enum,
+                                       "event":[],
+                                       "pulse":[],
+                                       "discomfort":[],
+                                       "stepsAr":[]
+                           }
+    property var currentSession
     //property string stepNbText:"StepNb"
     //Is set, when RunSessionScene is loaded
     property int typesDim
@@ -110,6 +121,7 @@ ApplicationWindow {
             hrm.startHrmDemo.connect(run.currentHrPlot.demoHrm)
             hrm.startHrmSearch.connect(run.currentHrPlot.realHrm)
             run.sessionTimeUpdate.connect(run.currentHrPlot.sessionTimeUpdateSlot)
+            currentSession = currentSessionOrig
         }
         //style: TabViewStyle {
             //frameOverlap: dp(0)
@@ -172,11 +184,15 @@ ApplicationWindow {
                source: "../../assets/img/SeaWolf.png"
                anchors.horizontalCenter: parent.horizontalCenter
                //anchors.bottom: parent.bottom
-               width: dp(150)
-               height:dp(150)
+               width: dp(250)
+               height:dp(250)
            }
         }
     }
+    Component.onCompleted: {
+        currentSession = currentSessionOrig
+    }
+
     Loader {
         id: pageLoader
         anchors.fill: parent

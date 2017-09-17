@@ -307,10 +307,6 @@ CircularGauge {
                     // update all gauges if we are about to run the "breath"gauge
                     var bContinue = true
                     if (isLastInCycle()){
-                        if ("back" == runSessionScene.currentGauge.gaugeName){
-                          // save number of double steps
-                          hrPlot.saveSteps()
-                        }
                         loadNextCycleVal([gauge])
                         var prevNextModelIndex = nextGauge.modelIndex
                         //console.log("prevNextModelIndex=", prevNextModelIndex)
@@ -346,7 +342,7 @@ CircularGauge {
                             runSessionScene.runGauge[walkIndx].visible = true
                             // save number of double steps
                             // Hardcoded 4 as a number of steps - need to refactor!
-                            hrPlot.saveSteps()
+                            //hrPlot.saveSteps()
                         }
 
                         //seting up next gauge as current if it's time is not 0
@@ -368,11 +364,11 @@ CircularGauge {
                         sessionTime = 0;
                         //save the session results
                         //openDialog.open()
-                        if ("back" == runSessionScene.currentGauge.gaugeName){
+                        //if ("back" == runSessionScene.currentGauge.gaugeName){
                             // save number of double steps
                             // Hardcoded 4 as a number of steps - need to refactor!
-                            hrPlot.saveSteps()
-                        }
+                            //hrPlot.saveSteps()
+                        //}
                         hrPlot.saveSession()
                         //pageLoader.source = "results.qml";
                     }

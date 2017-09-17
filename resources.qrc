@@ -87,5 +87,6 @@
         <file>qml/common/SeaWolfFiles.qml</file>
         <file>assets/img/bubble.png</file>
         <file>assets/img/bubble_rect.png</file>
+        <file>qml/common/StepsAr.qml</file>
     </qresource>
 </RCC>

@@ -9,7 +9,8 @@ import QtMultimedia 5.6
 //import QtQml 2.2
 import QtCharts 2.1
 import MyStuff 1.0
-// Events have Nb - number in currentSession.event, Enum Enum representation of type ("brth":0, "hold": 1),
+import ".."
+// Events have Nb - number in root.currentSession.event, Enum Enum representation of type ("brth":0, "hold": 1),
 //     Tm - time when it happened
 Rectangle{
     id:hrPlot
@@ -20,19 +21,8 @@ Rectangle{
     //anchors.topMargin: sessionView.cellWidth * 3
     opacity:1.0
     z:50
-    property var myEventsNm2Enum:{"brth":0 , "hold":1, "walk":2, "back":3, "EndOfMeditativeZone":4, "EndOfComfortZone":5, "Contraction":6, "EndOfWalk":7 }
-    property var myEventsEnum2Nm: invert(myEventsNm2Enum)
     property var runColors: {"brth" : "green", "hold" : "tomato", "walk" : "blue", "back" : "orange"}
     //property var eventsGraphProperty:{"Contraction":["red", "black", 6]}
-    property var currentSessionOrig: {
-        "sessionName":"TestSession",
-                "when":"ChangeMe", //Qt.formatDateTime(new Date(), "yyyy-MM-dd-hh-mm-ss"),
-                "eventNames":myEventsNm2Enum,
-                "event":[],
-                "pulse":[],
-                "discomfort":[]
-    }
-    property var currentSession
     //property LineSeries    currentHrSeries
     property LineSeries    currentStepHrSeries
     property LineSeries    currentDiscomfortSeries
@@ -81,6 +71,7 @@ Rectangle{
     property var stepXLabels:               []
     property int lastBackEvebtNb
     property int lastBackStepNb: -1
+    property alias stepsArHrp: stepsIds.stepsArHrp
     function sessionTimeUpdateSlot(sessionTime){
         //TODO: update current time
     }
@@ -106,7 +97,7 @@ Rectangle{
         for (i = 0; i < stepXLabels.length; i++){
             var lbl = stepXLabels[i]
             var tm = getLblTm(lbl)
-            if ((tm >= 0) && (tm <= currentSession.pulse.length)){
+            if ((tm >= 0) && (tm <= root.currentSession.pulse.length)){
                 currentStepAxisX.append(lbl, tm)
             }
         }
@@ -252,16 +243,6 @@ Rectangle{
         console.log("demoModePulseTm = ", demoModePulseTm)
     }
 
-    function invert (obj) {
-        var new_obj = {};
-        for (var prop in obj) {
-            if(obj.hasOwnProperty(prop)) {
-                new_obj[obj[prop]] = prop;
-            }
-        }
-        return new_obj;
-    }
-
     function isNewSeriesEvent(eventName){
         if (eventName in ["brth", "hold", "walk", "back"]){
             return true
@@ -271,16 +252,16 @@ Rectangle{
     }
 
     function getCurrentStepStartTm(tm){
-        //console.log("currentSession.event.length = ", currentSession.event.length)
-        if (currentSession.event.length === 0){
+        //console.log("root.currentSession.event.length = ", root.currentSession.event.length)
+        if (root.currentSession.event.length === 0){
             return 0
         }
 
-        var evt   = currentSession.event[0]
+        var evt   = root.currentSession.event[0]
         var evtTm = 0
         var nextEvt
-        for (var i = 0; (i < currentSession.event.length) && (currentSession.event[i][1] < currentStepAxisX.max); i++ ){
-            nextEvt = currentSession.event[i]
+        for (var i = 0; (i < root.currentSession.event.length) && (root.currentSession.event[i][1] < currentStepAxisX.max); i++ ){
+            nextEvt = root.currentSession.event[i]
             if (isNewSeriesEvent(nextEvt[0])){
                 if ((nextEvt[1] >= tm) ){
                     return evtTm
@@ -297,7 +278,7 @@ Rectangle{
     }
 
     function resetShow(){
-        stepsAr = stepsArOrig
+        stepsArHrp.init()
         sessionDuration = 0
         currentChartView.removeAllSeries()
         setupCurrentSeries()
@@ -321,7 +302,7 @@ Rectangle{
 
     function init(){
         resetShow()
-        currentSession = currentSessionOrig
+        root.currentSession = root.currentSessionOrig
         additionalXLabels         = []
         stepXLabels               = []
         sessionDuration           =  0
@@ -330,12 +311,12 @@ Rectangle{
         currentStepEventStartTm   = -1
         currentStepEventStopTm    = -1
         lastStepEventToShowNb     = -1
-        currentSession.when = Qt.formatDateTime(new Date(), "yyyy-MM-dd-hh-mm-ss");
+        root.currentSession.when = Qt.formatDateTime(new Date(), "yyyy-MM-dd-hh-mm-ss");
         lastPressEventNb = -1;
         currentStepEventEnum  = -1;
         maxStepsOnPlot        = 1000;
         firstStepEventToPlotNb   = -1;
-        currentChartView.title = currentSession.sessionName + " " + currentSession.when
+        currentChartView.title = root.currentSession.sessionName + " " + root.currentSession.when
     }
 
     //creates new series graph
@@ -406,55 +387,7 @@ Rectangle{
         for (step in selectedSession){
             sessionDuration += selectedSession[step].time;
         }
-        currentSession.sessionName = sessionName
-    }
-    Dialog {
-        id:saveStepsDialog
-        signal saveStepsSignal(int stNb)
-        title: "Save Steps"
-        property int backStepNb: 0
-        standardButtons: StandardButton.Ok
-        modality: Qt.ApplicationModal
-        Tumbler {
-            id: steps
-//            style: TumblerStyle {
-//                id: tumblerStyle
-//                delegate: Item {
-//                    implicitHeight: (tumbler.height - padding.top - padding.bottom) / tumblerStyle.visibleItemCount
-
-//                    Text {
-//                        id: label
-//                        text: styleData.value
-//                        color: styleData.current ? "#52E16D" : "#808285"
-//                        font.bold: true
-//                        opacity: 0.4 + Math.max(0, 1 - Math.abs(styleData.displacement)) * 0.6
-//                        anchors.centerIn: parent
-//                    }
-//                }
-//            }
-            TumblerColumn{
-               id: col100
-               model: 10
-            }
-            TumblerColumn{
-                id: col10
-                model: 10
-            }
-            TumblerColumn{
-                id:col1
-                model: 10
-            }
-               anchors.horizontalCenter: parent.horizontalCenter
-
-        }
-        onAccepted: {
-            saveStepsDialog.saveStepsSignal.connect(runSessionScene.updateBackSteps)
-            saveStepsSignal(100 * col100.currentIndex + 10 * col10.currentIndex + col1.currentIndex)
-        }
-        //Component.onCompleted: visible = true
-    }
-    function saveSteps(){
-        saveStepsDialog.open()
+        root.currentSession.sessionName = sessionName
     }
     function saveSession(){
         saveSessionDialog.open()
@@ -465,7 +398,7 @@ Rectangle{
         title: "Save Session?"
         //icon: StandardIcon.Question
         modality: Qt.NonModal
-        property alias sessionNm: sessionNm.text
+        property alias sessionNmTxt: sessionNm.text
         standardButtons: StandardButton.Yes  | StandardButton.No
         Text{
             id: sessionNm
@@ -478,13 +411,14 @@ Rectangle{
         //onRejected: console.log("aborted")
     }
     function saveSessionImpl() {
+        root.currentSession.stepsAr=stepsArHrp.stepsAr
         var path=qfa.getAccessiblePath("sessions");
         console.log("Path = ", path);
-        var fileName = currentSession.sessionName + "-" + currentSession.when + ".json";
-        saveSessionDialog.sessionNm = fileName
+        var fileName = root.currentSession.sessionName + "-" + root.currentSession.when + ".json";
+        saveSessionDialog.sessionNmTxt = fileName
         //open will add path before fileName
         console.log("fileName=", fileName, "Open=" , qfa.open(path + fileName));
-        var sessionString = JSON.stringify(currentSession);
+        var sessionString = JSON.stringify(root.currentSession);
         console.log("Wrote = ", qfa.write(sessionString));
         qfa.close();
     }
@@ -495,15 +429,16 @@ Rectangle{
         init()
         var qstr = qfa.read();
         console.log("read = ", qstr);
-        currentSession = JSON.parse(qstr);
+        root.currentSession = JSON.parse(qstr);
+        stepsArHrp=root.currentSession.stepsAr
         qfa.close();
-        showSessionGraph(currentSession)
+        showSessionGraph(root.currentSession)
         rangeSliderUpdate()
 
     }
     function rangeSliderUpdate(){
         plotRangeControl.from = 0;
-        plotRangeControl.to = currentSession.pulse.length
+        plotRangeControl.to = root.currentSession.pulse.length
         // fixing range slider handle position to the max range for the first time
         // or to prevent stocking all the values in the end
         // first time is recognized by the second.value === 0)
@@ -530,12 +465,12 @@ Rectangle{
         var eventNb
         var eventName
         var lbl
-        for (eventNb = 0; eventNb < currentSession.event.length; eventNb++){
-            eventName = myEventsEnum2Nm[currentSession.event[eventNb][0]]
+        for (eventNb = 0; eventNb < root.currentSession.event.length; eventNb++){
+            eventName = root.myEventsEnum2Nm[root.currentSession.event[eventNb][0]]
             // for step events only
             if (! (runColors[eventName] === undefined)){
                 tmStart = tmStop
-                tmStop = currentSession.event[eventNb][1]
+                tmStop = root.currentSession.event[eventNb][1]
                 //run.nextStepName is used in onSeriesAdded
                 // TODO: consolidate and make SeaWolfPlot self sofficient?
                 // TODO review why +1 is needed !
@@ -558,7 +493,7 @@ Rectangle{
         var backEventCnt = 0
         currentAxisY.min = (hrMin - 1);
         currentAxisY.max = (hrMax + 1);
-        stepsAr=stepsArOrig
+        stepsArHrp.init()
 
         //TODO does it make sence to synchronyze with ending steps in SeaWolfControls ? Mutex?
         // Is some sort of race condition is possible here?
@@ -568,14 +503,14 @@ Rectangle{
         lastStepEventTm=0
 
         for (eventNb = 0; eventNb < p_session.event.length; eventNb++){
-            eventName = myEventsEnum2Nm[p_session.event[eventNb][0]]
+            eventName = root.myEventsEnum2Nm[p_session.event[eventNb][0]]
             // for step events only
             if (! (runColors[eventName] === undefined)){
                 tmStart = tmStop
                 tmStop = p_session.event[eventNb][1]
                 //run.nextStepName is used in onSeriesAdded
                 // TODO: consolidate and make SeaWolfPlot self sofficient?
-                run.nextStepName = myEventsEnum2Nm[p_session.event[eventNb][0]]
+                run.nextStepName = root.myEventsEnum2Nm[p_session.event[eventNb][0]]
                 //markEvent(myEventsEnum2Nm[p_session.event[eventNb][0]], tmStop)
                 currentStepHrSeries = currentChartView.createSeries(ChartView.SeriesTypeLine, tmStop.toString(), currentStepAxisX, currentAxisY)
                 for (var tm = tmStart; tm <= tmStop; tm ++){
@@ -584,13 +519,13 @@ Rectangle{
                     currentDiscomfortSeries.append(tm, p_session.discomfort[tm])
                 }
                 lastStepEventTm = tmStop
-                if (eventName == "back"){
-                    //show the number of steps
-                    if (!(undefined === p_session.event[eventNb][2])){
-                        stepsAr[backEventCnt] = p_session.event[eventNb][2]
-                        backEventCnt++
-                    }
-                }
+//                if (eventName == "back"){
+//                    //show the number of steps
+//                    if (!(undefined === p_session.event[eventNb][2])){
+//                        stepsAr[backEventCnt] = p_session.event[eventNb][2]
+//                        backEventCnt++
+//                    }
+//                }
             }else{
                 var tmEvent = p_session.event[eventNb][1] + 1
 
@@ -613,14 +548,14 @@ Rectangle{
     function markEvent(eventName, tm){
         canCreateSeriesFlag = false
         var eventEnum = myEventsNm2Enum[eventName];
-        currentSession.event.push([eventEnum, tm])
-        var eventNb = currentSession.event.length - 1
-        var pulse = currentSession.pulse[currentSession.event[eventNb][1]]
+        root.currentSession.event.push([eventEnum, tm])
+        var eventNb = root.currentSession.event.length - 1
+        var pulse = root.currentSession.pulse[root.currentSession.event[eventNb][1]]
         if ("back" === eventName){
             lastBackEvebtNb = eventNb
             lastBackStepNb  += 1
         }
-        //console.log("*** markEvent Enter: time = ", tm, "eventName = ", eventName, "lastStepEventNm = ", lastStepEventNm, "eventNb = ", currentSession.event.length -1 )
+        //console.log("*** markEvent Enter: time = ", tm, "eventName = ", eventName, "lastStepEventNm = ", lastStepEventNm, "eventNb = ", root.currentSession.event.length -1 )
         if (! (runColors[eventName] === undefined)){
             lastStepEventTm = tm
             lastStepEventNm = eventName
@@ -639,21 +574,21 @@ Rectangle{
             }
         }
 
-        //console.log("*** markEvent Exit: time = ", tm, "eventName = ", eventName, "lastStepEventNm = ", lastStepEventNm, "eventNb = ", currentSession.event.length -1 )
+        //console.log("*** markEvent Exit: time = ", tm, "eventName = ", eventName, "lastStepEventNm = ", lastStepEventNm, "eventNb = ", root.currentSession.event.length -1 )
     }
     function timerUpdate(tm, hrValue){
         hrPlot.addPointToHrPlot(tm, hrValue)
         // update discomfort information
         var disValue = hrPlot.discomfortValue
-        hrPlot.currentSession.discomfort.push(disValue)
+        root.currentSession.discomfort.push(disValue)
         hrPlot.currentDiscomfortSeries.append(tm, disValue)
 
     }
     function addPointToHrPlot(tm, y){
         currentStepHrSeries.append(tm,y)
         hrPlot.rangeSliderUpdate()
-        currentAxisY.min = getSesssionHRMin(currentSession) - 5
-        currentAxisY.max = getSesssionHRMax(currentSession) + 5
+        currentAxisY.min = getSesssionHRMin(root.currentSession) - 5
+        currentAxisY.max = getSesssionHRMax(root.currentSession) + 5
         // currentStepAxisX.min and max are set by the range slider
         //testing that the last X label was't end of step label
 
@@ -684,7 +619,7 @@ Rectangle{
 
     ChartView {
         id:chartView
-        title: currentSession.sessionName + " " + currentSession.when
+        title: root.currentSession.sessionName + " " + root.currentSession.when
         anchors.fill: parent
         margins{top:dp(60); bottom:dp(60); left:dp(40); right:(dp(60))}
         //to make visible part of the graph taking bigger part
@@ -697,13 +632,13 @@ Rectangle{
 
         //Series is created we can work with it now
         onSeriesAdded:{
-            //console.log ("in onSeriesAdded lastStepEventNm:", lastStepEventNm, "lastStepEventTm = ", lastStepEventTm, "pulse = ", currentSession.pulse[lastStepEventTm -1],
+            //console.log ("in onSeriesAdded lastStepEventNm:", lastStepEventNm, "lastStepEventTm = ", lastStepEventTm, "pulse = ", root.currentSession.pulse[lastStepEventTm -1],
             //             "myEventsNm2Enum[lastStepEventNm]", myEventsNm2Enum[lastStepEventNm])
             series.color = runColors[run.nextStepName]
             series.width = dp(5)
             //console.log ("in onSeriesAdded series.color:", series.color)
-            //addPointToHrPlot(lastStepEventTm, currentSession.pulse[lastStepEventTm - 1])
-            //currentStepHrSeries.append(lastStepEventTm, currentSession.pulse[lastStepEventTm - 1])
+            //addPointToHrPlot(lastStepEventTm, root.currentSession.pulse[lastStepEventTm - 1])
+            //currentStepHrSeries.append(lastStepEventTm, root.currentSession.pulse[lastStepEventTm - 1])
             update()
             canCreateSeriesFlag = true;
         }
@@ -883,7 +818,7 @@ Rectangle{
         anchors.leftMargin: chartView.margins.left
         anchors.rightMargin: chartView.margins.right
         from: 0
-        to:   0 //undefined === currentSession.pulse.length? 50 : currentSession.pulse.length
+        to:   0 //undefined === root.currentSession.pulse.length? 50 : root.currentSession.pulse.length
         stepSize: 1
         property bool needAdditionalXLabels:false
         //first.value: 10
@@ -1049,8 +984,8 @@ Rectangle{
 
             y: discomfortSlider.bottomPadding + discomfortSlider.visualPosition * (discomfortSlider.availableHeight - height)
             x: discomfortSlider.leftPadding + discomfortSlider.availableWidth / 2 - width / 2
-            implicitWidth: dp(120)
-            implicitHeight: dp(120)
+            implicitWidth: dp(140)
+            implicitHeight: dp(140)
             radius: dp(60)
             opacity: discomfortSlider.pressed ? 0.6 : 0.8
             //color: "orange"
@@ -1141,8 +1076,8 @@ Rectangle{
             id:detailSliderHandle
             x: detailSlider.leftPadding + detailSlider.visualPosition * (detailSlider.availableWidth - width)
             y: detailSlider.topPadding + detailSlider.availableHeight / 2 - height / 2
-            implicitWidth: dp(120)
-            implicitHeight: dp(120)
+            implicitWidth: dp(140)
+            implicitHeight: dp(140)
             radius: dp(60)
             opacity: detailSlider.pressed ? 0.6 : 0.8
             //color: "orange"
@@ -1162,8 +1097,8 @@ Rectangle{
         }
         Rectangle{
             id:detailSliderText
-            implicitWidth: dp(130)
-            implicitHeight:dp(130)
+            implicitWidth: dp(140)
+            implicitHeight:dp(140)
             x:detailSliderRay.x - width/2
             y:detailSliderRay.height + height/2
             Image {
@@ -1183,12 +1118,12 @@ Rectangle{
                 //anchors.horizontalCenter: parent.horizontalCenter
                 //anchors.margins: dp(2)
                 color:"black"
-                text: {var tm = Math.round(detailSlider.value);
-                    var sessionTm = Math.round(detailSlider.value)
+                text: {var tm = Math.floor(detailSlider.value);
+                    //var sessionTm = Math.floor(detailSlider.value)
                     var txt = (tm - getCurrentStepStartTm(tm)).toString() +
                             "/" + (tm + demoModePulseTm).toString() + "\n" +
-                            currentSession.pulse[sessionTm].toString() + "\n" +
-                            Math.round(currentSession.discomfort[sessionTm]).toString();
+                            root.currentSession.pulse[tm].toString() + "\n" +
+                            Math.round(root.currentSession.discomfort[tm]).toString();
                     return txt
                 }
                 //verticalAlignment: Text.AlignVCenter
@@ -1212,10 +1147,9 @@ Rectangle{
         //anchors.right:  chartView.right
         Layout.preferredWidth: parent.width//runSessionScene.width
         Layout.preferredHeight: dp(20)//SeaWolfInput.height
-        Text{
-            id: stepsIdsText
-            text: stepNbText
-            font.pixelSize: dp(40)
+        property alias stepsArHrp: stepsArHrp
+        StepsAr{
+            id:stepsArHrp
         }
     }
     Component.onCompleted: {

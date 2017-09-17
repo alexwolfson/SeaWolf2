@@ -55,11 +55,6 @@ SceneBase {
     //        triggerMark = name
     //    }
 
-    function updateBackSteps(stNb){
-        stepsAr[hrPlot.lastBackStepNb] = stNb
-        hrPlot.currentSession.event[hrPlot.lastBackEvebtNb][2] = stNb
-        stepsIdsText.text = getStepIdsText()
-    }
     function getSessionTime(){
         return sessionTime
     }
@@ -76,7 +71,7 @@ SceneBase {
         currentGaugeHold.maximumValue = currentModel.get(holdIndx).time
         currentGaugeWalk.maximumValue = currentModel.get(walkIndx).time
         currentGaugeBack.maximumValue = currentModel.get(backIndx).time
-        //currentSession.sessionName = sessionName
+        //root.currentSession.sessionName = sessionName
     }
     // List elements are created dynamically, when fillListModel is called
     ColumnLayout{  //top level Column
@@ -234,7 +229,7 @@ SceneBase {
                 sessionTimeUpdate(sessionTime)
                 // update heart rate information
                 var hrValue = Math.round(heartRate.hr)
-                hrPlot.currentSession.pulse.push(hrValue)
+                root.currentSession.pulse.push(hrValue)
                 hrPlot.timerUpdate(sessionTime, hrValue)
                 if (triggerStepEventMark !== ""){
                     hrPlot.markEvent(triggerStepEventMark, sessionTime -1)
@@ -265,10 +260,8 @@ SceneBase {
             id: stepsIds
             Layout.preferredWidth: runSessionScene.width
             Layout.preferredHeight: SeaWolfInput.height
-            Text{
-                id: stepsIdsText
-                text: getStepIdsText()
-                font.pixelSize: dp(40)
+            StepsAr{
+               id:stepsArRun
             }
         }
 
@@ -316,16 +309,13 @@ SceneBase {
                         nextStepName = "brth"
 
                         //update walk steps
-                        stepsAr = stepsArOrig
-                        stepsIdsText.text = getStepIdsText()
-                        //
-                        hrPlot.currentSession = hrPlot.currentSessionOrig
-                        hrPlot.lastBackStepNb = -1
+                        stepsArRun.init()
+                         //
                         hrPlot.init()
                         hrPlot.timerUpdate(0, Math.round(heartRate.hr))
                         oneTimer.start()
                         //console.log("Time=", Qt.formatDateTime(new Date(), "yyyy-MM-dd-hh-mm-ss"))
-                        console.log("Session:",hrPlot.currentSession.sessionName, "started:",hrPlot.currentSession.when)
+                        console.log("Session:",root.currentSession.sessionName, "started:", root.currentSession.when)
 
                     }
                 }
@@ -459,6 +449,22 @@ SceneBase {
             } // End of gauges
 
             ColumnLayout{
+                Layout.preferredHeight: runSessionScene.height / 3
+                Layout.preferredWidth: runSessionScene.width/4
+                Layout.alignment: Qt.AlignHCenter
+
+                spacing:dp(8)
+                MenuButton {
+                    Layout.topMargin: dp(20)
+                    id: recordSteps
+                    z:95
+                    text: qsTr("Record Steps")
+                    enabled: true
+                    onClicked: {
+                        // save number of double steps
+                        stepsArRun.saveSteps()
+                    }
+                }
                 MenuButton {
                     id: stopButton
                     z:95
@@ -491,22 +497,25 @@ SceneBase {
                         currentGauge.cycleIsOver(gaugeBrth)
                     }
                 }
-                Rectangle{
-                    id:col2
-                    color: "transparent"
-                    //border.color: "black"
-                    Layout.preferredHeight: runSessionScene.height / 3
-                    Layout.preferredWidth: runSessionScene.width/4 - dp(20)
-                    Layout.alignment: Qt.AlignRight
-                    Image {
-                        id: seaWolfButton
-                        source: "../../assets/img/SeaWolf.png"
-                        anchors.horizontalCenter: parent.horizontalCenter
-                        anchors.bottom: parent.bottom
-                        width: parent.width
-                        height:width
-                    }
-                }
+
+//                Rectangle{
+//                    id:seaWolfLogo
+//                    z:95
+//                    color: "transparent"
+//                    //border.color: "black"
+//                    Layout.preferredHeight: parrent.height / 2
+//                    Layout.preferredWidth:  Layout.preferredHeight
+//                    Layout.alignment: Qt.AlignRight
+//                    Layout.rightMargin: dp(8)
+//                    Image {
+//                        id: seaWolfLogo1
+//                        source: "../../assets/img/SeaWolf.png"
+//                        anchors.horizontalCenter: parent.horizontalCenter
+//                        anchors.bottom: parent.bottom
+//                        Layout.preferredWidth: parent.width
+//                        height:width
+//                    }
+//                }
 
                 Component.onCompleted:{
                     currentWalkControl = finishStep
