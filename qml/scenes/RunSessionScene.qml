@@ -191,7 +191,7 @@ SceneBase {
 
                 }
                 Rectangle{
-                    id: currentStepSpent
+                    id: currentStepTimeSpent
                     property alias text:txtSpent.text
                     Layout.preferredWidth:  apneaTimes.smallCellWidth * 2
                     Layout.preferredHeight: apneaTimes.smallCellHeight * 2
@@ -246,7 +246,7 @@ SceneBase {
         Item{
             id: sessionPlot
             Layout.preferredWidth:runSessionScene.width - dp(8)
-            Layout.preferredHeight:runSessionScene.height / 2 - stepsIds.height
+            Layout.preferredHeight:runSessionScene.height / 2
             anchors.horizontalCenter: parent.horizontalCenter
 
             SeaWolfPlot{
@@ -255,15 +255,15 @@ SceneBase {
                 width:  parent.width
             }
         }
-        Row{
-            visible: gaugeWalk.maximumValue !== 0
-            id: stepsIds
-            Layout.preferredWidth: runSessionScene.width
-            Layout.preferredHeight: SeaWolfInput.height
-            StepsAr{
-               id:stepsArRun
-            }
-        }
+//        Row{
+//            visible: gaugeWalk.maximumValue !== 0
+//            id: stepsIds
+//            Layout.preferredWidth: runSessionScene.width
+//            Layout.preferredHeight: SeaWolfInput.height
+//            StepsAr{
+//               id:stepsArRun
+//            }
+//        }
 
         RowLayout{
 
@@ -309,7 +309,7 @@ SceneBase {
                         nextStepName = "brth"
 
                         //update walk steps
-                        stepsArRun.init()
+                        //hrPlot.stepsArHrp.init()
                          //
                         hrPlot.init()
                         hrPlot.timerUpdate(0, Math.round(heartRate.hr))
@@ -462,7 +462,7 @@ SceneBase {
                     enabled: true
                     onClicked: {
                         // save number of double steps
-                        stepsArRun.saveSteps()
+                        hrPlot.stepsArHrp.saveSteps()
                     }
                 }
                 MenuButton {

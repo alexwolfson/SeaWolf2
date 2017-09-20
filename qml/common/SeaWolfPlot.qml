@@ -430,7 +430,7 @@ Rectangle{
         var qstr = qfa.read();
         console.log("read = ", qstr);
         root.currentSession = JSON.parse(qstr);
-        stepsArHrp=root.currentSession.stepsAr
+        stepsArHrp.stepsAr=root.currentSession.stepsAr
         qfa.close();
         showSessionGraph(root.currentSession)
         rangeSliderUpdate()
@@ -493,7 +493,7 @@ Rectangle{
         var backEventCnt = 0
         currentAxisY.min = (hrMin - 1);
         currentAxisY.max = (hrMax + 1);
-        stepsArHrp.init()
+        //stepsArHrp.init()
 
         //TODO does it make sence to synchronyze with ending steps in SeaWolfControls ? Mutex?
         // Is some sort of race condition is possible here?
@@ -536,7 +536,7 @@ Rectangle{
             }
 
         }
-        stepNbText = getStepIdsText()
+        stepsArHrp.stepsIdsText = stepsArHrp.getStepIdsText()
         saveStepXLabels()
         rangeSliderUpdate()
         updateAdditionalXLabels()

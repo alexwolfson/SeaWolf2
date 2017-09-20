@@ -10,6 +10,7 @@ Item {
     property var stepsArOrig:[0,0,0,0]
     property var stepsAr
     property int stepsArInd: 0
+    property alias stepsIdsText:stepsIdsText.text
 
     function getStepIdsText(){
         return "<pre>" +

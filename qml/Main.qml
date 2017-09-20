@@ -85,7 +85,7 @@ ApplicationWindow {
                                        "event":[],
                                        "pulse":[],
                                        "discomfort":[],
-                                       "stepsAr":[]
+                                       "stepsAr":StepsAr.stepsArOrig
                            }
     property var currentSession
     //property string stepNbText:"StepNb"
