@@ -7,7 +7,7 @@ import QtQuick.Extras 1.4
 import QtQuick.Layouts 1.3
 import QtMultimedia 5.6
 //import QtQml 2.2
-import QtCharts 2.1
+import QtCharts 2.2
 import MyStuff 1.0
 import ".."
 // Events have Nb - number in root.currentSession.event, Enum Enum representation of type ("brth":0, "hold": 1),
@@ -77,7 +77,7 @@ Rectangle{
     }
 
     function getLblTm(lbl){
-        if (lbl === undefined){
+        if (typeof(lbl) === "undefined"){
             return 0
         }
 
@@ -390,6 +390,7 @@ Rectangle{
         root.currentSession.sessionName = sessionName
     }
     function saveSession(){
+        saveSessionDialog.fileNm = sessionNm.text + "-" + root.currentSession.when + ".json"
         saveSessionDialog.open()
     }
 
@@ -398,11 +399,12 @@ Rectangle{
         title: "Save Session?"
         //icon: StandardIcon.Question
         modality: Qt.NonModal
-        property alias sessionNmTxt: sessionNm.text
+        //property alias sessionNmTxt: sessionNm.text
+        property string fileNm: ""
         standardButtons: StandardButton.Yes  | StandardButton.No
         Text{
             id: sessionNm
-            text: ""
+            text: root.currentSession.sessionName
             font.bold: true
         }
         //Component.onCompleted: visible = true
@@ -414,10 +416,8 @@ Rectangle{
         root.currentSession.stepsAr=stepsArHrp.stepsAr
         var path=qfa.getAccessiblePath("sessions");
         console.log("Path = ", path);
-        var fileName = root.currentSession.sessionName + "-" + root.currentSession.when + ".json";
-        saveSessionDialog.sessionNmTxt = fileName
-        //open will add path before fileName
-        console.log("fileName=", fileName, "Open=" , qfa.open(path + fileName));
+        var op=qfa.open(path + saveSessionDialog.fileNm)
+        console.log("fileName=", saveSessionDialog.fileNm, "Open=" , op);
         var sessionString = JSON.stringify(root.currentSession);
         console.log("Wrote = ", qfa.write(sessionString));
         qfa.close();
@@ -468,7 +468,7 @@ Rectangle{
         for (eventNb = 0; eventNb < root.currentSession.event.length; eventNb++){
             eventName = root.myEventsEnum2Nm[root.currentSession.event[eventNb][0]]
             // for step events only
-            if (! (runColors[eventName] === undefined)){
+            if (typeof(runColors[eventName]) !== "undefined"){
                 tmStart = tmStop
                 tmStop = root.currentSession.event[eventNb][1]
                 //run.nextStepName is used in onSeriesAdded
@@ -505,7 +505,7 @@ Rectangle{
         for (eventNb = 0; eventNb < p_session.event.length; eventNb++){
             eventName = root.myEventsEnum2Nm[p_session.event[eventNb][0]]
             // for step events only
-            if (! (runColors[eventName] === undefined)){
+            if (typeof(runColors[eventName]) !== "undefined"){
                 tmStart = tmStop
                 tmStop = p_session.event[eventNb][1]
                 //run.nextStepName is used in onSeriesAdded
@@ -541,7 +541,7 @@ Rectangle{
         rangeSliderUpdate()
         updateAdditionalXLabels()
         currentChartView.title = p_session.sessionName + " " + p_session.when
-        chartView.update()
+        currentChartView.update()
 
     }
 
@@ -556,7 +556,7 @@ Rectangle{
             lastBackStepNb  += 1
         }
         //console.log("*** markEvent Enter: time = ", tm, "eventName = ", eventName, "lastStepEventNm = ", lastStepEventNm, "eventNb = ", root.currentSession.event.length -1 )
-        if (! (runColors[eventName] === undefined)){
+        if ( typeof(runColors[eventName]) !== "undefined"){
             lastStepEventTm = tm
             lastStepEventNm = eventName
             // the rest of the setup will be done during onSeriesAdded signal processing
@@ -780,8 +780,8 @@ Rectangle{
                 }
                 initialFirstVisualPosition  = plotRangeControl.first.visualPosition
                 initialSecondVisualPosition = plotRangeControl.second.visualPosition
-                console.log("***In onPressed:", initialFirstVisualPosition, initialSecondVisualPosition, initialLeftTouchX, initialRightTouchX,
-                            initialScale, initialTouchX0, initialTouchXMax)
+                //console.log("***In onPressed:", initialFirstVisualPosition, initialSecondVisualPosition, initialLeftTouchX, initialRightTouchX,
+                //            initialScale, initialTouchX0, initialTouchXMax)
             }
             onUpdated:{
                 var plotFirstVisual
@@ -1118,7 +1118,7 @@ Rectangle{
                 //anchors.horizontalCenter: parent.horizontalCenter
                 //anchors.margins: dp(2)
                 color:"black"
-                text: {var tm = Math.floor(detailSlider.value);
+                text: {var tm = (typeof(detailSlider.value) !== "undefined") ? Math.floor(detailSlider.value):0;
                     //var sessionTm = Math.floor(detailSlider.value)
                     var txt = (tm - getCurrentStepStartTm(tm)).toString() +
                             "/" + (tm + demoModePulseTm).toString() + "\n" +

@@ -8,7 +8,7 @@ import QtQuick.Extras 1.4
 Item {
     id:stepsArId
     property var stepsArOrig:[0,0,0,0]
-    property var stepsAr
+    property var stepsAr:stepsArOrig
     property int stepsArInd: 0
     property alias stepsIdsText:stepsIdsText.text
 
