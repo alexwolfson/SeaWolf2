@@ -390,7 +390,7 @@ Rectangle{
         root.currentSession.sessionName = sessionName
     }
     function saveSession(){
-        saveSessionDialog.fileNm = sessionNm.text + "-" + root.currentSession.when + ".json"
+        saveSessionDialog.fileNm = root.currentSession.sessionName + "-" + root.currentSession.when + ".json"
         saveSessionDialog.open()
     }
 
@@ -400,11 +400,11 @@ Rectangle{
         //icon: StandardIcon.Question
         modality: Qt.NonModal
         //property alias sessionNmTxt: sessionNm.text
-        property string fileNm: ""
+        property string fileNm: "fn"
         standardButtons: StandardButton.Yes  | StandardButton.No
         Text{
             id: sessionNm
-            text: root.currentSession.sessionName
+            text: parent.fileNm
             font.bold: true
         }
         //Component.onCompleted: visible = true
@@ -419,7 +419,7 @@ Rectangle{
         var op=qfa.open(path + saveSessionDialog.fileNm)
         console.log("fileName=", saveSessionDialog.fileNm, "Open=" , op);
         var sessionString = JSON.stringify(root.currentSession);
-        console.log("Wrote = ", qfa.write(sessionString));
+        qfa.write(sessionString);
         qfa.close();
     }
 
@@ -482,6 +482,9 @@ Rectangle{
 
     function showSessionGraph(p_session){
         console.log("*** Enetered showSessionGraph ")
+        stepsIds.visible = false
+        currentChartView = chartView
+        currentChartView.title = p_session.sessionName + " " + p_session.when
         var tmStart = 0
         var tmStop  = 0
         var eventNb = -1
@@ -504,6 +507,10 @@ Rectangle{
 
         for (eventNb = 0; eventNb < p_session.event.length; eventNb++){
             eventName = root.myEventsEnum2Nm[p_session.event[eventNb][0]]
+            if (-1 !== ["walk", "back"].indexOf(eventName)){
+                stepsIds.visible = true
+            }
+
             // for step events only
             if (typeof(runColors[eventName]) !== "undefined"){
                 tmStart = tmStop
@@ -540,7 +547,6 @@ Rectangle{
         saveStepXLabels()
         rangeSliderUpdate()
         updateAdditionalXLabels()
-        currentChartView.title = p_session.sessionName + " " + p_session.when
         currentChartView.update()
 
     }
@@ -579,7 +585,7 @@ Rectangle{
     function timerUpdate(tm, hrValue){
         hrPlot.addPointToHrPlot(tm, hrValue)
         // update discomfort information
-        var disValue = hrPlot.discomfortValue
+        var disValue = Math.round(hrPlot.discomfortValue)
         root.currentSession.discomfort.push(disValue)
         hrPlot.currentDiscomfortSeries.append(tm, disValue)
 
@@ -937,7 +943,7 @@ Rectangle{
             height: parent.height
             width: parent.width
             //color: "#21be2b"
-            opacity:1.0
+            opacity:0.5
             radius: dp(8)
             gradient: Gradient {
                 GradientStop {
@@ -1018,7 +1024,7 @@ Rectangle{
             right: chartView.margins.right
             //left:   Math.max(2 * chartView.margins.top, (4 * plotRangeControl.second.handle.height))
             //right:  detailSliderHandle.width/2;
-            //top:    2 * plotRangeControl.second.handle.height
+            //top:    handle.height
             //bottom: 2 * plotRangeControl.second.handle.height
             //right: 100//Math.max(2 * chartView.margins.bottom, (4 * plotRangeControl.second.handle.height))
             //bottom:    detailSliderHandle.width
@@ -1037,7 +1043,7 @@ Rectangle{
             height: parent.height
             width: parent.width
             //color: "#21be2b"
-            opacity:1.0
+            opacity:0.5
             radius: dp(8)
             gradient: Gradient {
                 GradientStop {
@@ -1120,10 +1126,11 @@ Rectangle{
                 color:"black"
                 text: {var tm = (typeof(detailSlider.value) !== "undefined") ? Math.floor(detailSlider.value):0;
                     //var sessionTm = Math.floor(detailSlider.value)
-                    var txt = (tm - getCurrentStepStartTm(tm)).toString() +
-                            "/" + (tm + demoModePulseTm).toString() + "\n" +
-                            root.currentSession.pulse[tm].toString() + "\n" +
-                            Math.round(root.currentSession.discomfort[tm]).toString();
+
+                    var txt = (tm - getCurrentStepStartTm(tm)).toString()
+                        txt +=    "/" + (tm + demoModePulseTm).toString() + "\n"
+                        txt +=   (typeof(root.currentSession.pulse[tm]) == "undefined")? "":  root.currentSession.pulse[tm].toString() + "\n"
+                        txt +=    Math.round(root.currentSession.discomfort[tm]).toString();
                     return txt
                 }
                 //verticalAlignment: Text.AlignVCenter

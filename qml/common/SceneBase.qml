@@ -7,6 +7,11 @@ Page {
     id: sceneBase
     //active:true
     //anchors.topMargin: 60
+    header: Label {
+        text: title
+        horizontalAlignment: Text.AlignHCenter
+    }
+
     Image {
         //z:90
         id: bkgImg

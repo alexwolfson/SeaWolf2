@@ -5,7 +5,7 @@ import QtQuick.Dialogs 1.2
 
 import "../common"
 SceneBase{
-    id:browseScene
+    id:presetSessionsScene
     property int chosenFileIndex:0
     property string chosenFile:""
     Item {
@@ -16,12 +16,12 @@ SceneBase{
             ListView {
                 //anchors.rightMargin: dp(20)
                 id: folderListView
-                width: browseScene.width;
+                width: presetSessionsScene.width;
                 height: dp(500);
                 FolderListModel {
                     id: folderModel
                     showHidden :true
-                    folder:  "file://" +  qfa.getAccessiblePath("sessions")
+                    folder:  "file://" +  qfa.getAccessiblePath("sessionTypes")
                     showDotAndDotDot:true
                     nameFilters: ["*.json"]
 //                    onFolderChanged: {
@@ -34,7 +34,7 @@ SceneBase{
                     id: fileDelegate
                     Rectangle{
                         id: fileRect
-                        width: browseScene.width
+                        width: presetSessionsScene.width
                         height: dp(60)
                         border.color: "black"
                         Text {
@@ -65,13 +65,13 @@ SceneBase{
                 model: folderModel
                 delegate: fileDelegate
             }
-            SeaWolfPlot{
-                id:hrPlot
-                height: browseScene.height/2
-            }
+//            SeaWolfPlot{
+//                id:hrPlot
+//                height: browseScene.height/2
+//            }
 
             RowLayout{
-                id:browseMenu
+                id:browseSceneMenu
                 height:dp(100)
                 width:parent.width
                 Layout.alignment: Qt.AlignCenter
@@ -79,25 +79,7 @@ SceneBase{
                     id:browseSession
                     text: qsTr("Browse")
                     onClicked: {
-                        folderModel.folder = "file://" +  qfa.getAccessiblePath("sessions")
-                    }
-                    enabled: true
-                }
-                MenuButton {
-                    id:emailSession
-                    text: qsTr("Email Session")
-                    onClicked: {
-                        // ALl this mess is needed for Android, because it prevents access to almost any loaction
-                        //var attachURL = folderModel.folder + "/" + chosenFile
-                        var localFile = qfa.urlToLocalFile(folderModel.folder + "/" + chosenFile)
-                        var exportablePath = qfa.getExportablePath();
-                        var attachURL = exportablePath + chosenFile;
-                        var cpRes = qfa.copyFile(localFile, attachURL);
-                        Qt.openUrlExternally("mailto:alexwolfson@gmail.com" +
-                                             "?subject=FreedivingSession" +
-                                             "&attach=" + attachURL +
-                                             "&body=This is a session, that I want you to look at")
-                        console.log("localFile=", localFile, "cpRes=", cpRes, "Attachment=", attachURL)
+                        folderModel.folder = "file://" +  qfa.getAccessiblePath("sessionTypes")
                     }
                     enabled: true
                 }

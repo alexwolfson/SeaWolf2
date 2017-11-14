@@ -134,10 +134,11 @@ ApplicationWindow {
 //                anchors.fill: parent
 //            }
 
+        TabButton { id: browseSessionTypes; text: qsTr("Sessions")}
         TabButton { id: confTab; text: qsTr("Conf")}
-        TabButton { id: runTab; text: qsTr("Run")}
+        TabButton { id: runTab; text: qsTr("Run"); }
         TabButton { id: hrmTab; text: qsTr("HRM")}
-        TabButton { id: browseResTab; text: qsTr("Browse")}
+        TabButton { id: browseResTab; text: qsTr("Results")}
         TabButton { id: prefTab; text: qsTr("Pref")}
         TabButton { id: aboutTab; text: qsTr("About")}
         TabButton { id: finishTab; text: qsTr("Finish")}
@@ -146,8 +147,9 @@ ApplicationWindow {
         id:stackLayout
         width: parent.width
         currentIndex: tabView.currentIndex
+        BrowseResultsScene{ id:browseSes;  }
         ConfigSeriesScene{ id:conf; }
-        RunSessionScene{ id:run;    }
+        RunSessionScene{ id:run;  title: qsTr("Run the session")  }
         HrmSetupScene{  id:hrm;     }
         BrowseResultsScene{  id:browseRes; }
         ConfigPreferencesScene{ id: pref }

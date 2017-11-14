@@ -126,7 +126,9 @@ DISTFILES += \
     qml/scenes/BrowseResultsScene.qml \
     qml/common/SeaWolfPlot.qml \
     assets/img/bubble.png \
-    qml/common/StepsAr.qml
+    qml/common/StepsAr.qml \
+    assets/sounds/1min.wav \
+    qml/scenes/PresetSessionsScene.qml
 
 HEADERS += \
     qmlfileaccess.h \

@@ -10,6 +10,22 @@ SceneBase {
     //===================================================
     // signal indicating that current session is selected
     signal sessionSelected(var sessionName, var selectedSession)
+    property var mySessionJson: {
+         "repeatLast":repeatLast,
+         "minBreathTime":minBreathTime,
+         "breathDecrement":breathDecrement,
+         "maxHoldTime":maxHoldTime,
+         "holdIncrement":holdIncrement,
+         "breathTimeWalk":breathTimeWalk,
+         "holdTimeWalk":  holdTimeWalk,
+         "walkTime":walkTime,
+         "walkBackTime":walkBackTime,
+         "sessionType":sessionType,
+         "sessionName":sessionName,
+         "numberOfCycles":numberOfCycles,
+         "additionalBreath":additionalBreath
+    }
+
 
     property string name
     //property alias numberOfCycles:nbOfCycles.result
@@ -18,8 +34,8 @@ SceneBase {
     property int breathDecrement:5
     property int maxHoldTime:20
     property int holdIncrement:5
-    property var breathTime:[60,60,60,60]
-    property var holdTime:  [60,60,60,60]
+    property var breathTimeWalk:[60,60,60,60]
+    property var holdTimeWalk:  [60,60,60,60]
     property int walkTime:120
     property int walkBackTime:120
     property var currentSessionProperties
@@ -113,12 +129,12 @@ SceneBase {
         var mySession = []
         sessionType = "WALK"
         // we are adding to the beginning of the array so the previous time is always in element 2 (if starting from 0)
-        for (var i = 0; i < breathTime.length; i++){
-            if (breathTime[i] === 0){
+        for (var i = 0; i < breathTimeWalk.length; i++){
+            if (breathTimeWalk[i] === 0){
                 break;
             }else{
-                mySession.push( {"time": breathTime[i],"typeName": "brth"});
-                mySession.push( {"time": holdTime[i],  "typeName": "hold"});
+                mySession.push( {"time": breathTimeWalk[i],"typeName": "brth"});
+                mySession.push( {"time": holdTimeWalk[i],  "typeName": "hold"});
                 mySession.push( {"time": walkTime,     "typeName": "walk"});
                 mySession.push( {"time": walkTime,     "typeName": "back"});
             }
@@ -162,6 +178,28 @@ SceneBase {
 //                anchors.left: parent.left
 //                anchors.right: parent.right
                 spacing: dp(3)
+                MenuButton {
+                    text: "Browse"
+                    onClicked: {
+                        maxHoldTimeId.visible        = true
+                        minBreathTimeId.visible      = true
+                        numberOfCyclesId.visible     = true
+                        repeatLastId.visible         = true
+                        holdIncrementId.visible  = false
+                        breathDecrementId.visible= true
+                        walkTimeEdit.visible       = false
+                        backTimeEdit.visible       = false
+                        sessionType                = "CO2"
+                        breathTime1.visible        = false
+                        breathTime2.visible        = false
+                        breathTime3.visible        = false
+                        breathTime4.visible        = false
+                        holdTime1.visible          = false
+                        holdTime2.visible          = false
+                        holdTime3.visible          = false
+                        holdTime4.visible          = false                    }
+                }
+
 
                 MenuButton {
                     text: "New CO2"
@@ -283,14 +321,14 @@ SceneBase {
             SeaWolfInput{ id:maxHoldTimeId;    type:"spinBox";   lbl: qsTr("maxHoldTime"); sbv:120; sbfrom:30; sbto: 600; sbstep: 5;  onResult: {maxHoldTime=intRes}}
             SeaWolfInput{ id:holdIncrementId;  type:"spinBox";   lbl: qsTr("holdIncrement"); sbv:15; sbfrom:0; sbto: 60; sbstep: 5;  onResult: {holdIncrement=intRes}}
 
-            SeaWolfInput{ id: breathTime1; type:"spinBox";   lbl: qsTr("BreathTime1"); sbv:breathTime[0]; sbfrom:0; sbto: 180; sbstep: 5;  onResult: {breathTime[0]=intRes}}
-            SeaWolfInput{ id: holdTime1;   type:"spinBox";   lbl: qsTr("HoldTime1");   sbv:holdTime[0]  ; sbfrom:0; sbto: 180; sbstep: 5;  onResult: {holdTime[0]  =intRes}}
-            SeaWolfInput{ id: breathTime2; type:"spinBox";   lbl: qsTr("BreathTime2"); sbv:breathTime[1]; sbfrom:0; sbto: 180; sbstep: 5;  onResult: {breathTime[1]=intRes}}
-            SeaWolfInput{ id: holdTime2;   type:"spinBox";   lbl: qsTr("HoldTime2");   sbv:holdTime[1]  ; sbfrom:0; sbto: 180; sbstep: 5;  onResult: {holdTime[1]  =intRes}}
-            SeaWolfInput{ id: breathTime3; type:"spinBox";   lbl: qsTr("BreathTime3"); sbv:breathTime[2]; sbfrom:0; sbto: 180; sbstep: 5;  onResult: {breathTime[2]=intRes}}
-            SeaWolfInput{ id: holdTime3;   type:"spinBox";   lbl: qsTr("HoldTime3");   sbv:holdTime[2]  ; sbfrom:0; sbto: 180; sbstep: 5;  onResult: {holdTime[2]  =intRes}}
-            SeaWolfInput{ id: breathTime4; type:"spinBox";   lbl: qsTr("BreathTime4"); sbv:breathTime[3]; sbfrom:0; sbto: 180; sbstep: 5;  onResult: {breathTime[3]=intRes}}
-            SeaWolfInput{ id: holdTime4;   type:"spinBox";   lbl: qsTr("HoldTime4");   sbv:holdTime[3]  ; sbfrom:0; sbto: 180; sbstep: 5;  onResult: {holdTime[3]  =intRes}}
+            SeaWolfInput{ id: breathTime1; type:"spinBox";   lbl: qsTr("BreathTime1"); sbv:breathTimeWalk[0]; sbfrom:0; sbto: 180; sbstep: 5;  onResult: {breathTimeWalk[0]=intRes}}
+            SeaWolfInput{ id: holdTime1;   type:"spinBox";   lbl: qsTr("HoldTime1");   sbv:holdTimeWalk[0]  ; sbfrom:0; sbto: 180; sbstep: 5;  onResult: {holdTimeWalk[0]  =intRes}}
+            SeaWolfInput{ id: breathTime2; type:"spinBox";   lbl: qsTr("BreathTime2"); sbv:breathTimeWalk[1]; sbfrom:0; sbto: 180; sbstep: 5;  onResult: {breathTimeWalk[1]=intRes}}
+            SeaWolfInput{ id: holdTime2;   type:"spinBox";   lbl: qsTr("HoldTime2");   sbv:holdTimeWalk[1]  ; sbfrom:0; sbto: 180; sbstep: 5;  onResult: {holdTimeWalk[1]  =intRes}}
+            SeaWolfInput{ id: breathTime3; type:"spinBox";   lbl: qsTr("BreathTime3"); sbv:breathTimeWalk[2]; sbfrom:0; sbto: 180; sbstep: 5;  onResult: {breathTimeWalk[2]=intRes}}
+            SeaWolfInput{ id: holdTime3;   type:"spinBox";   lbl: qsTr("HoldTime3");   sbv:holdTimeWalk[2]  ; sbfrom:0; sbto: 180; sbstep: 5;  onResult: {holdTimeWalk[2]  =intRes}}
+            SeaWolfInput{ id: breathTime4; type:"spinBox";   lbl: qsTr("BreathTime4"); sbv:breathTimeWalk[3]; sbfrom:0; sbto: 180; sbstep: 5;  onResult: {breathTimeWalk[3]=intRes}}
+            SeaWolfInput{ id: holdTime4;   type:"spinBox";   lbl: qsTr("HoldTime4");   sbv:holdTimeWalk[3]  ; sbfrom:0; sbto: 180; sbstep: 5;  onResult: {holdTimeWalk[3]  =intRes}}
 
             SeaWolfInput{ id:walkTimeEdit; type:"spinBox";   lbl: qsTr("maxWalkTime"); sbv:120; sbfrom:0; sbto: 200; sbstep: 5;  onResult: {walkTime=intRes}}
             SeaWolfInput{ id:backTimeEdit; type:"spinBox";   lbl: qsTr("maxWalkBackTime"); sbv:120; sbfrom:0; sbto: 200; sbstep: 5;  onResult: {walkBackTime=intRes}}
