@@ -72,6 +72,7 @@ Rectangle{
     property int lastBackEvebtNb
     property int lastBackStepNb: -1
     property alias stepsArHrp: stepsIds.stepsArHrp
+    property string fileNm: "fn"
     function sessionTimeUpdateSlot(sessionTime){
         //TODO: update current time
     }
@@ -390,7 +391,7 @@ Rectangle{
         root.currentSession.sessionName = sessionName
     }
     function saveSession(){
-        saveSessionDialog.fileNm = root.currentSession.sessionName + "-" + root.currentSession.when + ".json"
+        hrPlot.fileNm = root.currentSession.sessionName + "-" + root.currentSession.when + ".json"
         saveSessionDialog.open()
     }
 
@@ -400,11 +401,10 @@ Rectangle{
         //icon: StandardIcon.Question
         modality: Qt.NonModal
         //property alias sessionNmTxt: sessionNm.text
-        property string fileNm: "fn"
         standardButtons: StandardButton.Yes  | StandardButton.No
         Text{
             id: sessionNm
-            text: parent.fileNm
+            text: hrPlot.fileNm
             font.bold: true
         }
         //Component.onCompleted: visible = true
@@ -416,8 +416,8 @@ Rectangle{
         root.currentSession.stepsAr=stepsArHrp.stepsAr
         var path=qfa.getAccessiblePath("sessions");
         console.log("Path = ", path);
-        var op=qfa.open(path + saveSessionDialog.fileNm)
-        console.log("fileName=", saveSessionDialog.fileNm, "Open=" , op);
+        var op=qfa.open(path + hrPlot.fileNm)
+        console.log("fileName=", hrPlot.fileNm, "Open=" , op);
         var sessionString = JSON.stringify(root.currentSession);
         qfa.write(sessionString);
         qfa.close();
@@ -543,7 +543,7 @@ Rectangle{
             }
 
         }
-        stepsArHrp.stepsIdsText = stepsArHrp.getStepIdsText()
+        //ustepsArHrp.stepsIdsText = stepsArHrp.getStepIdsText()
         saveStepXLabels()
         rangeSliderUpdate()
         updateAdditionalXLabels()
@@ -626,6 +626,7 @@ Rectangle{
     ChartView {
         id:chartView
         title: root.currentSession.sessionName + " " + root.currentSession.when
+        //width
         anchors.fill: parent
         margins{top:dp(60); bottom:dp(60); left:dp(40); right:(dp(60))}
         //to make visible part of the graph taking bigger part
@@ -641,7 +642,7 @@ Rectangle{
             //console.log ("in onSeriesAdded lastStepEventNm:", lastStepEventNm, "lastStepEventTm = ", lastStepEventTm, "pulse = ", root.currentSession.pulse[lastStepEventTm -1],
             //             "myEventsNm2Enum[lastStepEventNm]", myEventsNm2Enum[lastStepEventNm])
             series.color = runColors[run.nextStepName]
-            series.width = dp(5)
+            //series.width = dp(5)
             //console.log ("in onSeriesAdded series.color:", series.color)
             //addPointToHrPlot(lastStepEventTm, root.currentSession.pulse[lastStepEventTm - 1])
             //currentStepHrSeries.append(lastStepEventTm, root.currentSession.pulse[lastStepEventTm - 1])

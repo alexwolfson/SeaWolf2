@@ -294,7 +294,7 @@ CircularGauge {
             onRunningChanged: {
                 if (running){
                     var backEventsNb = -1
-                    var currentBackEventInd
+                    var currentBackEvcurrentBackEventIndcurrentBackEventIndentInd
                     // hrPlot.setupCurrentSeries()
                     startVoiceTimers()
                     enterStateSndEffect.play()
