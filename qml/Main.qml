@@ -20,6 +20,11 @@ ApplicationWindow {
         return Math.min(/*sfDen, */sfWidth, sfHeight)
     }
     property int firstTime:1
+    property var runColors: {"brth" : "green", "hold" : "tomato", "walk" : "blue", "back" : "orange"}
+    //will return "undefined" type if color is undefined
+    function getStepColor(stepName){
+        return runColors[stepName]
+    }
 
     //for debugging
     function listProperty(item)
@@ -80,6 +85,7 @@ ApplicationWindow {
     property var myEventsEnum2Nm: invert(myEventsNm2Enum)
     property var currentSessionOrig: {
                                "sessionName":"TestSession",
+                               "sessionType":"ChangeMeu",
                                        "when":"ChangeMe", //Qt.formatDateTime(new Date(), "yyyy-MM-dd-hh-mm-ss"),
                                        "eventNames":myEventsNm2Enum,
                                        "event":[],
@@ -87,7 +93,7 @@ ApplicationWindow {
                                        "discomfort":[],
                                        "stepsAr":StepsAr.stepsArOrig
                            }
-    property var currentSession
+    property var currentSession:currentSessionOrig
     //property string stepNbText:"StepNb"
     //Is set, when RunSessionScene is loaded
     property int typesDim
@@ -162,12 +168,12 @@ ApplicationWindow {
             visible:true
             //anchors.leftMargin: dp(20)
             //Text {text:qsTr("Finish")}
-            Item {
+           Item {
                 id: quit
                 visible:true
                 anchors.fill: parent
                 MenuButton{
-                    z:100
+                    z:95
                     id:quitButton
                     width:parent.width/4
                     height: width
@@ -181,13 +187,15 @@ ApplicationWindow {
                     }
                 }
 
-            }
-            Image {
-               source: "../../assets/img/SeaWolf.png"
-               anchors.horizontalCenter: parent.horizontalCenter
-               //anchors.bottom: parent.bottom
-               width: dp(250)
-               height:dp(250)
+                Image {
+                    z:100
+                   source: "../../assets/img/SeaWolf.png"
+                   anchors.horizontalCenter: parent.horizontalCenter
+                   anchors.top: quitButton.bottom
+                   //anchors.bottom: parent.bottom
+                   width:parent.width/2
+                   height: width
+               }
            }
         }
     }

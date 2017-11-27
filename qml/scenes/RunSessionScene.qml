@@ -47,7 +47,8 @@ SceneBase {
     property color  borderColorFooterHold
     property int    timeFooterWalk
     property color  borderColorFooterWalk
-    property bool   noWalk: true
+    //current session has walk step
+    property bool   isWalk: true
     property string triggerStepEventMark: ""
     property string triggerPressEventMark: ""
     property string nextStepName: "brth"
@@ -63,14 +64,20 @@ SceneBase {
         var step;
         currentModel.clear();
         //hrPlot.sessionDuration = 0.0
+        isWalk=false
         for (step in selectedSession){
             currentModel.append({"time": selectedSession[step].time, "typeName":selectedSession[step].typeName, "isCurrent": false});
+            if (selectedSession[step].typeName === "walk"){
+                isWalk = true
+            }
+
             //hrPlot.sessionDuration += selectedSession[step].time;
         }
+        root.typesDim = isWalk? runGauge.length : 2
         currentGaugeBrth.maximumValue = currentModel.get(brthIndx).time
         currentGaugeHold.maximumValue = currentModel.get(holdIndx).time
-        currentGaugeWalk.maximumValue = currentModel.get(walkIndx).time
-        currentGaugeBack.maximumValue = currentModel.get(backIndx).time
+        currentGaugeWalk.maximumValue = isWalk ? currentModel.get(walkIndx).time : 0
+        currentGaugeBack.maximumValue = isWalk ? currentModel.get(backIndx).time : 0
         //root.currentSession.sessionName = sessionName
     }
     // List elements are created dynamically, when fillListModel is called
@@ -94,16 +101,6 @@ SceneBase {
                 id: apneaModel
                 //the following 3 properties will be used as indexes
                 //added something so user will not be confused if runs before configuring
-                //          ListElement { time: 3; typeName: "brth";    isCurrent: false }
-                //          ListElement { time: 4; typeName: "hold";    isCurrent: false }
-                //          ListElement { time: 5; typeName: "walk";    isCurrent: false }
-                //          ListElement { time: 6; typeName: "brth";    isCurrent: false }
-                //          ListElement { time: 7; typeName: "hold";    isCurrent: false }
-                //          ListElement { time: 8; typeName: "walk";    isCurrent: false }
-                //          ListElement { time: 9; typeName: "brth";    isCurrent: false }
-                //          ListElement { time:10; typeName: "hold";    isCurrent: false }
-                //          ListElement { time:11; typeName: "walk";    isCurrent: false }
-
                 ListElement { time: 3; typeName: "brth";    isCurrent: false }
                 ListElement { time: 4; typeName: "hold";    isCurrent: false }
                 ListElement { time: 5; typeName: "walk";    isCurrent: false }
@@ -138,8 +135,31 @@ SceneBase {
                     border.color: currentGauge.needleColor
                     Text{ id:txtLeft
                         anchors.centerIn: parent
-                        font.pixelSize: Math.round(dp(0.75 * parent.height))
+                        font.pixelSize: Math.round(0.75 * parent.height)
                         text: Math.round(currentGauge.maximumValue - currentGauge.value)
+                    }
+                }
+                Component {
+                    id: timeCell
+                    Rectangle {
+                        z:100
+                        property real myRadius: dp(5)
+                        id: wrapper
+                        radius: myRadius
+                        color: cellColor
+                        border.color: borderColor
+                        border.width: borderWidth
+                        Text {
+                            id:timeText
+                            anchors.centerIn: parent
+                            //font.pointSize: Math.round(parent.height/4)
+                            font.pixelSize: Math.round(0.75 * parent.height)
+                            text: "<b>" + whatToShow + "</b>"; color: "black"; /*style: Text.Raised; styleColor: "black"*/
+                            //text: index + ". " + typeName + " " + time + "sec."
+
+                        }
+                        Behavior on border.color {ColorAnimation{duration:500}}
+                        Behavior on border.width {NumberAnimation{duration:500}}
                     }
                 }
 
@@ -152,43 +172,20 @@ SceneBase {
                     Layout.preferredHeight: cellHeight * apneaTimes.nbOfRows + (apneaTimes.nbOfRows + 1) * apneaTimesLayout.spacing;
                     //clip: true
                     model: currentModel
-                    delegate: Component {
+                    delegate: Component{
                         Loader{
-                            Rectangle {
-
-                                property real myRadius: dp(5)
-                                id: wrapper
-                                z:      {var zdeep=isCurrent ? 100:95; /*console.log("isCurrent, index, zdeep", isCurrent, index, zdeep);*/return zdeep}
-                                width:  /*isCurrent ? 2* sessionView.cellWidth :*/ sessionView.cellWidth - dp(4)
-                                height: sessionView.cellHeight
-                                //height: sessionView.cellHeihght - dp(4)
-                                radius: /*isCurrent ? 2 * myRadius:*/ myRadius
-                                border.color: { if (index == -1) return "grey";
-                                    return hrPlot.runColors[currentModel.get(index).typeName];
-                                }
-                                color: index == -1 ? "grey" : "white" //{ if (index == -1) return "grey"; isCurrent? "white": "black"}
-                                border.width: isCurrent? dp(2): dp(6)
-                                function whatToShow() {
-
-                                    var wts = /*isCurrent ? Math.round(time - runGauge[index % runGauge.length].value) :*/ time
-                                    //timeLeft(wts)
-                                    return wts
-                                }
-                                Text {
-                                    id:timeText
-                                    anchors.centerIn: parent
-                                    //font.pointSize: Math.round(parent.height/4)
-                                    font.pixelSize: Math.round(dp(0.7 * parent.height))
-                                    text: "<b>" + parent.whatToShow() + "</b>"; color: "black"; /*style: Text.Raised; styleColor: "black"*/
-                                    //text: index + ". " + typeName + " " + time + "sec."
-
-                                }
-                                Behavior on border.color {ColorAnimation{duration:500}}
-                                Behavior on border.width {NumberAnimation{duration:500}}
-                            }
+                            property bool isSelected: isCurrent
+                            property var borderColor: index !== -1 ?
+                                         getStepColor(currentModel.get(index).typeName) : "grey"
+                            property var cellColor: isSelected ? "white" : "lightgrey"
+                            property int borderWidth: isSelected? dp(2): dp(6)
+                            property string whatToShow: index !== -1 ? currentModel.get(index).time : ""
+                            sourceComponent: timeCell;
+                            visible: (index !== -1) && ( currentModel.get(index).time !== 0)
+                            width:  sessionView.cellWidth - dp(6);
+                            height: sessionView.cellHeight;
                         }
                     }
-
                 }
                 Rectangle{
                     id: currentStepTimeSpent
@@ -207,7 +204,7 @@ SceneBase {
                     border.color: currentGauge.needleColor
                     Text{ id:txtSpent
                         anchors.centerIn: parent
-                        font.pixelSize: Math.round(dp(0.75 * parent.height))
+                        font.pixelSize: Math.round(0.75 * parent.height)
                         text: Math.round(currentGauge.value)
                     }
                 }
@@ -255,15 +252,15 @@ SceneBase {
                 width:  parent.width
             }
         }
-//        Row{
-//            visible: gaugeWalk.maximumValue !== 0
-//            id: stepsIds
-//            Layout.preferredWidth: runSessionScene.width
-//            Layout.preferredHeight: SeaWolfInput.height
-//            StepsAr{
-//               id:stepsArRun
-//            }
-//        }
+        //        Row{
+        //            visible: gaugeWalk.maximumValue !== 0
+        //            id: stepsIds
+        //            Layout.preferredWidth: runSessionScene.width
+        //            Layout.preferredHeight: SeaWolfInput.height
+        //            StepsAr{
+        //               id:stepsArRun
+        //            }
+        //        }
 
         RowLayout{
 
@@ -293,8 +290,8 @@ SceneBase {
 
                         gaugeBrth.maximumValue = currentModel.get(brthIndx).time
                         gaugeHold.maximumValue = currentModel.get(holdIndx).time
-                        gaugeWalk.maximumValue = currentModel.get(walkIndx).time
-                        gaugeBack.maximumValue = currentModel.get(backIndx).time
+                        gaugeWalk.maximumValue = isWalk ? currentModel.get(walkIndx).time : 0
+                        gaugeBack.maximumValue = isWalk ? currentModel.get(backIndx).time : 0
                         gaugeBrth.state = "stateRun"
                         gaugeBrth.value = 0
                         gaugeHold.state = "initial"
@@ -310,7 +307,7 @@ SceneBase {
 
                         //update walk steps
                         //hrPlot.stepsArHrp.init()
-                         //
+                        //
                         hrPlot.init()
                         hrPlot.timerUpdate(0, Math.round(heartRate.hr))
                         oneTimer.start()
@@ -443,7 +440,6 @@ SceneBase {
                     currentGaugeWalk=gaugeWalk
                     currentGaugeBack=gaugeBack
                     runGauge = [currentGaugeBrth, currentGaugeHold, currentGaugeWalk, currentGaugeBack];
-                    root.typesDim = runGauge.length
                 }
 
             } // End of gauges
@@ -477,8 +473,8 @@ SceneBase {
                         currentGauge.state = "initial";
                         gaugeBrth.maximumValue = currentModel.get(brthIndx).time
                         gaugeHold.maximumValue = currentModel.get(holdIndx).time
-                        gaugeWalk.maximumValue = currentModel.get(walkIndx).time
-                        gaugeBack.maximumValue = currentModel.get(backIndx).time
+                        gaugeWalk.maximumValue = isWalk ? currentModel.get(walkIndx).time : 0
+                        gaugeBack.maximumValue = isWalk ? currentModel.get(backIndx).time : 0
                         gaugeBrth.state = "initial"
                         gaugeBrth.value = 0
                         gaugeHold.state = "initial"
@@ -497,25 +493,6 @@ SceneBase {
                         currentGauge.cycleIsOver(gaugeBrth)
                     }
                 }
-
-//                Rectangle{
-//                    id:seaWolfLogo
-//                    z:95
-//                    color: "transparent"
-//                    //border.color: "black"
-//                    Layout.preferredHeight: parrent.height / 2
-//                    Layout.preferredWidth:  Layout.preferredHeight
-//                    Layout.alignment: Qt.AlignRight
-//                    Layout.rightMargin: dp(8)
-//                    Image {
-//                        id: seaWolfLogo1
-//                        source: "../../assets/img/SeaWolf.png"
-//                        anchors.horizontalCenter: parent.horizontalCenter
-//                        anchors.bottom: parent.bottom
-//                        Layout.preferredWidth: parent.width
-//                        height:width
-//                    }
-//                }
 
                 Component.onCompleted:{
                     currentWalkControl = finishStep

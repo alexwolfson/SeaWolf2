@@ -21,7 +21,6 @@ Rectangle{
     //anchors.topMargin: sessionView.cellWidth * 3
     opacity:1.0
     z:50
-    property var runColors: {"brth" : "green", "hold" : "tomato", "walk" : "blue", "back" : "orange"}
     //property var eventsGraphProperty:{"Contraction":["red", "black", 6]}
     //property LineSeries    currentHrSeries
     property LineSeries    currentStepHrSeries
@@ -322,8 +321,6 @@ Rectangle{
 
     //creates new series graph
     function setupCurrentSeries(){
-        //currentHrSeries = currentChartView.createSeries(ChartView.SeriesTypeLine, "0", currentStepAxisX, currentAxisY);
-        //currentHrSeries.color = runColors[currentGauge.gaugeName]
         currentContractionSeries = currentChartView.createSeries(ChartView.SeriesTypeScatter, "contraction", currentEventAxisX, currentAxisY);
         currentStepHrSeries = currentChartView.createSeries(ChartView.SeriesTypeLine, "0", currentStepAxisX, currentAxisY)
         currentStepHrSeries.width = dp(5)
@@ -468,7 +465,7 @@ Rectangle{
         for (eventNb = 0; eventNb < root.currentSession.event.length; eventNb++){
             eventName = root.myEventsEnum2Nm[root.currentSession.event[eventNb][0]]
             // for step events only
-            if (typeof(runColors[eventName]) !== "undefined"){
+            if (getStepColor(eventName) !== "undefined"){
                 tmStart = tmStop
                 tmStop = root.currentSession.event[eventNb][1]
                 //run.nextStepName is used in onSeriesAdded
@@ -512,7 +509,7 @@ Rectangle{
             }
 
             // for step events only
-            if (typeof(runColors[eventName]) !== "undefined"){
+            if (getStepColor(eventName) !== "undefined"){
                 tmStart = tmStop
                 tmStop = p_session.event[eventNb][1]
                 //run.nextStepName is used in onSeriesAdded
@@ -562,7 +559,7 @@ Rectangle{
             lastBackStepNb  += 1
         }
         //console.log("*** markEvent Enter: time = ", tm, "eventName = ", eventName, "lastStepEventNm = ", lastStepEventNm, "eventNb = ", root.currentSession.event.length -1 )
-        if ( typeof(runColors[eventName]) !== "undefined"){
+        if ( getStepColor(eventName) !== "undefined"){
             lastStepEventTm = tm
             lastStepEventNm = eventName
             // the rest of the setup will be done during onSeriesAdded signal processing
@@ -641,7 +638,7 @@ Rectangle{
         onSeriesAdded:{
             //console.log ("in onSeriesAdded lastStepEventNm:", lastStepEventNm, "lastStepEventTm = ", lastStepEventTm, "pulse = ", root.currentSession.pulse[lastStepEventTm -1],
             //             "myEventsNm2Enum[lastStepEventNm]", myEventsNm2Enum[lastStepEventNm])
-            series.color = runColors[run.nextStepName]
+            series.color = getStepColor(run.nextStepName)
             //series.width = dp(5)
             //console.log ("in onSeriesAdded series.color:", series.color)
             //addPointToHrPlot(lastStepEventTm, root.currentSession.pulse[lastStepEventTm - 1])

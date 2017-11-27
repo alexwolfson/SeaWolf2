@@ -23,31 +23,11 @@ CircularGauge {
     property bool isCurrent: false
     property real minAngle: -45
     property real maxAngle:  45
-    property color needleColor: hrPlot.runColors[gaugeName]
+    property color needleColor: getStepColor(gaugeName)
     property int modelIndex:0
     //:runSessionScene.runGauge.length
     minimumValue: 0
     maximumValue: gaugeModel.get(0).time
-
-    function startVoiceTimers(){
-        sixtyTimer.interval= maximumValue * 1000 - 60000
-        if (sixtyTimer.interval > 0){
-            sixtyTimer.start()
-        }
-        thirtyTimer.interval= maximumValue * 1000 - 30000
-        if (thirtyTimer.interval > 0){
-            thirtyTimer.start()
-        }
-        tenTimer.interval = maximumValue * 1000 - 10000
-        if (tenTimer.interval > 0){
-            tenTimer.start()
-        }
-    }
-    function stopVoiceTimers(){
-            thirtyTimer.stop()
-            tenTimer.stop()
-            sixtyTimer.stop()
-    }
 
     onModelIndexChanged:{
         if (gaugeModel != null ){
@@ -184,21 +164,6 @@ CircularGauge {
             //styleColor: gauge.needleColor
         }
     }
-    SoundEffect {
-        id: sixtysnd
-        volume: 1.0
-        source: "../../assets/sounds/1min.wav"
-    }
-    SoundEffect {
-        id: thirtysnd
-        volume: 1.0
-        source: "../../assets/sounds/30sec.wav"
-    }
-    SoundEffect {
-        id: tensnd
-        volume: 1.0
-        source: "../../assets/sounds/10sec.wav"
-    }
     states:[
         State {
             name: "stateRun"
@@ -219,6 +184,40 @@ CircularGauge {
             }
         }
     ]
+    function startVoiceTimers(){
+        sixtyTimer.interval= maximumValue * 1000 - 60000
+        if (sixtyTimer.interval > 0){
+            sixtyTimer.start()
+        }
+        thirtyTimer.interval= maximumValue * 1000 - 30000
+        if (thirtyTimer.interval > 0){
+            thirtyTimer.start()
+        }
+        tenTimer.interval = maximumValue * 1000 - 10000
+        if (tenTimer.interval > 0){
+            tenTimer.start()
+        }
+    }
+    function stopVoiceTimers(){
+            thirtyTimer.stop()
+            tenTimer.stop()
+            sixtyTimer.stop()
+    }
+    SoundEffect {
+        id: sixtysnd
+        volume: 1.0
+        source: "../../assets/sounds/1min.wav"
+    }
+    SoundEffect {
+        id: thirtysnd
+        volume: 1.0
+        source: "../../assets/sounds/30sec.wav"
+    }
+    SoundEffect {
+        id: tensnd
+        volume: 1.0
+        source: "../../assets/sounds/10sec.wav"
+    }
     Timer{
         id: sixtyTimer
         interval:60000
@@ -243,7 +242,8 @@ CircularGauge {
     }
     // It means that the next one is "brth"
     function isLastInCycle(){
-        if (nextGauge.modelIndex % typesDim ===  0)
+//        if (nextGauge.modelIndex % typesDim ===  0)
+        if (nextGauge.gaugeName === "brth")
             return true
         else
             return false
